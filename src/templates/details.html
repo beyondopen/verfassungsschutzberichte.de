@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Verfassungsschutzbericht {{d.year}} {{d.jurisdiction}}{% endblock %}
+
+{% block social_media %}
+{% if d.jurisdiction == 'Bund' %}
+{% set jurfix = "Bundesamt für Verfassungsschutz" %}
+{% set jurfixshort = "Bundesamt für Verfassungsschutz" %}
+{% else %}
+{% set jurfix = "Verfassungsschutz" + d.jurisdiction %}
+{% set jurfixshort = d.jurisdiction %}
+{% endif %}
+<meta property="og:title" content="Verfassungsschutzbericht {{d.year}} – {{jurfixshort}}">
+<meta property="og:description"
+  content="Über was infomiert der Verfassungs­schutz? Die Berichte des Geheimdienstes: gesammelt, durchsuchbar und analysiert.">
+<meta property="og:image" content="{{request.host_url[:-1]}}{{(d.pages|sort(attribute='page_number')|first).file_url}}">
+{% endblock %}
+
+
+{% block nav %}
+
+<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="/"><span class="d-none d-sm-inline">Verfassungsschutz&shy;berichte.de</span><span
+        class="d-block d-sm-none very-small-mobile">Verfassungsschutzberichte.de</span></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/berichte">Berichte</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/suche">Suche</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/trends">Trends</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/#ueber">Über</a>
+        </li>
+
+      </ul>
+
+      <form class="form-inline mr-2" method="GET">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="inputGroup-sizing-default">zu Seite</span>
+          </div>
+          <input style="width: 5rem;" type="number" value="1" min="1" max="{{d.pages|length}}" class="form-control"
+            aria-label="Default" aria-describedby="inputGroup-sizing-default"
+            onchange="document.getElementById(this.value).nextElementSibling.click();" />
+        </div>
+
+        <div hidden class="form-group">
+          <select class="form-control" id="exampleFormControlSelect2"
+            onchange="document.getElementById(this.value).nextElementSibling.click();">
+            {% for i in range(1, d.pages|length + 1) %}
+            {% if i%10 == 0 or i == 1 or i == d.pages|length %}
+            <option>{{i}}</option>
+            {% endif %}
+            {% endfor %}
+          </select>
+        </div>
+      </form>
+      <form class="form-inline my-2 my-lg-0" method="GET" action="/suche">
+        <input type="hidden" name="min_year" value="{{d.year}}">
+        <input type="hidden" name="max_year" value="{{d.year}}">
+        <input type="hidden" name="jurisdiction" value="{{d.jurisdiction|lower|urlencode}}">
+        <input class="form-control mr-sm-2" type="search" placeholder="Im Bericht suchen" aria-label="Search" name="q">
+        <button class="btn my-2 my-sm-0 btn-primary" type="submit">Suchen</button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+{% endblock %}
+
+{% block content %}
+
+<div style="padding-top: 54px;"></div>
+<h1 class="mt-1 mt-lg-5">Verfassungs&shy;schutz&shy;bericht {{d.year}}</h1>
+
+<h2 class="mb-1 mb-lg-5">{{jurfix}}</h2>
+
+<p>
+  Der Bericht umfasst {{d.pages|length}} Seiten mit insgesamt ungefähr {{counts}} Wörtern.<a href="{{d.file_url}}">
+    PDF downloaden</a>, <a href='/{{d.jurisdiction|lower|urlencode}}-{{d.year}}.txt'>Text</a>, <a
+    href='/api/{{d.jurisdiction|lower|urlencode}}/{{d.year}}'>JSON</a>.
+</p>
+
+{% for p in d.pages|sort(attribute='page_number') %}
+
+<div class="jump" id="{{p.page_number}}"></div>
+<a href="#{{p.page_number}}">
+  <h3>{{p.page_number}}</h3>
+</a>
+<!-- <p>{{ p.content }}</p> -->
+<div>
+  <img style="width: 100%" data-src="{{p.file_url}}" class="lazyload" alt="{{p.content}}" />
+</div>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,23 @@
+version: "3"
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./src/:/app/
+      - ./data/:/data/
+
+    depends_on:
+      - db
+    container_name: vsb
+    environment:
+      - FLASK_ENV=development
+  db:
+    image: postgres:11
+    volumes:
+      - ./misc/dbdata:/var/lib/postgresql/data
+    expose:
+      - 5432
+    environment:
+      POSTGRES_PASSWORD: password

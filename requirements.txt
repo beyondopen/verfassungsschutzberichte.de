@@ -1,0 +1,12 @@
+sqlalchemy-searchable
+Flask-SQLAlchemy
+flask
+psycopg2
+pdftotext
+pdf2image
+Flask-Caching
+gunicorn
+clean-text
+unidecode
+spacy
+redis

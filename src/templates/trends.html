@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+
+{% block title %}Verfassungsschutz Trends{% endblock %}
+
+{% block social_media %}
+<meta property="og:title" content="Verfassungsschutz Trends">
+<meta property="og:description" content="Wie oft werden Begriffe in den Berichten des Verfassungsschutzes verwendet?">
+{% if qs|length == 0 %}
+<meta property="og:image" content="https://vsb-screenshots.app.vis.one/trends?q=raf&q=nsu">
+{% else %}
+<meta property="og:image" content="https://vsb-screenshots.app.vis.one{{request.full_path|safe}}">
+{% endif %}
+{% endblock %}
+{% block nav %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="/"><span class="d-none d-sm-inline">Verfassungsschutz&shy;berichte.de</span><span
+        class="d-block d-sm-none very-small-mobile">Verfassungsschutzberichte.de</span></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/berichte">Berichte</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/suche">Suche</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="/trends">Trends</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/#ueber">Über</a>
+        </li>
+      </ul>
+      <!-- <form class="form-inline my-2 my-lg-0">
+          <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form> -->
+    </div>
+  </div>
+</nav>
+
+{% endblock %}
+
+{% block content %}
+
+<script defer>
+  var closeB = '  <button type="button" class="close" aria-label="Close"></button>'
+  window.tokens = [];
+
+  // Copies a string to the clipboard. Must be called from within an 
+  // event handler such as click. May return false if it failed, but
+  // this is not always possible. Browser support for Chrome 43+, 
+  // Firefox 42+, Safari 10+, Edge and IE 10+.
+  // IE: The clipboard feature may be disabled by an administrator. By
+  // default a prompt is shown the first time the clipboard is 
+  // used (per session).
+  function copyToClipboard(text) {
+    if (window.clipboardData && window.clipboardData.setData) {
+      // IE specific code path to prevent textarea being shown while dialog is visible.
+      return clipboardData.setData("Text", text);
+
+    } else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
+      var textarea = document.createElement("textarea");
+      textarea.textContent = text;
+      textarea.style.position = "fixed";  // Prevent scrolling to bottom of page in MS Edge.
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        return document.execCommand("copy");  // Security exception may be thrown by some browsers.
+      } catch (ex) {
+        console.warn("Copy to clipboard failed.", ex);
+        return false;
+      } finally {
+        document.body.removeChild(textarea);
+      }
+    }
+  }
+
+
+  function myFunction() {
+    var t = this.dataset.token
+    window.tokens = window.tokens.filter(function (x) { return x != t })
+    window.vsbData = window.vsbData.filter(function (x) { return x[0] != t })
+    draw()
+  }
+
+  window.vsbData = []
+
+  function draw() {
+    var domString = ''
+    for (var i = 0; i < window.tokens.length; i++) {
+      domString += '<button type="button" class="word btn btn-secondary mr-1 mb-1" data-token="' + window.tokens[i] + '">' + window.tokens[i] + '   <span aria-hidden="true">&times;</span></button>'
+    }
+    document.getElementById('tokens').innerHTML = domString;
+
+    var classname = document.getElementsByClassName("word")
+    for (var i = 0; i < classname.length; i++) {
+      classname[i].addEventListener('click', myFunction, false);
+    }
+
+    var q = ""
+    if (window.tokens.length > 0) {
+      var enc_tokens = []
+      for (var i = 0; i < window.tokens.length; i++) enc_tokens.push(encodeURIComponent(window.tokens[i]))
+
+      q += '?q=' + enc_tokens.join('&q=')
+    }
+    if (history.state !== q) window.history.pushState(q, null, "/trends" + q);
+
+
+
+    document.getElementById('chart').innerHTML = '';
+    if (window.vsbData.length > 0) {
+      var results = window.drawLineChart(window.vsbData, 'chart', 100, 'rel. Häufigkeit')
+      window.vsbMinYear = results[1]
+      window.vsbMaxYear = results[2]
+
+      var x = document.getElementById("sharebuttons");
+      // here the URL in the share buttons get set
+      x.children[0].setAttribute('value', window.location.href.replace('https://verfassungsschutzberichte.de', 'https://vsberichte.de'));
+      x.style.display = "flex";
+
+    } else {
+      // catch initial
+      if (window.location.href.indexOf('?') !== -1)
+        document.getElementById('chart').innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div><div>'
+      var x = document.getElementById("sharebuttons");
+      x.style.display = "none";
+    }
+    if (window.innerWidth < 768) {
+      var elmnt = document.getElementById("someId")
+      if (elmnt != null) elmnt.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });;
+    }
+  }
+
+  window.onpopstate = function (event) {
+    if (event.state != null)
+      window.location.href = '/trends' + event.state
+  }
+
+  function addToken(token) {
+    if (token == '') return;
+
+    token = token.replace(/"|'/g, '')
+    token = token.toLowerCase()
+    window.tokens.push(token);
+    draw();
+
+    fetch('/stats?q=' + encodeURIComponent(token)).then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      window.vsbData.push(data);
+      draw();
+    })
+  }
+
+  function addMultipleToken(tokens) {
+    var urls = []
+    for (var i = 0; i < tokens.length; i++) {
+      window.tokens.push(tokens[i].toLowerCase());
+      urls.push('/stats?q=' + encodeURIComponent(tokens[i]))
+    }
+    draw();
+
+    Promise.all(urls.map(function (u) { return fetch(u) })).then(function (responses) {
+      return Promise.all(responses.map(function (res) { return res.json() }))
+    }
+    ).then(function (datas) {
+      for (var i = 0; i < datas.length; i++) window.vsbData.push(datas[i])
+
+      draw();
+    })
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    // add all at once
+    addMultipleToken([{% for q in qs %}"{{ q| safe}}", {% endfor %}]);
+
+  function callback(event) {
+    var token = document.getElementById('input').value;
+    document.getElementById('input').value = '';
+    addToken(token)
+    event.preventDefault();
+  }
+
+  var ele = document.getElementById('form');
+  if (ele.addEventListener) {
+    ele.addEventListener("submit", callback, false);  //Modern browsers
+  } else if (ele.attachEvent) {
+    ele.attachEvent('onsubmit', callback);            //Old IE
+  }
+
+  document.getElementById("export-jpg").addEventListener("click", function () {
+    var canvas = document.getElementById("chart").childNodes[1];
+    canvas.toBlob(function (blob) {
+      saveAs(blob, "vsberichte-de-{{'-'.join(qs)}}.jpg");
+    });
+  });
+
+  document.getElementById("clipboard").addEventListener("click", function () {
+    var txt = document.getElementById("clipboard-text").value;
+    copyToClipboard(txt)
+  });
+
+  document.getElementById("export-csv").addEventListener("click", function () {
+    var rows = [['token', 'year', 'count']];
+    var curYear = window.vsbMinYear;
+    while (curYear <= window.vsbMaxYear) {
+
+      for (var i = 0; i < window.vsbData.length; i++) {
+        var value = 0;
+        var item = window.vsbData[i]
+        if (item[1].hasOwnProperty(curYear)) {
+          value = item[1][curYear]
+        }
+        rows.push([item[0], curYear, value])
+      }
+      curYear++;
+    }
+
+    let csvContent = "data:text/csv;charset=utf-8,";
+
+    rows.forEach(function (rowArray) {
+      let row = rowArray.join(",");
+      csvContent += row + "\r\n";
+    });
+
+    var encodedUri = encodeURI(csvContent);
+    window.open(encodedUri);
+  });
+
+  var backgroundColor = 'white';
+  Chart.plugins.register({
+    beforeDraw: function (c) {
+      var ctx = c.chart.ctx;
+      ctx.fillStyle = backgroundColor;
+      ctx.fillRect(0, 0, c.chart.width, c.chart.height);
+    }
+  });
+
+  });
+
+</script>
+
+{% set js = ['alle', 'Bund', 'Baden-Württemberg', 'Bayern', 'Berlin', 'Brandenburg', 'Bremen', 'Hamburg', 'Hessen', 'Mecklenburg-Vorpommern', 'Niedersachsen', 'Nordrhein-Westfalen', 'Rheinland-Pfalz', 'Saarland', 'Sachsen', 'Sachsen-Anhalt', 'Schleswig-Holstein', 'Thüringen'] %}
+
+<h1 class="my-1 my-lg-5">Verfassungs&shy;schutz Trends</h1>
+
+<div class="row">
+  <form id='form' class="col-lg-6">
+    <p>Vergleiche wie oft Stichwörter in den Verfassungsschutzberichten erwähnt werden. <a href="/#relative">Mehr über
+        die Berechnung und deren Aussagekraft erfahren</a>.</p>
+
+    <div class="input-group mb-2 mt-1 mt-lg-5">
+      <input id='input' type="text" class="form-control" placeholder="Wörter hinzufügen z.B. NSU" name="q">
+      <div class="input-group-append">
+        <button class="btn btn-primary">Hinzufügen</button>
+      </div>
+    </div>
+    <div id='tokens'>
+
+    </div>
+
+    <!-- <div class="form-row">
+    <div class="col">
+      <label for="exampleFormControlSelect1">Jurisdiktion</label>
+      <select onchange="this.form.submit()" name="jurisdiction" class="form-control" id="exampleFormControlSelect1">
+        {% for j in js %}
+        <option>{{j}}</option>
+        {% endfor %}
+
+      </select>
+    </div>
+    <div class="col">
+      <label for="exampleFormControlSelect2">Min. Jahr</label>
+      <select onchange="this.form.submit()" name="min_year" class="form-control" id="exampleFormControlSelect2">
+        <option>kein</option>
+        {% for y in range(1990, 2019) %}
+        <option>{{y}}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col">
+      <label for="exampleFormControlSelect3">Max. Jahr</label>
+      <select onchange="this.form.submit()" name="max_year" class="form-control" id="exampleFormControlSelect3">
+        <option>kein</option>
+        {% for y in range(1990, 2019) %}
+        <option>{{y}}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div> -->
+  </form>
+  <div class="col-lg-6">
+    <h3 class="mt-3 mt-lg-0">Beispiele</h3>
+    <ul>
+      <li><a href='/trends?q=punk&q=skinhead'>Punk vs Skinhead</a></li>
+      <li><a href='/trends?q=raf&q=nsu&q=combat%2018&q=blood%20%26%20honour'>RAF vs NSU vs Combat 18 vs Blood &
+          Honour</a>
+      <li><a href="/trends?q=internet&q=facebook&q=forum&q=zeitung">Internet vs Facebook vs Forum vs Zeitung</a></li>
+      <li><a href="/trends?q=npd&q=afd&q=dkp&q=pkk&q=pds">NPD vs AfD vs DKP vs PKK vs PDS</a></li>
+      <li><a href="/trends?q=linksextrem&q=rechtsextrem">linksextrem vs rechtsextrem</a></li>
+      <li><a href="/trends?q=g20&q=g8&q=g7">G20 vs G8 vs G7</a></li>
+      <li><a href="/trends?q=deutschland&q=national&q=islam&q=salafist">Deutschland vs national vs Islam vs Salafist</a>
+      </li>
+      <li><a href="/trends?q=iran&q=china&q=russland&q=türkei">Iran vs China vs Russland vs Türkei</a>
+      </li>
+      <li><a href='/trends?q=rassistisch&q=fremdenfeindlich&q=linksradikal&q=rechtsradikal'>rassistisch vs
+          fremdenfeindlich vs linksradikal vs rechtsradikal</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="my-3 my-lg-5" id='chart' style="position: relative; height: 50vh"></div>
+
+
+<p>Diese Grafik teilen auf <a
+    href="https://twitter.com/intent/tweet?text=Verfassungsschutz Trends: {{' vs '.join(qs)}}&url={{request.url|urlencode}}&hashtags=vsberichte">Twitter</a>
+  oder <a href="https://www.facebook.com/sharer/sharer.php?u={{request.url|urlencode}}">Facebook</a> teilen. Mehr unter
+  dem
+  Hashtag <a href="https://twitter.com/hashtag/vsberichte?lang=de">#vsberichte</a>.
+</p>
+
+<div class="input-group input-group-sm my-5" id='sharebuttons'>
+  <input class="form-control" type="text" value="" readonly id='clipboard-text'>
+  <div class="input-group-append">
+    <button class="btn btn-secondary" type="button" id='clipboard'>URL kopieren</button>
+    <button type="button" class="btn btn-secondary" id='export-jpg'>JPG speichern</button>
+    <button type="button" class="btn btn-secondary" id='export-csv'>CSV exportieren</button>
+  </div>
+</div>
+
+{% endblock %}

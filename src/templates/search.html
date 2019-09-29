@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+
+{% block title %}Suche in Verfassungsschutzberichten{% endblock %}
+
+{% block social_media %}
+<meta property="og:title" content="Suche in Verfassungsschutzberichten">
+<meta property="og:description"
+  content="Über was infomiert der Verfassungs­schutz? Die Berichte des Geheimdienstes: gesammelt, durchsuchbar und analysiert.">
+<meta property="og:image" content="https://verfassungsschutzberichte.de/static/thumbnail.jpg">
+{% endblock %}
+
+{% block nav %}
+
+<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="/"><span class="d-none d-sm-inline">Verfassungsschutz&shy;berichte.de</span><span
+        class="d-block d-sm-none very-small-mobile">Verfassungsschutzberichte.de</span></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/berichte">Berichte</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="/suche">Suche</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/trends">Trends</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/#ueber">Über</a>
+        </li>
+
+      </ul>
+      <!-- <form class="form-inline my-2 my-lg-0">
+          <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form> -->
+    </div>
+  </div>
+</nav>
+
+{% endblock %}
+
+{% block content %}
+
+{% set js = ['alle', 'Bund', 'Baden-Württemberg', 'Bayern', 'Berlin', 'Brandenburg', 'Bremen', 'Hamburg', 'Hessen', 'Mecklenburg-Vorpommern', 'Niedersachsen', 'Nordrhein-Westfalen', 'Rheinland-Pfalz', 'Saarland', 'Sachsen', 'Sachsen-Anhalt', 'Schleswig-Holstein', 'Thüringen'] %}
+
+<div style="padding-top: 54px;"></div>
+<h1 class="my-1 my-lg-5">Verfassungs&shy;schutz Suche</h1>
+
+<p>Alle Berichte sind durchsuchbar. <a href="/#suche">Mehr über die Suche erfahren</a>.</p>
+
+{% if q == None %}
+
+<form action="/suche" method="get">
+  <div class="input-group mt-1 mt-lg-5 mb-2">
+    <input type="text" class="form-control" placeholder="Suche" name="q">
+    <div class="input-group-append">
+      <button class="btn btn-primary" type="submit">Suchen</button>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col">
+      <label for="exampleFormControlSelect1">Jurisdiktion</label>
+      <select onchange="this.form.submit()" name="jurisdiction" class="form-control" id="exampleFormControlSelect1">
+        {% for j in js %}
+        <option>{{j}}</option>
+        {% endfor %}
+
+      </select>
+    </div>
+    <div class="col">
+      <label for="exampleFormControlSelect2">Min. Jahr</label>
+      <select onchange="this.form.submit()" name="min_year" class="form-control" id="exampleFormControlSelect2">
+        <option>kein</option>
+        {% for y in range(1977, 2019) %}
+        <option>{{y}}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col">
+      <label for="exampleFormControlSelect3">Max. Jahr</label>
+      <select onchange="this.form.submit()" name="max_year" class="form-control" id="exampleFormControlSelect3">
+        <option>kein</option>
+        {% for y in range(1977, 2019) %}
+        <option>{{y}}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+</form>
+
+
+{% else %}
+
+<form action="/suche" method="get" class="mb-3 mb-lg-5">
+  <div class="input-group mt-1 mt-lg-5 mb-2">
+    <input type="text" class="form-control" placeholder="Suche" name="q" value="{{q}}">
+    <div class="input-group-append">
+      <button class="btn btn-primary" type="submit">Suchen</button>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col">
+      <label for="exampleFormControlSelect1">Jurisdiktion</label>
+      <select onchange="this.form.submit()" name="jurisdiction" class="form-control" id="exampleFormControlSelect1">
+        {% for j in js %}
+        {% if jurisdiction is not none and j.lower() == jurisdiction.lower() %}
+        <option selected>{{j}}</option>
+        {% else %}
+        <option>{{j}}</option>
+        {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col">
+      <label for="exampleFormControlSelect2">Min. Jahr</label>
+      <select onchange="this.form.submit()" name="min_year" class="form-control" id="exampleFormControlSelect2">
+        <option>kein</option>
+        {% for y in range(1977, 2019) %}
+        {% if y == min_year %}
+        <option selected>{{y}}</option>
+        {% else %}
+        <option>{{y}}</option>
+        {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col">
+      <label for="exampleFormControlSelect3">Max. Jahr</label>
+      <select onchange="this.form.submit()" name="max_year" class="form-control" id="exampleFormControlSelect3">
+        <option>kein</option>
+        {% for y in range(1977, 2019) %}
+        {% if y == max_year %}
+        <option selected>{{y}}</option>
+        {% else %}
+        <option>{{y}}</option>
+        {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+</form>
+
+
+{% if n == 0 %}
+
+Für diese Anfrage wurden keine Treffer gefunden.
+
+{% else %}
+
+
+<div class="mb-3 mb-lg-5" id='chart' style="position: relative; height: 150px;"></div>
+
+{% if min_year != max_year or min_year is none %}
+<script>
+  window.drawLineChart([["{{ q }}", {{ counts | safe }}]], 'chart', 50, 'Seiten', null, false, true)
+</script>
+{% endif %}
+
+<div class="row">
+  <div class="col">
+    Treffer auf {{n}} Seiten
+  </div>
+  <div class="col text-right">
+    "{{q}}" in den <a href="/trends?q={{q|urlencode}}">Verfassungsschutz Trends</a>
+  </div>
+</div>
+
+
+{% for r in results %}
+<div class="card my-3 my-lg-5">
+  <div class="card-header">
+    <a href="/{{r.document.jurisdiction|lower}}/{{r.document.year}}/#{{r.page_number}}">Seite {{r.page_number}} im
+      Verfassungsschutzbericht {{r.document.year}} {{r.document.jurisdiction}}</a>
+  </div>
+  <div class="card-body">
+    <ul>
+      {% for s in r.snips %}
+      <li>{{s|safe}}</li>
+      {% endfor %}
+    </ul>
+    <div>
+      <img style="width: 100%;" data-src="{{r.file_url}}" class="lazyload" alt="{{r.content}}" />
+    </div>
+  </div>
+
+</div>
+{% endfor %}
+
+{% set query_string = "/suche?q=" + q  %}
+
+{% if not jurisdiction is none%}
+{% set query_string = query_string + "&jurisdiction=" + jurisdiction %}
+{% endif %}
+
+{% if not min_year is none%}
+{% set query_string = query_string + "&min_year=" + min_year|string %}
+{% endif %}
+
+{% if not max_year is none%}
+{% set query_string = query_string + "&max_year=" + max_year|string %}
+{% endif %}
+
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+
+    {% if page == 1 %}
+
+    <li class="page-item disabled">
+      <a class="page-link" href="#" tabindex="-1" aria-disabled="true">vorherige</a>
+    </li>
+
+    {% else %}
+
+    <li class="page-item">
+      <a class="page-link" href="{{query_string}}&page={{page - 1}}" tabindex="-1">vorherige</a>
+    </li>
+
+    {% endif %}
+
+    {% for pn in range(min_page, max_page + 1) %}
+    {% if page == pn %}
+    <li class="page-item active"><a class="page-link" href="{{query_string}}&page={{pn}}">{{pn}}</a></li>
+    {% else %}
+    <li class="page-item"><a class="page-link" href="{{query_string}}&page={{pn}}">{{pn}}</a></li>
+    {% endif %}
+    {% endfor %}
+
+    {% if page == max_page %}
+
+    <li class="page-item disabled">
+      <a class="page-link" href="#" tabindex="-1" aria-disabled="true">nächste</a>
+    </li>
+
+    {% else %}
+
+    <li class="page-item">
+      <a class="page-link" href="{{query_string}}&page={{page + 1}}" tabindex="-1">nächste</a>
+    </li>
+
+    {% endif %}
+
+
+  </ul>
+</nav>
+
+{% endif %}
+
+{% endif %}
+
+
+{% endblock %}

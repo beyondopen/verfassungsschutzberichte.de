@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Verfassungsschutzberichte{% endblock %}
+
+{% block social_media %}
+<meta property="og:title" content="Verfassungsschutzberichte">
+<meta property="og:description"
+  content="Über was infomiert der Verfassungs­schutz? Die Berichte des Geheimdienstes: gesammelt, durchsuchbar und analysiert.">
+<meta property="og:image" content="https://verfassungsschutzberichte.de/static/thumbnail.jpg">
+{% endblock %}
+
+{% block nav %}
+
+<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="/"><span class="d-none d-sm-inline">Verfassungsschutz&shy;berichte.de</span><span
+        class="d-block d-sm-none very-small-mobile">Verfassungsschutzberichte.de</span></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="/berichte">Berichte</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/suche">Suche</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/trends">Trends</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/#ueber">Über</a>
+        </li>
+      </ul>
+      <form class="form-inline my-2 my-lg-0" method="GET" action="/suche">
+        <input class="form-control mr-sm-2" type="search" placeholder="In allen Berichten suchen" aria-label="Search"
+          name="q">
+        <button class="btn my-2 my-sm-0 btn-primary" type="submit">Suchen</button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+{% endblock %}
+
+{% block content %}
+
+<div style="padding-top: 54px;"></div>
+<h1 class="my-1 my-lg-5">Verfassungs&shy;schutz&shy;berichte</h1>
+
+<p>Aktuell haben wir {{total}} Verfassungsschutzberichte aus Bund und Länder. Wenn dir ein fehlender vorliegt, nehme
+  bitte
+  <a href="/#kontakt">Kontakt</a> mit uns auf.</p>
+
+{% for d in docs %}
+<a id="{{d.jurisdiction|lower}}" class="anchor"></a>
+{% if d.jurisdiction == 'Bund' %}
+<h3 class="mt-5">Bundesamt für Verfassungsschutz</h3>
+{% else %}
+<h3 class="mt-5">{{ d.jurisdiction }}</h3>
+{% endif %}
+
+
+{% for y in d.years %}
+<a class="mr-1" href="{{d.jurisdiction|lower|urlencode}}/{{y}}">{{ y }} </a>
+{% endfor %}
+
+{% if d.jurisdiction == 'Hessen' %}
+<br>
+<small>Von 1991 bis 1999 wurden keine Berichte veröffentlicht.</small>
+{% endif %}
+
+{% if d.jurisdiction == 'Thüringen' %}
+<br>
+<small>2014 wurde kein Bericht veröffentlicht.</small>
+{% endif %}
+
+{% if d.jurisdiction == 'Mecklenburg-Vorpommern' %}
+<br>
+<small>Von 1998 bis 2002 erschien ein Extremismusbericht.</small>
+{% endif %}
+
+{% if d.jurisdiction == 'Saarland' %}
+<br>
+<small>„Auf Grund der Überschaubarkeit des Landes und der strukturellen Gegebenheiten der einzelnen Beobachtungsbereiche
+  erscheint im Saarland kein jährlicher Verfassungsschutzbericht“ (<a
+    href="https://web.archive.org/web/20160107114618/http://www.saarland.de/4492.htm">Quelle</a>). Seit 2013 erscheint
+  ein Lagebild
+  Verfassungsschutz.</small>
+{% endif %}
+
+{% endfor %}
+
+
+{% endblock %}

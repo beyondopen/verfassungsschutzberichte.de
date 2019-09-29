@@ -1,0 +1,63 @@
+html,
+body {
+  height: 100%;
+}
+
+a.anchor {
+  display: block;
+  position: relative;
+  top: -60px;
+  visibility: hidden;
+}
+
+body > div {
+  min-height: 80%;
+}
+
+hr {
+  margin-top: 3rem;
+}
+footer {
+  margin-bottom: 3rem;
+  margin-top: 3rem;
+}
+
+.push-down {
+  display: flex;
+  flex-direction: column;
+}
+
+.push-down > * {
+  margin-top: auto;
+}
+
+.jump:before {
+  content: "";
+  display: block;
+}
+
+@media only screen and (min-width: 576px) {
+  .jump:before {
+    content: "";
+    display: block;
+    padding-top: 90px; /* header height + empty space */
+    margin-top: -54px; /* header height to degrees padding’s space */
+  }
+}
+
+/* breakpoint iPhone 6 */
+@media only screen and (max-width: 374px) {
+  .very-small-mobile {
+    font-size: 14px;
+  }
+}
+
+canvas {
+  background-color: "white";
+}
+
+body {
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
