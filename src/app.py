@@ -10,8 +10,14 @@ import pdftotext
 
 import cleantext
 import spacy
-from flask import (Flask, jsonify, make_response, render_template, request,
-                   send_from_directory)
+from flask import (
+    Flask,
+    jsonify,
+    make_response,
+    render_template,
+    request,
+    send_from_directory,
+)
 from flask_caching import Cache
 from flask_sqlalchemy import BaseQuery, SQLAlchemy
 from pdf2image import convert_from_path
@@ -195,20 +201,22 @@ def update_docs(pattern="*"):
             db.session.rollback()
     cache.clear()
 
+
 @app.cli.command()
 @click.argument("pattern")
 def remove_docs(pattern="*"):
     try:
         # fucked up cascade
         doc = Document.query.filter(Document.file_url == "/pdfs/" + pattern).first()
-        TokenCount.query.filter(TokenCount.document_id==doc.id).delete()
-        DocumentPage.query.filter(DocumentPage.document_id==doc.id).delete()
+        TokenCount.query.filter(TokenCount.document_id == doc.id).delete()
+        DocumentPage.query.filter(DocumentPage.document_id == doc.id).delete()
         Document.query.filter(Document.file_url == "/pdfs/" + pattern).delete()
         db.session.commit()
     except Exception as e:
         print(e)
         db.session.rollback()
     cache.clear()
+
 
 @app.cli.command()
 def init_docs():
@@ -241,11 +249,13 @@ def get_index():
         res.append({"jurisdiction": x, "years": years})
     return res, total
 
+
 @app.route("/")
 @cache.cached()
 def index():
     res, total = get_index()
     return render_template("index.html", docs=res, total=total)
+
 
 @app.route("/berichte")
 @cache.cached()
@@ -265,6 +275,7 @@ def details(jurisdiction, year):
         .scalar()
     )
     return render_template("details.html", d=d, counts=sumed)
+
 
 def build_query():
     q = request.args.get("q")
@@ -398,8 +409,10 @@ def search():
     ids_int = [x.id for x in results]
     if len(ids_int) > 0:
         snips = db.engine.execute(
-            text(f"SELECT id, ts_headline(content, tsq_parse('{q}'), 'MaxFragments=10, MinWords=5, MaxWords=20, FragmentDelimiter=XXX.....XXX') as text FROM {DocumentPage.__tablename__} WHERE id in ({ids})"
-        ))
+            text(
+                f"SELECT id, ts_headline(content, tsq_parse('{q}'), 'MaxFragments=10, MinWords=5, MaxWords=20, FragmentDelimiter=XXX.....XXX') as text FROM {DocumentPage.__tablename__} WHERE id in ({ids})"
+            )
+        )
     else:
         snips = []
 
@@ -421,13 +434,15 @@ def search():
     )
 
 
-@app.route('/robots.txt')
+@app.route("/robots.txt")
 @cache.cached()
 def static_from_root():
     return send_from_directory(app.static_folder, request.path[1:])
 
+
 # FILES
 # ensure the files are served by nginx
+
 
 @app.route("/pdfs/<path:filename>")
 def download_pdf(filename):
@@ -449,7 +464,9 @@ def download_img(filename):
     response.headers["X-Accel-Redirect"] = "/x_images/" + filename
     return response
 
+
 # API
+
 
 def serialize_doc(d):
     return {
@@ -460,24 +477,82 @@ def serialize_doc(d):
         "num_pages": d.num_pages,
     }
 
+
 @app.route("/api/<jurisdiction>/<int:year>/")
 @cache.cached()
 def api_details(jurisdiction, year):
     jurisdiction = jurisdiction.title()
     d = Document.query.filter_by(jurisdiction=jurisdiction, year=year).first()
     res = serialize_doc(d)
-    res['pages'] = [x.content for x in  d.pages]
+    res["pages"] = [x.content for x in d.pages]
     return jsonify(res)
+
 
 @app.route("/api/")
 @cache.cached()
 def api_index():
     res, total = get_index()
-    return jsonify({'reports': res, 'total': total})
+    return jsonify({"reports": res, "total": total})
+
 
 @app.route("/<jurisdiction>-<int:year>.txt")
 @cache.cached()
 def text_details(jurisdiction, year):
     jurisdiction = jurisdiction.title()
     d = Document.query.filter_by(jurisdiction=jurisdiction, year=year).first()
-    return '\n\n\n'.join([x.content for x in  d.pages]), 200, {'Content-Type': 'text/plain; charset=utf-8'}
+    return (
+        "\n\n\n".join([x.content for x in d.pages]),
+        200,
+        {"Content-Type": "text/plain; charset=utf-8"},
+    )
+
+
+@app.route("/api/auto-complete")
+@cache.cached(query_string=True)
+def api_search_auto():
+    # TODO: respect min/max year etc.
+
+    q_orig = request.args.get("q").lower()
+    if (
+        '"' in q_orig
+        or " and " in q_orig
+        or " or " in q_orig
+        or "(" in q_orig
+        or ")" in q_orig
+    ):
+        return jsonify([])
+    q_list = q_orig.split()
+    q = q_list[-1]
+
+    if len(q_list) == 1:
+        results = (
+            TokenCount.query.filter(TokenCount.token.like(q + "%"))
+            .order_by(TokenCount.count.desc())
+            .limit(100)
+        )
+    else:
+        # make sure previous tokens appear on the same document page
+        ids = None
+        for t in q_list[:-1]:
+            res = (
+                TokenCount.query.filter(TokenCount.token == t)
+                .with_entities(TokenCount.document_id)
+                .all()
+            )
+            if ids is None:
+                ids = set(res)
+            else:
+                ids = ids.intersection(res)
+        results = (
+            TokenCount.query.filter(TokenCount.token.like(q + "%"))
+            .filter(TokenCount.document_id.in_(ids))
+            .order_by(TokenCount.count.desc())
+            .limit(100)
+        )
+
+    res = []
+    for x in results:
+        if not x.token in res:
+            res.append(x.token)
+    return jsonify([" ".join(q_list[:-1] + [x]) for x in res[:10]])
+

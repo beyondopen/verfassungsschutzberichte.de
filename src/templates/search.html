@@ -47,6 +47,7 @@
   </div>
 </nav>
 
+
 {% endblock %}
 
 {% block content %}
@@ -58,11 +59,38 @@
 
 <p>Alle Berichte sind durchsuchbar. <a href="/#suche">Mehr über die Suche erfahren</a>.</p>
 
+<script defer src="/static/bootstrap-autocomplete.min.js"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', function () {
+    $('.basicAutoComplete').autoComplete({
+      minLength: 2,
+      resolverSettings: {
+        url: '/api/auto-complete'
+      },
+      events: {
+        searchPost: function (resultsFromServer) {
+          // fully hide dropdown when there are no results to show
+          if (resultsFromServer.length === 0) {
+            $('.bootstrap-autocomplete.dropdown-menu.show').hide()
+          } else {
+            $('.bootstrap-autocomplete.dropdown-menu').show()
+          }
+          return resultsFromServer;
+        }
+      }
+    });
+
+    $('.basicAutoComplete').on('autocomplete.select', function (evt, item) {
+      $('form').submit()
+    });
+  });
+</script>
+
 {% if q == None %}
 
 <form action="/suche" method="get">
-  <div class="input-group mt-1 mt-lg-5 mb-2">
-    <input type="text" class="form-control" placeholder="Suche" name="q">
+  <div class="input-group mt-1 mt-lg-5 mb-2 mb-lg-5">
+    <input type="text" class="form-control basicAutoComplete" placeholder="Suche" name="q" autocomplete="off">
     <div class="input-group-append">
       <button class="btn btn-primary" type="submit">Suchen</button>
     </div>
@@ -103,8 +131,9 @@
 {% else %}
 
 <form action="/suche" method="get" class="mb-3 mb-lg-5">
-  <div class="input-group mt-1 mt-lg-5 mb-2">
-    <input type="text" class="form-control" placeholder="Suche" name="q" value="{{q}}">
+  <div class="input-group mt-1 mt-lg-5 mb-2 mb-lg-5">
+    <input type="text" class="form-control basicAutoComplete" placeholder="Suche" name="q" value="{{q}}"
+      autocomplete="off">
     <div class="input-group-append">
       <button class="btn btn-primary" type="submit">Suchen</button>
     </div>
@@ -165,8 +194,8 @@ Für diese Anfrage wurden keine Treffer gefunden.
 <!-- can't defer inline scipts -->
 <script>
   window.addEventListener('DOMContentLoaded', function () {
-    window.drawLineChart([["{{ q }}", {{ counts | safe }}]], 'chart', 50, 'Seiten', null, false, true)
-    });
+    window.drawLineChart([["{{ q }}", {{ counts | safe }}]], 'chart', 50, 'Seiten', null, false, true);
+  });
 </script>
 {% endif %}
 
