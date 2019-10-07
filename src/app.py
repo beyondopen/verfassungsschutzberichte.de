@@ -35,6 +35,10 @@ else:
 
 app.config["SQLALCHEMY_DATABASE_URI"] = url
 
+# remove whitespaces from HTML
+app.jinja_env.trim_blocks = True
+app.jinja_env.lstrip_blocks = True
+
 
 cache = Cache(app)
 
@@ -191,6 +195,20 @@ def update_docs(pattern="*"):
             db.session.rollback()
     cache.clear()
 
+@app.cli.command()
+@click.argument("pattern")
+def remove_docs(pattern="*"):
+    try:
+        # fucked up cascade
+        doc = Document.query.filter(Document.file_url == "/pdfs/" + pattern).first()
+        TokenCount.query.filter(TokenCount.document_id==doc.id).delete()
+        DocumentPage.query.filter(DocumentPage.document_id==doc.id).delete()
+        Document.query.filter(Document.file_url == "/pdfs/" + pattern).delete()
+        db.session.commit()
+    except Exception as e:
+        print(e)
+        db.session.rollback()
+    cache.clear()
 
 @app.cli.command()
 def init_docs():
@@ -233,7 +251,7 @@ def index():
 @cache.cached()
 def reports():
     res, total = get_index()
-    return render_template("berichte.html", docs=res, total=total)
+    return render_template("reports.html", docs=res, total=total)
 
 
 @app.route("/<jurisdiction>/<int:year>/")
@@ -438,7 +456,7 @@ def serialize_doc(d):
         "year": d.year,
         "title": d.title,
         "jurisdiction": d.jurisdiction,
-        "file_url": request.base_url + d.file_url,
+        "file_url": request.base_url[:-1] + d.file_url,
         "num_pages": d.num_pages,
     }
 

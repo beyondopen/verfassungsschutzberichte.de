@@ -162,8 +162,11 @@ Für diese Anfrage wurden keine Treffer gefunden.
 <div class="mb-3 mb-lg-5" id='chart' style="position: relative; height: 150px;"></div>
 
 {% if min_year != max_year or min_year is none %}
+<!-- can't defer inline scipts -->
 <script>
-  window.drawLineChart([["{{ q }}", {{ counts | safe }}]], 'chart', 50, 'Seiten', null, false, true)
+  window.addEventListener('DOMContentLoaded', function () {
+    window.drawLineChart([["{{ q }}", {{ counts | safe }}]], 'chart', 50, 'Seiten', null, false, true)
+    });
 </script>
 {% endif %}
 
