@@ -512,7 +512,10 @@ def text_details(jurisdiction, year):
 def api_search_auto():
     # TODO: respect min/max year etc.
 
-    q_orig = request.args.get("q").lower()
+    q_orig = request.args.get("q", "").lower()
+    if q_orig == '':
+        return jsonify([])
+
     if (
         '"' in q_orig
         or " and " in q_orig
