@@ -159,7 +159,7 @@
 </div>
 
 
-<script type="text/javascript">
+<script>
   window.addEventListener("load", function () {
     var svgObject = document.getElementById('tilemap').getSVGDocument();
     var rects = svgObject.getElementsByTagName("rect");
@@ -254,12 +254,12 @@
       Daher sollten die Information aus den Berichten nicht ungeprüft als Wahrheit angenommen werden.
       <br><br>
       Berichtserstattung & Pressemitteilungen:
-      <ul>
-        <li><a>Artikel bei Spiegel.de: XX</a></li>
-        <li><a href="//codefor.de/blog/Launch-Verfassungsschutzberichte.de.html">Unsere Pressemitteilung zum
-            Launch</a></li>
-      </ul>
     </p>
+    <ul>
+      <li><a>Artikel bei Spiegel.de: XX</a></li>
+      <li><a href="//codefor.de/blog/Launch-Verfassungsschutzberichte.de.html">Unsere Pressemitteilung zum
+          Launch</a></li>
+    </ul>
 
     <h2 class="mt-5">Das sagen andere über uns</h2>
 
@@ -487,7 +487,7 @@
         <code>38C5 EAFB CB2E CE44 4D3D  8476 2A90 2E83 D0F8 1161</code></small><br><br>
       Der Code befindet sich auf <a href="https://github.com/codeforberlin/verfassungsschutzberichte.de">GitHub</a> und
       Neuigkeiten gibt es auf <a href="https://twitter.com/vsberichte">Twitter</a>.<br><br>👉 <a
-        href="https://twitter.com/vsberichte"><img height=20 width=20
+        href="https://twitter.com/vsberichte"><img alt="twitter" height=20 width=20
           src=" {{ url_for('static', filename='twitter.svg') }}">@vsberichte</a>
       <br><br>
       Ehrenamtlich konzipiert und umgesetzt von <a href="https://johannesfilter.com">Johannes Filter</a> aus dem <a
@@ -500,10 +500,11 @@
 
     <div class='row justify-content-center align-items-center'>
       <div class='col text-center'><a href="https://www.meetup.com/OK-Lab-Berlin/"><img style="width: 50%"
-            src='/static/oklabberlin.jpg' /></a></div>
-      <div class='col text-center'><a href="https://codefor.de"><img style="width: 100%"
-            src='/static/CFG_logo.svg' /></a></div>
-      <div class='col text-center'><a href="https://okfn.de"><img style="width: 100%" src='/static/okf.svg' /></a></div>
+            src='/static/oklabberlin.jpg' alt="ok lab berlin" /></a></div>
+      <div class='col text-center'><a href="https://codefor.de"><img style="width: 100%" src='/static/CFG_logo.svg'
+            alt="cfg" /></a></div>
+      <div class='col text-center'><a href="https://okfn.de"><img style="width: 100%" src='/static/okf.svg'
+            alt="OKF" /></a></div>
     </div>
 
 
@@ -511,9 +512,9 @@
     <h2 class="mt-5">Partner:innen</h2>
 
     <div class='row justify-content-center align-items-center'>
-      <div class='col text-center'><a href="http://www.humanistische-union.de/"><img style="width: 40%"
-            src='/static/hu.jpg' /></a></div>
-      <div class='col text-center'><a href="https://fragdenstaat.de"><img style="width: 50%"
+      <div class='col text-center'><a href="http://www.humanistische-union.de/"><img alt="humanistische-union"
+            style="width: 40%" src='/static/hu.jpg' /></a></div>
+      <div class='col text-center'><a href="https://fragdenstaat.de"><img alt="fragdenstaat" style="width: 50%"
             src='/static/frag_den_staat_logo.svg' /></a></div>
     </div>
 
@@ -525,7 +526,7 @@
         Archive</a> und die Open-Source-Community.
     </p>
 
-
   </div>
+</div>
 
-  {% endblock %}
+{% endblock %}
