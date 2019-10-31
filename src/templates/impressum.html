@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Verfassungsschutzberichte{% endblock %}
+
+{% block social_media %}
+<meta property="og:title" content="Verfassungsschutzberichte">
+<meta property="og:description"
+  content="Über was infomiert der Verfassungs­schutz? Die Berichte des Geheimdienstes: gesammelt, durchsuchbar und analysiert.">
+<meta property="og:image" content="https://verfassungsschutzberichte.de/static/thumbnail.jpg">
+{% endblock %}
+
+{% block nav %}
+
+<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="/"><span class="d-none d-sm-inline">Verfassungsschutz&shy;berichte.de</span><span
+        class="d-block d-sm-none very-small-mobile">Verfassungsschutzberichte.de</span></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/berichte">Berichte</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/suche">Suche</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/trends">Trends</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/#ueber">Über</a>
+        </li>
+      </ul>
+      <form class="form-inline my-2 my-lg-0" method="GET" action="/suche">
+        <input class="form-control mr-sm-2" type="search" placeholder="In allen Berichten suchen" aria-label="Search"
+          name="q">
+        <button class="btn my-2 my-sm-0 btn-primary" type="submit">Suchen</button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+{% endblock %}
+
+{% block content %}
+
+<div style="padding-top: 54px;"></div>
+<h1 class="my-1 my-lg-5">Impressum</h1>
+
+<p>
+  Open Knowledge Foundation Deutschland e.V. <br />
+  Singerstr. 109 <br />
+  10179 Berlin <br />
+  Deutschland <br /><br />
+
+  E-Mail: info@okfn.de <br />
+  Telefon: +49 30 57 70 36 660 <br />
+  Fax: +49 30 57 70 36 669 <br />
+  Vereinsregister Nr: VR 30468 B <br />
+  Umsatzsteuernummer: DE278022128 <br />
+  Registergericht: Amtsgericht Charlottenburg <br /> <br />
+
+  Vertreten durch den Vereinsvorstand: Andreas Pawelke, Daniel Dietrich, Jana Wichmann, Kristina
+  Klein, Lucy Chambers
+</p>
+
+
+{% endblock %}

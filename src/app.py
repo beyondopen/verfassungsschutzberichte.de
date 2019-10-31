@@ -251,7 +251,7 @@ def get_index():
 
 
 @app.route("/")
-@cache.cached()
+@cache.cached(timeout=60)
 def index():
     res, total = get_index()
     return render_template("index.html", docs=res, total=total)
@@ -370,6 +370,11 @@ def stats():
 def trends():
     qs = request.args.getlist("q")
     return render_template("trends.html", qs=qs)
+
+@app.route("/impressum")
+@cache.cached()
+def impressum():
+    return render_template("impressum.html")
 
 
 @app.route("/suche")
