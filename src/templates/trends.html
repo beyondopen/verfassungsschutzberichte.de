@@ -307,10 +307,11 @@
       <li><a href='/trends?q=punk&q=skinhead'>Punk vs Skinhead</a></li>
       <li><a href="/trends?q=g20&q=g8&q=g7">G20 vs G8 vs G7</a></li>
       <li><a href='/trends?q=raf&q=nsu&q=combat%2018&q=blood%20%26%20honour'>RAF vs NSU vs Combat 18 vs Blood &
-          Honour</a>
+          Honour</a></li>
       <li><a href="/trends?q=internet&q=facebook&q=forum&q=zeitung">Internet vs Facebook vs Forum vs Zeitung</a></li>
       <li><a href="/trends?q=npd&q=afd&q=dkp&q=pkk&q=pds">NPD vs AfD vs DKP vs PKK vs PDS</a></li>
       </li>
+      <!-- invalid HTML but whatever -->
       <div class="d-none d-md-block ">
         <li><a href="/trends?q=deutschland&q=national&q=islam&q=salafist">Deutschland vs national vs Islam vs
             Salafist</a>
@@ -331,7 +332,7 @@
 
 
 <p class='mt-2'>Diese Grafik auf <a
-    href="https://twitter.com/intent/tweet?text=Verfassungsschutz Trends: {{' vs '.join(qs)}}&url={{request.url|urlencode}}&hashtags=vsberichte"><img
+    href="https://twitter.com/intent/tweet?text=Verfassungsschutz%20Trends:%20{{'%20vs%20'.join(qs)}}&url={{request.url|urlencode}}&hashtags=vsberichte"><img
       height=20 width=20 src=" {{ url_for('static', filename='twitter.svg') }}"> Twitter</a>
   oder <a href="https://www.facebook.com/sharer/sharer.php?u={{request.url|urlencode}}"><img height=20 width=20
       src=" {{ url_for('static', filename='facebook.svg') }}"> Facebook</a> teilen. Mehr unter

@@ -1,8 +1,5 @@
 {% extends 'base.html' %}
 
-{% block title %}Verfassungsschutzbericht {{d.year}} {{d.jurisdiction}}{% endblock %}
-
-{% block social_media %}
 {% if d.jurisdiction == 'Bund' %}
 {% set jurfix = "Bundesamt für Verfassungsschutz" %}
 {% set jurfixshort = "Bundesamt für Verfassungsschutz" %}
@@ -10,6 +7,11 @@
 {% set jurfix = "Verfassungsschutz" + d.jurisdiction %}
 {% set jurfixshort = d.jurisdiction %}
 {% endif %}
+
+{% block title %}Verfassungsschutzbericht {{d.year}} {{d.jurisdiction}}{% endblock %}
+
+{% block social_media %}
+
 <meta property="og:title" content="Verfassungsschutzbericht {{d.year}} – {{jurfixshort}}">
 <meta property="og:description"
   content="Über was infomiert der Verfassungs­schutz? Die Berichte des Geheimdienstes: gesammelt, durchsuchbar und analysiert.">
