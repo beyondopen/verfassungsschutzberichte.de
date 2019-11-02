@@ -18,6 +18,7 @@ from flask import (
     render_template,
     request,
     send_from_directory,
+    abort
 )
 from flask_caching import Cache
 from flask_sqlalchemy import BaseQuery, SQLAlchemy
@@ -270,6 +271,10 @@ def reports():
 def details(jurisdiction, year):
     jurisdiction = jurisdiction.title()
     d = Document.query.filter_by(jurisdiction=jurisdiction, year=year).first()
+    
+    if d is None:
+        abort(404)
+
     sumed = (
         TokenCount.query.filter(TokenCount.document_id == d.id)
         .with_entities(func.sum(TokenCount.count))
@@ -489,6 +494,8 @@ def serialize_doc(d):
 def api_details(jurisdiction, year):
     jurisdiction = jurisdiction.title()
     d = Document.query.filter_by(jurisdiction=jurisdiction, year=year).first()
+    if d is None:
+        abort(404)
     res = serialize_doc(d)
     res["pages"] = [x.content for x in d.pages]
     return jsonify(res)
@@ -508,6 +515,8 @@ def api_index():
 def text_details(jurisdiction, year):
     jurisdiction = jurisdiction.title()
     d = Document.query.filter_by(jurisdiction=jurisdiction, year=year).first()
+    if d is None:
+        abort(404)
     return (
         "\n\n\n".join([x.content for x in d.pages]),
         200,
