@@ -4,6 +4,7 @@ import re
 import time
 from collections import Counter, defaultdict
 from pathlib import Path
+from urllib.parse import quote
 
 import click
 import pdftotext
@@ -497,6 +498,8 @@ def api_details(jurisdiction, year):
 @cache.cached()
 def api_index():
     res, total = get_index()
+    for x in res:
+        x['jurisdiction_escaped'] = quote(x['jurisdiction'].lower())
     return jsonify({"reports": res, "total": total})
 
 
