@@ -260,7 +260,7 @@ def index():
 
 
 @app.route("/berichte")
-@cache.cached()
+@cache.cached(timeout=60)
 def reports():
     res, total = get_index()
     return render_template("reports.html", docs=res, total=total)
