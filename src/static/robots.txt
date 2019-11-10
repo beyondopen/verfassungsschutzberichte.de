@@ -2,6 +2,7 @@ user-agent: *
 Allow: /$
 Allow: /berichte
 Allow: /trends
+Allow: /static
 Disallow: /
 
 User-agent: ia_archiver
