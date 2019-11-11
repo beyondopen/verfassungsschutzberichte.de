@@ -3,6 +3,7 @@ Allow: /$
 Allow: /berichte
 Allow: /trends
 Allow: /static
+Allow: /images/*_0.jpg$
 Disallow: /
 
 User-agent: ia_archiver
