@@ -29,6 +29,8 @@ from sqlalchemy.sql import text
 from sqlalchemy_searchable import SearchQueryMixin, make_searchable
 from sqlalchemy_utils.types import TSVectorType
 
+from report_info import report_info
+
 app = Flask(__name__)
 
 if app.debug:
@@ -263,7 +265,7 @@ def index():
 @cache.cached(timeout=60)
 def reports():
     res, total = get_index()
-    return render_template("reports.html", docs=res, total=total)
+    return render_template("reports.html", docs=res, total=total, report_info=report_info)
 
 
 @app.route("/<jurisdiction>/<int:year>/")
@@ -280,7 +282,7 @@ def details(jurisdiction, year):
         .with_entities(func.sum(TokenCount.count))
         .scalar()
     )
-    return render_template("details.html", d=d, counts=sumed)
+    return render_template("details.html", d=d, counts=sumed, report_info=report_info)
 
 
 def build_query():
@@ -442,6 +444,7 @@ def search():
         min_page=max(1, page - 5),
         max_page=min((num_results - 1) // 20 + 1, page + 5),
         counts=counts,
+        report_info=report_info
     )
 
 

@@ -66,6 +66,8 @@ Two folders exists:
 
 Naming: `vsbericht-nw-2000.pdf` for NRW 2000, `vsbericht-2000.pdf` for the federal report 2000.
 
+If a report is for multiple years, choose the latest year as the main date. And update <src/report_info.py> accordingly.
+
 ## Search
 
 Using Postgres' full-text search features via [sqlalchemy-searchable](https://github.com/kvesteri/sqlalchemy-searchable). Some shortcomings, though. Right now, it's not possible to use trigram similarity. And wildcard queries are the default and can only be deactivated via quotes, i.e., "query". Also the results are not shown on the PDFs

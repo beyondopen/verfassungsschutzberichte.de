@@ -68,7 +68,12 @@
 
 
 {% for y in d.years %}
+
+{% if d.jurisdiction in report_info and y in report_info[d.jurisdiction] %}
+<a class="mr-1" href="{{d.jurisdiction|lower|urlencode}}/{{y}}">{{ report_info[d.jurisdiction][y]['title'] }} </a>
+{% else %}
 <a class="mr-1" href="{{d.jurisdiction|lower|urlencode}}/{{y}}">{{ y }} </a>
+{% endif %}
 {% endfor %}
 
 {% if d.jurisdiction == 'Hessen' %}

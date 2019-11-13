@@ -87,7 +87,12 @@
 {% block content %}
 
 <div style="padding-top: 54px;"></div>
+
+{% if d.jurisdiction in report_info and d.year in report_info[d.jurisdiction] %}
+<h1 class="mt-1 mt-lg-5">Verfassungs&shy;schutz&shy;bericht {{ report_info[d.jurisdiction][d.year]['title'] }}</h1>
+{% else %}
 <h1 class="mt-1 mt-lg-5">Verfassungs&shy;schutz&shy;bericht {{d.year}}</h1>
+{% endif %}
 
 <h2 class="mb-1 mb-lg-5">{{jurfix}}</h2>
 

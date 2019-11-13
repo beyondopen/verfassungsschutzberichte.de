@@ -210,10 +210,16 @@ Für diese Anfrage wurden keine Treffer gefunden.
 
 
 {% for r in results %}
+
+{% set doc_title = r.document.year %}
+{% if r.document.jurisdiction in report_info and r.document.year in report_info[r.document.jurisdiction] %}
+{% set doc_title = report_info[r.document.jurisdiction][r.document.year]['title'] %}
+{% endif %}
+
 <div class="card my-3 my-lg-5">
   <div class="card-header">
     <a href="/{{r.document.jurisdiction|lower}}/{{r.document.year}}/#{{r.page_number}}">Seite {{r.page_number}} im
-      Verfassungsschutzbericht {{r.document.year}} {{r.document.jurisdiction}}</a>
+      Verfassungsschutzbericht {{doc_title}} {{r.document.jurisdiction}}</a>
   </div>
   <div class="card-body">
     <ul>
