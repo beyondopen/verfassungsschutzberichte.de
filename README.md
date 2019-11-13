@@ -54,6 +54,7 @@ location /x_pdfs {
 
 - clear cache: `dokku run the-app flask clear-cache`
 - add documents: `dokku run the-app flask update-docs '*'`
+- remove documents: `dokku run the-app flask remove-docs '*'` (`dokku run vsb flask remove-docs 'vsbericht-th-2002.pdf'`)
 
 ## PDF preprocessing
 
