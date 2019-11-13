@@ -41,7 +41,7 @@ else:
     url = os.environ["DATABASE_URL"]
     app.config["CACHE_TYPE"] = "redis"
     app.config["CACHE_REDIS_URL"] = os.environ["REDIS_URL"]
-    app.config["CACHE_DEFAULT_TIMEOUT"] = 60 * 60 * 24  # 1 day
+    app.config["CACHE_DEFAULT_TIMEOUT"] = 60 * 60 * 24 * 14  # 2 weeks
 
 app.config["SQLALCHEMY_DATABASE_URI"] = url
 
@@ -255,14 +255,14 @@ def get_index():
 
 
 @app.route("/")
-@cache.cached(timeout=60)
+@cache.cached(timeout=60 * 60)
 def index():
     res, total = get_index()
     return render_template("index.html", docs=res, total=total)
 
 
 @app.route("/berichte")
-@cache.cached(timeout=60)
+@cache.cached(timeout=60 * 60)
 def reports():
     res, total = get_index()
     return render_template("reports.html", docs=res, total=total, report_info=report_info)
@@ -340,7 +340,7 @@ def get_year_totals():
 
 
 @app.route("/stats")
-@cache.cached(query_string=True, timeout=60 * 60 * 24 * 4)  # 4 weeks
+@cache.cached(query_string=True)
 def stats():
     q = request.args.get("q")
     if q is None:
