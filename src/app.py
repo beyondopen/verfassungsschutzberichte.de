@@ -74,7 +74,7 @@ class DocumentPage(db.Model):
     query_class = DocumentQuery
 
     document_id = db.Column(db.Integer, db.ForeignKey("document.id"), nullable=False)
-    document = db.relationship("Document", backref=db.backref("pages", lazy=True))
+    document = db.relationship("Document", backref=db.backref("pages", lazy=True, order_by="DocumentPage.page_number"))
 
     id = db.Column(db.Integer, primary_key=True)
     page_number = db.Column(db.Integer)
