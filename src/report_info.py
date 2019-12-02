@@ -19,7 +19,7 @@ start_year = {
     "Mecklenburg-Vorpommern": 1992,
     "Saarland": 2013,
     "Schleswig-Holstein": 1976,
-    "Nordrein-Westfalen": 1950,
+    "Nordrhein-Westfalen": 1950,
     "Sachsen": 1993,
     "Rheinland-Pfalz": 1984,
 }
@@ -39,7 +39,7 @@ no_reports = {
     "Mecklenburg-Vorpommern": [],
     "Saarland": [],
     "Schleswig-Holstein": [],
-    "Nordrein-Westfalen": [],
+    "Nordrhein-Westfalen": [],
     "Sachsen": [],
     "Rheinland-Pfalz": [],
 }
