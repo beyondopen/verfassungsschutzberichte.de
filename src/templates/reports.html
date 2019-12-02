@@ -60,46 +60,67 @@
 
 {% for d in docs %}
 <a id="{{d.jurisdiction|lower}}" class="anchor"></a>
+{% set button_title = "Verfassungsschutzbericht " + d.jurisdiction %}
 {% if d.jurisdiction == 'Bund' %}
 <h3 class="mt-5">Bundesamt für Verfassungsschutz</h3>
+{% set button_title = "Verfassungsschutzbericht" %}
+
 {% else %}
 <h3 class="mt-5">{{ d.jurisdiction }}</h3>
 {% endif %}
 
-
-{% for y in d.years %}
-
-{% if d.jurisdiction in report_info and y in report_info[d.jurisdiction] %}
-<a class="mr-1" href="{{d.jurisdiction|lower|urlencode}}/{{y}}">{{ report_info[d.jurisdiction][y]['title'] }} </a>
-{% else %}
-<a class="mr-1" href="{{d.jurisdiction|lower|urlencode}}/{{y}}">{{ y }} </a>
-{% endif %}
-{% endfor %}
+<div class="d-flex flex-wrap" style="font-family: monospace;">
+  {% if d.years %}
+  {% for y in range(report_info['start_year'][d.jurisdiction], d.years|max) | reverse %}
+  {% set title = y %}
+  {% if d.jurisdiction in report_info['title'] and y in report_info['title'][d.jurisdiction] %}
+  {% set title = report_info['title'][d.jurisdiction][y]['title'] %}
+  </a>
+  {% endif %}
+  {% if y in d.years %}
+  <a class="mr-2 mb-2 btn btn-primary btn-sm" role="button" href="{{d.jurisdiction|lower|urlencode}}/{{y}}"
+    title="{{button_title}} {{title}}">{{ title }}</a>
+  {% else %}
+  {% if y in report_info['no_reports'][d.jurisdiction]%}
+  <a class="mr-2 mb-2 btn btn-secondary btn-sm disabled" role="button" aria-disabled="true"
+    title="{{button_title}} {{title}} ist nicht erschienen">{{ title }}</a>
+  {% else %}
+  <a class="mr-2 mb-2 btn btn-warning btn-sm disabled" role="button" aria-disabled="true"
+    title="{{button_title}} {{title}} fehlt uns noch">{{ title }}</a>
+  {% endif%}
+  {% endif%}
+  {% endfor %}
+  {% endif %}
+</div>
 
 {% if d.jurisdiction == 'Hessen' %}
-<br>
 <small>Von 1991 bis 1999 wurden keine Berichte veröffentlicht.</small>
 {% endif %}
 
+{% if d.jurisdiction == 'Bund' %}
+<small>Bis 1982 hieß der Bericht „Betrifft: Verfassungsschutz“</small>
+{% endif %}
+
 {% if d.jurisdiction == 'Thüringen' %}
-<br>
 <small>2014 wurde kein Bericht veröffentlicht.</small>
 {% endif %}
 
 {% if d.jurisdiction == 'Mecklenburg-Vorpommern' %}
-<br>
-<small>Von 1998 bis 2002 erschien ein Extremismusbericht.</small>
+<small>Von 1998 bis 2002 hieß der Bericht „Extremismusbericht“.</small>
+{% endif %}
+
+{% if d.jurisdiction == 'Nordrhein-Westfalen' %}
+<small>Bis 1976 hieß der Bericht „Extremismus-Berichte“ [sic].</small>
 {% endif %}
 
 {% if d.jurisdiction == 'Saarland' %}
-<br>
-<small>„Auf Grund der Überschaubarkeit des Landes und der strukturellen Gegebenheiten der einzelnen Beobachtungsbereiche
+<small>„Auf Grund der Überschaubarkeit des Landes und der strukturellen Gegebenheiten der einzelnen
+  Beobachtungsbereiche
   erscheint im Saarland kein jährlicher Verfassungsschutzbericht“ (<a
     href="https://web.archive.org/web/20160107114618/http://www.saarland.de/4492.htm">Quelle</a>). Seit 2013 erscheint
-  ein Lagebild
-  Verfassungsschutz.</small>
+  ein Bericht unter dem Namen „Lagebild
+  Verfassungsschutz“.</small>
 {% endif %}
-
 {% endfor %}
 
 
