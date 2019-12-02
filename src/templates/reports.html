@@ -71,7 +71,7 @@
 
 <div class="d-flex flex-wrap" style="font-family: monospace;">
   {% if d.years %}
-  {% for y in range(report_info['start_year'][d.jurisdiction], d.years|max) | reverse %}
+  {% for y in range(report_info['start_year'][d.jurisdiction], (d.years|max) + 1) | reverse %}
   {% set title = y %}
   {% if d.jurisdiction in report_info['title'] and y in report_info['title'][d.jurisdiction] %}
   {% set title = report_info['title'][d.jurisdiction][y]['title'] %}
