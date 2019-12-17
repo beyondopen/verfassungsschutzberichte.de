@@ -54,9 +54,11 @@
 <div style="padding-top: 54px;"></div>
 <h1 class="my-1 my-lg-5">Verfassungs&shy;schutz&shy;berichte</h1>
 
-<p>Aktuell haben wir {{total}} Verfassungsschutzberichte aus Bund und Länder. Wenn dir ein fehlender vorliegt, nehme
+<!-- <p>Aktuell haben wir {{total}} Verfassungsschutzberichte aus Bund und Länder. Wenn dir ein fehlender vorliegt, nehme
   bitte
-  <a href="/#scannen">Kontakt</a> mit uns auf.</p>
+  <a href="/#scannen">Kontakt</a> mit uns auf.</p> -->
+<p>Aktuell haben wir {{total}} Verfassungsschutzberichte aus Bund und Länder. Die Berichte die gelb makiert sind, fehlen
+  uns noch. Wir sind noch dabei alte Berichte zu scannen.</p>
 
 {% for d in docs %}
 <a id="{{d.jurisdiction|lower}}" class="anchor"></a>
