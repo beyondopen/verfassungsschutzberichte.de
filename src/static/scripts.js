@@ -1,3 +1,5 @@
+// some polyfills
+
 if (!Array.prototype.filter) {
   Array.prototype.filter = function(func, thisArg) {
     "use strict";
@@ -120,6 +122,16 @@ if (!Array.prototype.map) {
   };
 }
 
+function getParameterByName(name, url) {
+  if (!url) url = window.location.href;
+  name = name.replace(/[\[\]]/g, "\\$&");
+  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+    results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return "";
+  return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
 document.addEventListener("DOMContentLoaded", function() {
   // make sure the dummy text has at least an a4 ratio (sufficient in most cases)
   var imgs = document.getElementsByClassName("lazyload");
@@ -138,7 +150,8 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 
-// var colors = ["#cbd5e8", "#f4cae4", "#b3e2cd", "#fdcdac", "#e6f5c9"];
+// colors taken from color brewer
+// http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=12 + http://colorbrewer2.org/#type=qualitative&scheme=Set3&n=12
 
 var colors = [
   "#a6cee3",
@@ -166,8 +179,6 @@ var colors = [
   "#ccebc5",
   "#ffed6f"
 ];
-
-// http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=12 + http://colorbrewer2.org/#type=qualitative&scheme=Set3&n=12
 
 function drawLineChart(
   datas,
@@ -206,10 +217,8 @@ function drawLineChart(
     }
   }
 
-  var ds = [];
-  // var max_num = 0;
+  var datasets = [];
   for (var di = 0; di < datas.length; di++) {
-    // console.log(datas);
     var lab = datas[di][0];
     var data = datas[di][1];
     var years = [];
@@ -245,86 +254,97 @@ function drawLineChart(
       color = colors[di];
     }
 
-    ds.push({
+    datasets.push({
       label: lab,
       lineTension: 0,
       fill: false,
       backgroundColor: color,
       borderColor: color,
       data: values,
-      borderWidth: 2
+      borderWidth: 3
     });
-
-    // max_num += values.reduce((a, b) => a + b, 0);
-  }
-  // var hits = document.getElementById("hits");
-  // if (hits != null) hits.innerText = max_num + " ";
-
-  function done() {
-    alert("haha");
-    var url = myLine.toBase64Image();
-    document.getElementById("url").src = url;
   }
 
-  return [
-    new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: years,
-        datasets: ds
+  const newChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: years,
+      datasets
+    },
+    options: {
+      events: ["mousemove"],
+      onHover: (event, chartElement) => {
+        event.target.style.cursor = chartElement[0] ? "pointer" : "default";
       },
-      options: {
-        tooltips: {
-          callbacks: {
-            label: function(tooltipItem, data) {
-              var label = data.datasets[tooltipItem.datasetIndex].label || "";
+      tooltips: {
+        callbacks: {
+          label: function(tooltipItem, data) {
+            var label = data.datasets[tooltipItem.datasetIndex].label || "";
 
-              if (label) {
-                label += ": ";
-              }
-              label += tooltipItem.yLabel.toFixed(6);
-              return label;
+            if (label) {
+              label += ": ";
+            }
+            label += tooltipItem.yLabel.toFixed(6);
+            return label;
+          }
+        }
+      },
+      responsive: true,
+      maintainAspectRatio: false,
+      title: {
+        display: title !== null,
+        text: title
+      },
+      legend: {
+        display: searchPage !== true
+      },
+      scales: {
+        xAxes: [
+          {
+            scaleLabel: {
+              display: true,
+              labelString: "Jahr"
+            },
+            ticks: {
+              maxTicksLimit: indexPage ? 8 : 11
             }
           }
-        },
-        responsive: true,
-        maintainAspectRatio: false,
-        title: {
-          display: title !== null,
-          text: title
-        },
-        legend: {
-          display: searchPage !== true
-        },
-        scales: {
-          xAxes: [
-            {
-              scaleLabel: {
-                display: true,
-                labelString: "Jahr"
-              },
-              ticks: {
-                maxTicksLimit: indexPage ? 8 : 11
-              }
+        ],
+        yAxes: [
+          {
+            scaleLabel: {
+              display: true,
+              labelString: yLabel
+            },
+            ticks: {
+              maxTicksLimit: height < 100 ? 5 : height < 400 ? 6 : 11,
+              beginAtZero: true,
+              integerSteps: true
             }
-          ],
-          yAxes: [
-            {
-              scaleLabel: {
-                display: true,
-                labelString: yLabel
-              },
-              ticks: {
-                maxTicksLimit: height < 100 ? 5 : height < 400 ? 6 : 11,
-                beginAtZero: true,
-                integerSteps: true
-              }
-            }
-          ]
-        }
+          }
+        ]
       }
-    }),
-    minYear,
-    maxYear
-  ];
+    }
+  });
+
+  ctx.onclick = function(evt) {
+    var firstPoint = newChart.getElementAtEvent(evt)[0];
+
+    if (firstPoint) {
+      var label = newChart.data.labels[firstPoint._index];
+      var token = newChart.data.datasets[firstPoint._datasetIndex].label;
+      var juris = getParameterByName("jurisdiction") || "alle";
+      window.location.href =
+        "/suche?q=" +
+        token +
+        "&jurisdiction=" +
+        juris +
+        "&min_year=" +
+        label +
+        "&max_year=" +
+        label;
+    }
+  };
+
+  return [newChart, minYear, maxYear];
 }
