@@ -50,6 +50,8 @@ location /x_pdfs {
 }
 ```
 
+Adjust the postgres config and increase `shared_buffers` and `work_mem` to, e.g., `1GB` and `128MB` respectively.
+
 ## One-off commands
 
 - clear cache: `dokku run the-app flask clear-cache`
