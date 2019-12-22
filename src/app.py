@@ -18,7 +18,7 @@ from flask import (
     render_template,
     request,
     send_from_directory,
-    abort
+    abort,
 )
 from flask_caching import Cache
 from flask_sqlalchemy import BaseQuery, SQLAlchemy
@@ -74,7 +74,10 @@ class DocumentPage(db.Model):
     query_class = DocumentQuery
 
     document_id = db.Column(db.Integer, db.ForeignKey("document.id"), nullable=False)
-    document = db.relationship("Document", backref=db.backref("pages", lazy=True, order_by="DocumentPage.page_number"))
+    document = db.relationship(
+        "Document",
+        backref=db.backref("pages", lazy=True, order_by="DocumentPage.page_number"),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     page_number = db.Column(db.Integer)
@@ -265,7 +268,9 @@ def index():
 @cache.cached(timeout=60 * 60)
 def reports():
     res, total = get_index()
-    return render_template("reports.html", docs=res, total=total, report_info=report_info)
+    return render_template(
+        "reports.html", docs=res, total=total, report_info=report_info
+    )
 
 
 @app.route("/<jurisdiction>/<int:year>/")
@@ -273,7 +278,7 @@ def reports():
 def details(jurisdiction, year):
     jurisdiction = jurisdiction.title()
     d = Document.query.filter_by(jurisdiction=jurisdiction, year=year).first()
-    
+
     if d is None:
         abort(404)
 
@@ -379,6 +384,7 @@ def trends():
     qs = request.args.getlist("q")
     return render_template("trends.html", qs=qs)
 
+
 @app.route("/impressum")
 @cache.cached()
 def impressum():
@@ -444,7 +450,7 @@ def search():
         min_page=max(1, page - 5),
         max_page=min((num_results - 1) // 20 + 1, page + 5),
         counts=counts,
-        report_info=report_info
+        report_info=report_info,
     )
 
 
@@ -509,22 +515,8 @@ def api_details(jurisdiction, year):
 def api_index():
     res, total = get_index()
     for x in res:
-        x['jurisdiction_escaped'] = quote(x['jurisdiction'].lower())
+        x["jurisdiction_escaped"] = quote(x["jurisdiction"].lower())
     return jsonify({"reports": res, "total": total})
-
-
-@app.route("/<jurisdiction>-<int:year>.txt")
-@cache.cached()
-def text_details(jurisdiction, year):
-    jurisdiction = jurisdiction.title()
-    d = Document.query.filter_by(jurisdiction=jurisdiction, year=year).first()
-    if d is None:
-        abort(404)
-    return (
-        "\n\n\n".join([x.content for x in d.pages]),
-        200,
-        {"Content-Type": "text/plain; charset=utf-8"},
-    )
 
 
 @app.route("/api/auto-complete")
@@ -533,7 +525,7 @@ def api_search_auto():
     # TODO: respect min/max year etc.
 
     q_orig = request.args.get("q", "").lower()
-    if q_orig == '':
+    if q_orig == "":
         return jsonify([])
 
     if (
@@ -579,3 +571,81 @@ def api_search_auto():
             res.append(x.token)
     return jsonify([" ".join(q_list[:-1] + [x]) for x in res[:10]])
 
+
+@app.route("/api/mentions")
+@cache.cached(query_string=True)
+def api_mentions():
+    q = request.args.get("q")
+
+    to_csv = not request.args.get("csv") is None
+
+    if q is None or len(q) == 0:
+        abort(404)
+    q = cleantext.clean(q, lang="de")
+    query, page, jurisdiction, max_year, min_year = build_query()
+
+    if max_year is None:
+        max_year = 2018
+    if min_year is None:
+        min_year = 1993
+
+    # get counts for the years, only select ID for performance
+    count_sq = query.search(q).with_entities(DocumentPage.id)
+    counts = (
+        DocumentPage.query.with_entities(DocumentPage.id)
+        .filter(DocumentPage.id.in_(count_sq.subquery()))
+        .join(Document)
+        .group_by(Document.year, Document.jurisdiction)
+        .values(Document.jurisdiction, Document.year, func.count(DocumentPage.id))
+    )
+
+    results = defaultdict(lambda: defaultdict(lambda: 0))
+
+    for k, v in report_info['start_year'].items():
+        for y in range(min_year, max_year + 1):
+            results[k][y] = 0
+        for y in range(min_year, v):
+            results[k][y] = -1
+    
+    for k, v in report_info['no_reports'].items():
+        for y in v:
+            results[k][y] = -1
+
+    for c in counts:
+        results[c[0]][c[1]] = c[2]
+
+    if to_csv:
+        csv_results = []
+        for k1, k2v in results.items():
+            for k2, v in k2v.items():
+                csv_results.append(';'.join([k1, str(k2), str(v)]))
+
+        return (
+            "\n".join(csv_results),
+            200,
+            {"Content-Type": "text/plain; charset=utf-8"},
+        )
+    else:
+        return jsonify(results)
+    # c_d = {}
+    # for c in counts:
+    #     c_d[c[0]] = c[1]
+    # counts = json.dumps(c_d)
+
+
+
+# text files
+
+
+@app.route("/<jurisdiction>-<int:year>.txt")
+@cache.cached()
+def text_details(jurisdiction, year):
+    jurisdiction = jurisdiction.title()
+    d = Document.query.filter_by(jurisdiction=jurisdiction, year=year).first()
+    if d is None:
+        abort(404)
+    return (
+        "\n\n\n".join([x.content for x in d.pages]),
+        200,
+        {"Content-Type": "text/plain; charset=utf-8"},
+    )
