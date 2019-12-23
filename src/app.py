@@ -615,7 +615,7 @@ def api_mentions():
         results[c[0]][c[1]] = c[2]
 
     if to_csv:
-        csv_results = []
+        csv_results = [['juris;year;count']]
         for k1, k2v in results.items():
             for k2, v in k2v.items():
                 csv_results.append(';'.join([k1, str(k2), str(v)]))
