@@ -573,7 +573,7 @@ def api_search_auto():
 
 
 @app.route("/api/mentions")
-@cache.cached(query_string=True)
+# @cache.cached(query_string=True)
 def api_mentions():
     q = request.args.get("q")
 
