@@ -611,6 +611,9 @@ def api_mentions():
         for y in v:
             if max_year >= y >= min_year:
                 results[k][y] = -1
+        for y in range(min_year, max_year + 1):
+            if 0 == Document.query.filter(Document.jurisdiction == k, Document.year == y).count():
+                results[k][y] = -1
 
     for c in counts:
         results[c[0]][c[1]] = c[2]
