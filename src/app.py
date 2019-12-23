@@ -4,7 +4,7 @@ import re
 import time
 from collections import Counter, defaultdict
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 
 import click
 import pdftotext
@@ -296,6 +296,9 @@ def build_query():
     jurisdiction = request.args.get("jurisdiction")
     min_year = request.args.get("min_year", "kein")
     max_year = request.args.get("max_year", "kein")
+
+    if not jurisdiction is None:
+        jurisdiction = unquote(jurisdiction)
 
     if jurisdiction == "alle":
         jurisdiction = None

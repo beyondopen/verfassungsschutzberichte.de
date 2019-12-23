@@ -24,6 +24,8 @@
 3. `docker-compose up`
 4. http://localhost:5000
 
+To get started, put some PDFs in to `$project/data/pdfs`. Get to docker id with `docker ps`, then `docker exec -it f00d7aa42de8 bash` with the appropiate id. Then `flask update-docs '*'` to process pdfs.
+
 ## Production
 
 Deploy with [Dokku](https://github.com/dokku/dokku).
