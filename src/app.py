@@ -609,7 +609,8 @@ def api_mentions():
     
     for k, v in report_info['no_reports'].items():
         for y in v:
-            results[k][y] = -1
+            if max_year >= y >= min_year:
+                results[k][y] = -1
 
     for c in counts:
         results[c[0]][c[1]] = c[2]
