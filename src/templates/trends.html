@@ -150,7 +150,6 @@
   function addToken(token) {
     if (token == '') return;
 
-    token = token.replace(/"|'/g, '')
     token = token.toLowerCase()
     window.tokens.push(token);
     draw();
@@ -304,7 +303,6 @@
     <h3 class="mt-3 mt-lg-0">Beispiele</h3>
     <ul>
       <li><a href="/trends?q=linksextrem&q=rechtsextrem">linksextrem vs rechtsextrem</a></li>
-      <li><a href='/trends?q=punk&q=skinhead'>Punk vs Skinhead</a></li>
       <li><a href="/trends?q=g20&q=g8&q=g7">G20 vs G8 vs G7</a></li>
       <li><a href='/trends?q=raf&q=nsu&q=combat%2018&q=blood%20%26%20honour'>RAF vs NSU vs Combat 18 vs Blood &
           Honour</a></li>

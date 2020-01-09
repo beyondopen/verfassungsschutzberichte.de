@@ -354,7 +354,7 @@ def stats():
     if q is None:
         return jsonify({})
 
-    q = cleantext.clean(q.replace('"', "").replace("'", ""), lang="de")
+    q = cleantext.clean(q, lang="de")
 
     query, page, jurisdiction, max_year, min_year = build_query()
 
