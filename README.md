@@ -33,10 +33,7 @@ Deploy with [Dokku](https://github.com/dokku/dokku).
 1. create a Dokku app
 2. link a postgres db
 3. link a redis cache
-4. Then mount two folders for the static content:
-
-- folder with pdfs to `/data/pdfs`
-- folder with resulting images to `/data/imgs`
+4. Then mount a folder `data` with contains two folders (`pdfs` for pdfs and `images` for images of the pdf pages) for the static content: `dokku storage:mount $app $path:/data/`
 
 To serve the images and pdfs via nginx (xsendfile), adapt the nginx config:
 
