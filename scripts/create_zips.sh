@@ -15,5 +15,5 @@ done
 cd /mnt/data/temp-data &&
 	rm /mnt/data/temp-data/vsberichte-texts.zip;
 	/usr/bin/zip -r -j /mnt/data/temp-data/vsberichte-texts.zip /mnt/data/temp-data/tmp-texts &&
-	scp /mnt/data/temp-data/vsberichte*.zip filter@berlin.jfilter.de:/var/www/data.jfilter.de/html/ &&
+	scp /mnt/data/temp-data/vsberichte*.zip filter@berlin.jfilter.de:/mnt/data/data-portal/ &&
   rm /mnt/data/temp-data/vsberichte*.zip && rm -rf /mnt/data/temp-data/tmp-texts
