@@ -33,6 +33,7 @@ from report_info import report_info
 
 app = Flask(__name__)
 
+# caching at browser & nginx cache
 @app.after_request
 def add_header(response):
     response.cache_control.max_age = 60 * 60 * 24 # 1 day
