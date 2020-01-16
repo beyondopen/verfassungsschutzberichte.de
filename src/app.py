@@ -280,7 +280,7 @@ def reports():
     )
 
 
-@app.route("/<jurisdiction>/<int:year>/")
+@app.route("/<jurisdiction>/<int:year>")
 @cache.cached()
 def details(jurisdiction, year):
     jurisdiction = jurisdiction.title()
@@ -508,7 +508,7 @@ def serialize_doc(d):
     }
 
 
-@app.route("/api/<jurisdiction>/<int:year>/")
+@app.route("/api/<jurisdiction>/<int:year>")
 @cache.cached()
 def api_details(jurisdiction, year):
     jurisdiction = jurisdiction.title()
@@ -520,7 +520,7 @@ def api_details(jurisdiction, year):
     return jsonify(res)
 
 
-@app.route("/api/")
+@app.route("/api")
 @cache.cached()
 def api_index():
     res, total = get_index()
