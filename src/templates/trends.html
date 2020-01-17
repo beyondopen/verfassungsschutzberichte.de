@@ -86,10 +86,10 @@
   }
 
 
-  function myFunction() {
+  function deleteToken() {
     var t = this.dataset.token
     window.tokens = window.tokens.filter(function (x) { return x != t })
-    window.vsbData = window.vsbData.filter(function (x) { return x[0] != t })
+    window.vsbData = window.vsbData.filter(function (x) { return encodeURIComponent(unescape(x[0])) != t })
     draw()
   }
 
@@ -98,13 +98,13 @@
   function draw() {
     var domString = ''
     for (var i = 0; i < window.tokens.length; i++) {
-      domString += '<button type="button" class="word btn btn-secondary mr-1 mb-1" data-token="' + window.tokens[i] + '">' + window.tokens[i] + '   <span aria-hidden="true">&times;</span></button>'
+      domString += '<button type="button" class="word btn btn-secondary mr-1 mb-1" data-token="' + window.tokens[i] + '">' + decodeURIComponent(window.tokens[i]) + '   <span aria-hidden="true">&times;</span></button>'
     }
     document.getElementById('tokens').innerHTML = domString;
 
     var classname = document.getElementsByClassName("word")
     for (var i = 0; i < classname.length; i++) {
-      classname[i].addEventListener('click', myFunction, false);
+      classname[i].addEventListener('click', deleteToken, false);
     }
 
     var q = ""
@@ -150,11 +150,11 @@
   function addToken(token) {
     if (token == '') return;
 
-    token = token.toLowerCase()
+    token = encodeURIComponent(token.toLowerCase())
     window.tokens.push(token);
     draw();
 
-    fetch('/stats?q=' + encodeURIComponent(token)).then(function (response) {
+    fetch('/stats?q=' + token).then(function (response) {
       return response.json();
     }).then(function (data) {
       window.vsbData.push(data);
@@ -165,8 +165,9 @@
   function addMultipleToken(tokens) {
     var urls = []
     for (var i = 0; i < tokens.length; i++) {
-      window.tokens.push(tokens[i].toLowerCase());
-      urls.push('/stats?q=' + encodeURIComponent(tokens[i]))
+      var tok = unescape(tokens[i]).toLowerCase()
+      window.tokens.push(encodeURIComponent(tok));
+      urls.push('/stats?q=' + tok)
     }
     draw();
 
@@ -182,7 +183,7 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     // add all at once
-    addMultipleToken([{% for q in qs %}"{{ q| safe}}", {% endfor %}]);
+    addMultipleToken({{ qs | tojson | safe }});
 
   function callback(event) {
     var token = document.getElementById('input').value;

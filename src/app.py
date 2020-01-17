@@ -360,8 +360,9 @@ def stats():
     q = request.args.get("q")
     if q is None:
         return jsonify({})
-
     q = cleantext.clean(q, lang="de")
+    # for qs like "token" remove the quotes to count
+    counting_q = q.replace('"', "").replace("'", "")
 
     query, page, jurisdiction, max_year, min_year = build_query()
 
@@ -372,9 +373,10 @@ def stats():
         .with_entities(Document.year, DocumentPage.content)
     )
     d = defaultdict(int)
+
     for r in all_results:
         year = r.year
-        count = r.content.lower().count(q)
+        count = r.content.lower().count(counting_q)
         d[year] += count
 
     for year_tup in get_year_totals():
