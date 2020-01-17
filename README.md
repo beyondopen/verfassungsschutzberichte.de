@@ -53,9 +53,11 @@ Adjust the postgres config and increase `shared_buffers` and `work_mem` to, e.g.
 
 ## One-off commands
 
-- clear cache: `dokku run the-app flask clear-cache`
-- add documents: `dokku run the-app flask update-docs '*'`
-- remove documents: `dokku run the-app flask remove-docs '*'` (`dokku run vsb flask remove-docs 'vsbericht-th-2002.pdf'`)
+- clear cache: `dokku run vsb flask clear-cache`
+- add documents: `dokku run vsb flask update-docs '*'`
+- remove documents: `dokku run vsb flask remove-docs '*'` (`dokku run vsb flask remove-docs 'vsbericht-th-2002.pdf'`)
+
+(Replace `vsb` with your dokku app name.)
 
 ## PDF preprocessing
 
@@ -72,7 +74,7 @@ If a report is for multiple years, choose the latest year as the main date. And 
 
 ## Search
 
-Using Postgres' full-text search features via [sqlalchemy-searchable](https://github.com/kvesteri/sqlalchemy-searchable). Some shortcomings, though. Right now, it's not possible to use trigram similarity. And wildcard queries are the default and can only be deactivated via quotes, i.e., "query". Also the results are not shown on the PDFs
+Using Postgres' full-text search features via [sqlalchemy-searchable](https://github.com/kvesteri/sqlalchemy-searchable). Right now, there are some shortcomings. It's not possible to use trigram similarity. And wildcard queries are the default and can only be deactivated by using quotes, i.e., "query". Also the matching tokens are not displayed on the page/image. Further work is required to improve the search.
 
 ## License
 
