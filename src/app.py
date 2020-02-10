@@ -493,6 +493,7 @@ def download_img(filename):
         return send_from_directory("/data/images", filename)
 
     response = make_response()
+    response.headers["Content-Type"] = "image/jpeg"
     response.headers["X-Accel-Redirect"] = "/x_images/" + filename
     return response
 
