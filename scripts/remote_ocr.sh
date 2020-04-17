@@ -26,7 +26,7 @@ scp $1 $server:$location/tmp.pdf &&
 ssh $server 'cd ~/pdfproc &&
    mutool clean tmp.pdf tmp.pdf &&
    qpdf --decrypt tmp.pdf tmp2.pdf && mv tmp2.pdf tmp.pdf &&
-   docker run --rm -v "$(pwd):/data" jbarlow83/ocrmypdf -l deu --pdf-renderer hocr --deskew --output-type pdf --clean --skip-text --optimize 0  --jbig2-lossy /data/tmp.pdf /data/tmp_ocr.pdf &&
+   docker run --rm -v "$(pwd):/data" jbarlow83/ocrmypdf -l deu --pdf-renderer hocr --deskew --output-type pdf --clean --skip-text --optimize 1  --jbig2-lossy /data/tmp.pdf /data/tmp_ocr.pdf &&
    docker run --rm -v "$PWD:/workdir" -u "$(id -u):$(id -g)" ptspts/pdfsizeopt pdfsizeopt --use-pngout=no tmp_ocr.pdf tmp_ocr_cleaned.pdf &&
    rm tmp.pdf && rm tmp_ocr.pdf' &&
 scp $server:$location/tmp_ocr_cleaned.pdf $out

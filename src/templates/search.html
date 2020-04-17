@@ -110,7 +110,7 @@
       <label for="exampleFormControlSelect2">Min. Jahr</label>
       <select onchange="this.form.submit()" name="min_year" class="form-control" id="exampleFormControlSelect2">
         <option>kein</option>
-        {% for y in range(1977, 2019) %}
+        {% for y in range(1977, 2020) %}
         <option>{{y}}</option>
         {% endfor %}
       </select>
@@ -119,7 +119,7 @@
       <label for="exampleFormControlSelect3">Max. Jahr</label>
       <select onchange="this.form.submit()" name="max_year" class="form-control" id="exampleFormControlSelect3">
         <option>kein</option>
-        {% for y in range(1977, 2019) %}
+        {% for y in range(1977, 2020) %}
         <option>{{y}}</option>
         {% endfor %}
       </select>
@@ -155,7 +155,7 @@
       <label for="exampleFormControlSelect2">Min. Jahr</label>
       <select onchange="this.form.submit()" name="min_year" class="form-control" id="exampleFormControlSelect2">
         <option>kein</option>
-        {% for y in range(1977, 2019) %}
+        {% for y in range(1977, 2020) %}
         {% if y == min_year %}
         <option selected>{{y}}</option>
         {% else %}
@@ -168,7 +168,7 @@
       <label for="exampleFormControlSelect3">Max. Jahr</label>
       <select onchange="this.form.submit()" name="max_year" class="form-control" id="exampleFormControlSelect3">
         <option>kein</option>
-        {% for y in range(1977, 2019) %}
+        {% for y in range(1977, 2020) %}
         {% if y == max_year %}
         <option selected>{{y}}</option>
         {% else %}
