@@ -20,22 +20,22 @@
 ## Development
 
 1. install and run [Docker](https://www.docker.com/)
-2. clone repository and go to its root
+2. `git clone https://github.com/dmedak/verfassungsschutzberichte.de && cd verfassungsschutzberichte.de`
 3. `docker-compose up`
 4. http://localhost:5000
 
-To get started, put some PDFs in to `$project/data/pdfs`. Get to docker id with `docker ps`, then `docker exec -it f00d7aa42de8 bash` with the appropiate id. Then `flask update-docs '*'` to process pdfs.
+To get started, put some PDFs in to `verfassungsschutzberichte.de/data/pdfs`. Get the id with `docker ps`, then enter the Docker container `docker exec -it f00d7aa42de8 bash` with the appropiate id. Then run `flask update-docs '*'` inside the container to process pdfs.
 
 ## Production
 
 Deploy with [Dokku](https://github.com/dokku/dokku).
 
-1. create a Dokku app
+1. create a Dokku app, e.g. with the name `vsb`
 2. link a postgres db
 3. link a redis cache
 4. Then mount a folder `data` with contains two folders (`pdfs` for pdfs and `images` for images of the pdf pages) for the static content: `dokku storage:mount $app $path:/data/`
 
-To serve the images and pdfs via nginx (xsendfile), adapt the nginx config:
+To serve the images and pdfs via nginx (xsendfile), adapt the nginx config of Dokku:
 
 ```bash
 location /x_images {
@@ -57,7 +57,6 @@ Adjust the postgres config and increase `shared_buffers` and `work_mem` to, e.g.
 - add documents: `dokku run vsb flask update-docs '*'`
 - remove documents: `dokku run vsb flask remove-docs '*'` (`dokku run vsb flask remove-docs 'vsbericht-th-2002.pdf'`)
 
-(Replace `vsb` with your dokku app name.)
 
 ## PDF preprocessing
 

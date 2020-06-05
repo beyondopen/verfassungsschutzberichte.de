@@ -104,7 +104,10 @@ class TokenCount(db.Model):
 
 
 db.configure_mappers()  # very important!
-# db.create_all()
+
+if app.debug:
+    db.create_all()
+
 db.session.commit()
 
 

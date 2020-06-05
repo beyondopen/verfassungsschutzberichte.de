@@ -16,4 +16,7 @@ COPY ./Procfile /app/Procfile
 
 ENV FLASK_APP=/app/app.py
 EXPOSE 5000
-CMD ["flask", "run", "--host", "0.0.0.0"]
+
+# The following commands gets overriden in prod with `Procfile`
+# More: http://dokku.viewdocs.io/dokku/deployment/methods/dockerfiles/
+CMD ["flask", "run"]
