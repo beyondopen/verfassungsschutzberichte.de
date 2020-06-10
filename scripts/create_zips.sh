@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -x
 
-mkdir /mnt/data/temp-data && cd /mnt/data/temp-data && /usr/bin/zip -r -j /mnt/data/temp-data/vsberichte.zip /mnt/data/vsb/vsb-data/pdfs
+mkdir -p /mnt/data/temp-data && rm -rf /mnt/data/temp-data/* && cd /mnt/data/temp-data && /usr/bin/zip -r -j /mnt/data/temp-data/vsberichte.zip /mnt/data/vsb/vsb-data/pdfs
 
 mkdir -p /mnt/data/temp-data/tmp-texts/ &&
 rm /mnt/data/temp-data/tmp-texts/* ;
