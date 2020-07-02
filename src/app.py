@@ -464,7 +464,7 @@ def search():
 @app.route("/robots.txt")
 @cache.cached()
 def static_from_root():
-    return send_from_directory(app.static_folder, request.path[1:])
+    return send_from_directory("static", request.path[1:])
 
 
 # FILES
