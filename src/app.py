@@ -7,29 +7,28 @@ from pathlib import Path
 from urllib.parse import quote, unquote
 
 import click
-import pdftotext
 
 import cleantext
+import pdftotext
 import spacy
 from flask import (
     Flask,
+    abort,
     jsonify,
     make_response,
     render_template,
     request,
     send_from_directory,
-    abort,
 )
 from flask_caching import Cache
 from flask_sqlalchemy import BaseQuery, SQLAlchemy
 from pdf2image import convert_from_path
 from PIL import Image
+from report_info import report_info
 from sqlalchemy import func
 from sqlalchemy.sql import text
 from sqlalchemy_searchable import SearchQueryMixin, make_searchable
 from sqlalchemy_utils.types import TSVectorType
-
-from report_info import report_info
 
 app = Flask(__name__)
 
@@ -104,8 +103,7 @@ if app.debug:
 db.session.commit()
 
 
-abr = [x.split() for x in Path("abr.txt").read_text().split("\n")]
-jurisdictions = ["Bund"] + [l[1] for l in abr]
+jurisdictions = ["Bund"] + [l[1] for l in report_info["abr"]]
 
 nlp = spacy.blank("de")
 
@@ -132,7 +130,7 @@ def proc_pdf(pdf_path):
         return
 
     juris = "Bund"
-    for [a, b] in abr:
+    for [a, b] in report_info["abr"]:
         if a.lower() == str(pdf_path.name.split("-")[1]):
             juris = b
     year = int(pdf_path.stem.split("-")[-1])
@@ -153,6 +151,7 @@ def proc_pdf(pdf_path):
         pdf = pdftotext.PDF(f)
         num_pages = 0
         texts = []
+        # iterate over all pages of the PDF
         for i, page_text in enumerate(pdf):
             page_text = cleantext.clean(
                 page_text, lang="de", lower=False, no_line_breaks=True
@@ -201,7 +200,7 @@ def clear_cache():
 @app.cli.command()
 @click.argument("pattern")
 def update_docs(pattern="*"):
-    # todo: update or remove existing objects
+    # only add documents that are not already entered
     for pdf_path in Path("/data" + "/pdfs").glob(pattern + ".pdf"):
         try:
             proc_pdf(pdf_path)
@@ -216,7 +215,7 @@ def update_docs(pattern="*"):
 @click.argument("pattern")
 def remove_docs(pattern="*"):
     try:
-        # fucked up cascade
+        # fucked up cascade on creation of db schema, so a a work-around
         doc = Document.query.filter(Document.file_url == "/pdfs/" + pattern).first()
         TokenCount.query.filter(TokenCount.document_id == doc.id).delete()
         DocumentPage.query.filter(DocumentPage.document_id == doc.id).delete()
@@ -229,8 +228,8 @@ def remove_docs(pattern="*"):
 
 
 @app.cli.command()
-def init_docs():
-    # delete all data and caches
+def clear_data():
+    # delete all data and caches, add new documents
     db.drop_all()
     db.session.commit()
 
@@ -610,28 +609,33 @@ def api_mentions():
 
     results = defaultdict(lambda: defaultdict(lambda: 0))
 
-    for k, v in report_info['start_year'].items():
+    for k, v in report_info["start_year"].items():
         for y in range(min_year, max_year + 1):
             results[k][y] = 0
         for y in range(min_year, v):
             results[k][y] = -1
-    
-    for k, v in report_info['no_reports'].items():
+
+    for k, v in report_info["no_reports"].items():
         for y in v:
             if max_year >= y >= min_year:
                 results[k][y] = -1
         for y in range(min_year, max_year + 1):
-            if 0 == Document.query.filter(Document.jurisdiction == k, Document.year == y).count():
+            if (
+                0
+                == Document.query.filter(
+                    Document.jurisdiction == k, Document.year == y
+                ).count()
+            ):
                 results[k][y] = -1
 
     for c in counts:
         results[c[0]][c[1]] = c[2]
 
     if to_csv:
-        csv_results = ['juris;year;count']
+        csv_results = ["juris;year;count"]
         for k1, k2v in results.items():
             for k2, v in k2v.items():
-                csv_results.append(';'.join([k1, str(k2), str(v)]))
+                csv_results.append(";".join([k1, str(k2), str(v)]))
 
         return (
             "\n".join(csv_results),
@@ -644,7 +648,6 @@ def api_mentions():
     # for c in counts:
     #     c_d[c[0]] = c[1]
     # counts = json.dumps(c_d)
-
 
 
 # text files

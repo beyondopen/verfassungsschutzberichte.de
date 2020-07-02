@@ -44,5 +44,29 @@ no_reports = {
     "Rheinland-Pfalz": [],
 }
 
-report_info = {"title": title, "start_year": start_year, "no_reports": no_reports}
+abr_text = """BW 	Baden-Württemberg
+BY 	Bayern
+BE 	Berlin
+BB 	Brandenburg
+HB 	Bremen
+HH 	Hamburg
+HE 	Hessen
+MV 	Mecklenburg-Vorpommern
+NI 	Niedersachsen
+NW 	Nordrhein-Westfalen
+RP 	Rheinland-Pfalz
+SL 	Saarland
+SN 	Sachsen
+ST 	Sachsen-Anhalt
+SH 	Schleswig-Holstein
+TH 	Thüringen"""
+
+abr = [x.split() for x in abr_text.split("\n")]
+
+report_info = {
+    "title": title,
+    "start_year": start_year,
+    "no_reports": no_reports,
+    "abr": abr,
+}
 
