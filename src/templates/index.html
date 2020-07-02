@@ -82,7 +82,7 @@
     <div class="text-center text-md-left">
       <a class="btn btn-primary mt-3" href="/trends?q=linksextrem&q=rechtsextrem" role="button">Mehr Trends: z. B.
         links- vs rechtsextrem</a>
-      <a class="btn btn-primary mt-3" href="/suche?q=NSU" role="button">oder Suche "NSU"</a>
+      <a class="btn btn-primary mt-3" href='/suche?q="NSU"' role="button">oder Suche "NSU"</a>
     </div>
   </div>
 
@@ -132,32 +132,43 @@
 <div class="row">
   <div class="col-lg-8">
     <h2>{{total}} Verfassungs&shy;schutz&shy;berichte</h2>
+    {% for d in docs %}
+    {% if d.jurisdiction == 'Bund' %}
     <p>Wir sammeln die PDFs der Berichte und stellen sie dem Web entsprechend dar. Hier sind nur
-      die
+      die {{d.years|count}}
       Berichte des Bundesamtes für Verfassungsschutz aufgeführt. <a href='/berichte'>Alle {{total}} Berichte gibt es auf
         der
         Übersichtsseite.</a></p>
-    {% for d in docs %}
-    {% if d.jurisdiction == 'Bund' %}
     <a id="{{d.jurisdiction|lower}}" class="anchor"></a>
     <h5 class="mt-5">Berichte des Bundesamtes</h5>
     {% for y in d.years %}
-    <a class="mr-1" href="{{d.jurisdiction|lower|urlencode}}/{{y}}">{{ y }} </a>
+    <a class="mr-1" style="font-family: monospace;" href="{{d.jurisdiction|lower|urlencode}}/{{y}}">{{ y }} </a>
     {% endfor %}
     {% endif %}
     {% endfor %}
-  </div>
-  <div class="col-lg-4 mt-5 mt-lg-0" style='align-content: center;justify-content: center;display: flex;'>
-    <object id="tilemap" type="image/svg+xml" data="/static/map.svg" height="250" width="250"></object>
-  </div>
-</div>
-
-<div class="row mt-5">
-  <div class="col-lg-8">
-    <h3>Verfassungsschutz Trends</h3>
+    <h3 class="mt-5">Verfassungsschutz Trends</h3>
     <p>Durch die digitale Archivierung können Erwähnung im zeitlichen Verlauf betrachten werden: Wir präsentieren die <a
         href="/trends">Verfassungsschutz Trends</a>. Oben sind nur drei Beispiele. Die Nutzer:innen sind eingeladen
       durch eigene Begriffe interessante Grafiken zu kreieren und über Social Media zu verbreiten.</p>
+  </div>
+  <div class="col-lg-4 mt-5 mt-lg-0" style='align-content: center;justify-content: center;display: flex;'>
+    <table class="table table-sm">
+      <tr>
+        <th scope="col">Land</th>
+        <th scope="col" class="text-right"># Berichte</th>
+      </tr>
+    </thead>
+      <tbody>
+        {% for d in docs %}
+          {% if d.jurisdiction != 'Bund' %}
+          <tr>
+            <td><small><a href="/berichte#{{d.jurisdiction|lower|urlencode}}">{{d.jurisdiction}}</a></small></td>
+            <td class="text-right"><small>{{d.years|count}}</small></td>
+          </tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 </div>
 
