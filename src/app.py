@@ -33,13 +33,6 @@ from report_info import report_info
 
 app = Flask(__name__)
 
-# caching at browser & nginx cache
-@app.after_request
-def add_header(response):
-    response.cache_control.max_age = 60 * 60 * 24 # 1 day
-    response.cache_control.public = True
-    return response
-
 if app.debug:
     url = "postgresql+psycopg2://postgres:password@db:5432/postgres"
     time.sleep(10)
