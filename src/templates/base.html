@@ -1,94 +1,160 @@
-<!doctype html>
-<html lang='de'>
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    {% block head %}
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1, IE=edge" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='bootstrap.min.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='Chart.min.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <script
+      defer
+      src="{{ url_for('static', filename='jquery.min.js') }}"
+    ></script>
+    <script
+      defer
+      src="{{ url_for('static', filename='popper.min.js') }}"
+    ></script>
+    <script
+      defer
+      src="{{ url_for('static', filename='bootstrap.min.js') }}"
+    ></script>
+    <script
+      defer
+      src="{{ url_for('static', filename='lazysizes.min.js') }}"
+    ></script>
+    <script
+      defer
+      src="{{ url_for('static', filename='Chart.min.js') }}"
+    ></script>
+    <script defer src="{{ url_for('static', filename='unfetch.js') }}"></script>
+    <script
+      defer
+      src="{{ url_for('static', filename='es6-promise.auto.min.js') }}"
+    ></script>
+    <script
+      defer
+      src="{{ url_for('static', filename='FileSaver.min.js') }}"
+    ></script>
+    <script defer src="{{ url_for('static', filename='scripts.js') }}"></script>
+    <title>{% block title %}{% endblock %}</title>
+    <meta
+      property="og:url"
+      content="https://verfassungsschutzberichte.de{{ request.full_path }}"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@vsberichte" />
 
-<head>
-  {% block head %}
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-  <meta http-equiv="X-UA-Compatible" content="chrome=1, IE=edge">
-  <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='Chart.min.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-  <script defer src="{{ url_for('static', filename='jquery.min.js') }}"></script>
-  <script defer src="{{ url_for('static', filename='popper.min.js') }}"></script>
-  <script defer src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
-  <script defer src="{{ url_for('static', filename='lazysizes.min.js') }}"></script>
-  <script defer src="{{ url_for('static', filename='Chart.min.js') }}"></script>
-  <script defer src="{{ url_for('static', filename='unfetch.js') }}"></script>
-  <script defer src="{{ url_for('static', filename='es6-promise.auto.min.js') }}"></script>
-  <script defer src="{{ url_for('static', filename='FileSaver.min.js') }}"></script>
-  <script defer src="{{ url_for('static', filename='scripts.js') }}"></script>
-  <title>{% block title %}{% endblock %}</title>
-  <meta property="og:url" content="https://verfassungsschutzberichte.de{{ request.full_path }}">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:site" content="@vsberichte">
+    <!-- favicon -->
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/static/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/static/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/static/favicon-16x16.png"
+    />
+    <link rel="manifest" href="/static/site.webmanifest" />
+    <link rel="shortcut icon" href="/static/favicon.ico" />
+    <meta name="msapplication-TileColor" content="#da532c" />
+    <meta name="msapplication-config" content="/static/browserconfig.xml" />
+    <meta name="theme-color" content="#ffffff" />
 
-  <!-- favicon -->
-  <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
-  <link rel="manifest" href="/static/site.webmanifest">
-  <link rel="shortcut icon" href="/static/favicon.ico">
-  <meta name="msapplication-TileColor" content="#da532c">
-  <meta name="msapplication-config" content="/static/browserconfig.xml">
-  <meta name="theme-color" content="#ffffff">
+    {% endblock %} {% block social_media %} {% endblock %}
+  </head>
 
-  {% endblock %}
-  {% block social_media %}
-  {% endblock %}
-</head>
+  <body>
+    {% block nav %}{% endblock %}
+    <div class="container">
+      {% block content %}{% endblock %}
+      <div class="push"></div>
+    </div>
 
-<body>
-  {% block nav %}{% endblock %}
-  <div class="container">
-    {% block content %}{% endblock %}
-    <div class="push"></div>
-  </div>
+    <hr />
+    <footer class="my-5">
+      <ul class="nav justify-content-center">
+        <li class="nav-item">
+          <a class="nav-link" href="/#faq">FAQ</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/#daten">Daten</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/#kontakt">Kontakt</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/impressum">Impressum</a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            href="https://okfn.de/impressum/#datenschutzerkl%C3%A4rung"
+            >Datenschutz</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            href="https://newsletter.dmedak.de/verfassungsschutzberichte/"
+            >Newsletter</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/vsberichte"
+            ><img
+              height="20"
+              width="20"
+              src=" {{ url_for('static', filename='twitter.svg') }}"
+            />@vsberichte</a
+          >
+        </li>
+      </ul>
+      <div style="padding-top: 54px;"></div>
+    </footer>
 
-  <hr>
-  <footer class="my-5">
-    <ul class="nav justify-content-center">
-      <li class="nav-item">
-        <a class="nav-link" href="/#faq">FAQ</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/#daten">Daten</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/#kontakt">Kontakt</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/impressum">Impressum</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="https://okfn.de/impressum/#datenschutzerkl%C3%A4rung">Datenschutz</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="https://newsletter.dmedak.de/verfassungsschutzberichte/">Newsletter</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="https://twitter.com/vsberichte"><img height=20 width=20
-            src=" {{ url_for('static', filename='twitter.svg') }}">@vsberichte</a></li>
-    </ul>
-    <div style="padding-top: 54px;"></div>
-  </footer>
-
-  <!-- Matomo -->
-  <script type="text/javascript">
-    var _paq = window._paq || [];
-    /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-    _paq.push(['disableCookies']);
-    _paq.push(['trackPageView']);
-    _paq.push(['enableLinkTracking']);
-    (function () {
-      var u = "//traffic.okfn.de/";
-      _paq.push(['setTrackerUrl', u + 'matomo.php']);
-      _paq.push(['setSiteId', '53']);
-      var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
-      g.type = 'text/javascript'; g.async = true; g.defer = true; g.src = u + 'matomo.js'; s.parentNode.insertBefore(g, s);
-    })();
-  </script>
-  <!-- End Matomo Code -->
-</body>
-
+    <!-- Matomo -->
+    <script type="text/javascript">
+      var _paq = window._paq || [];
+      /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+      _paq.push(["disableCookies"]);
+      _paq.push(["trackPageView"]);
+      _paq.push(["enableLinkTracking"]);
+      (function () {
+        var u = "//traffic.okfn.de/";
+        _paq.push(["setTrackerUrl", u + "matomo.php"]);
+        _paq.push(["setSiteId", "53"]);
+        var d = document,
+          g = d.createElement("script"),
+          s = d.getElementsByTagName("script")[0];
+        g.type = "text/javascript";
+        g.async = true;
+        g.defer = true;
+        g.src = u + "matomo.js";
+        s.parentNode.insertBefore(g, s);
+      })();
+    </script>
+    <!-- End Matomo Code -->
+  </body>
 </html>

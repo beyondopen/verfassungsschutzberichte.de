@@ -1,22 +1,33 @@
-{% extends 'base.html' %}
-
-{% block title %}Verfassungsschutzberichte{% endblock %}
-
-{% block social_media %}
-<meta property="og:title" content="Verfassungsschutzberichte">
-<meta property="description"
-  content="Online-Archiv für Verfassungsschutzberichte. Über was informiert der Verfassungs­schutz? Die Berichte des Geheimdienstes: gesammelt, durchsuchbar und analysiert.">
-<meta property="og:image" content="https://verfassungsschutzberichte.de/static/thumbnail.jpg">
-{% endblock %}
-
-{% block nav %}
+{% extends 'base.html' %} {% block title %}Impressum -
+Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
+<meta property="og:title" content="Verfassungsschutzberichte" />
+<meta
+  property="description"
+  content="Online-Archiv für Verfassungsschutzberichte. Über was informiert der Verfassungs­schutz? Die Berichte des Geheimdienstes: gesammelt, durchsuchbar und analysiert."
+/>
+<meta
+  property="og:image"
+  content="https://verfassungsschutzberichte.de/static/thumbnail.jpg"
+/>
+{% endblock %} {% block nav %}
 
 <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
   <div class="container">
-    <a class="navbar-brand" href="/"><span class="d-none d-sm-inline">Verfassungsschutz&shy;berichte.de</span><span
-        class="d-block d-sm-none very-small-mobile">Verfassungsschutzberichte.de</span></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <a class="navbar-brand" href="/"
+      ><span class="d-none d-sm-inline">Verfassungsschutz&shy;berichte.de</span
+      ><span class="d-block d-sm-none very-small-mobile"
+        >Verfassungsschutzberichte.de</span
+      ></a
+    >
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
       <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -39,17 +50,22 @@
         </li>
       </ul>
       <form class="form-inline my-2 my-lg-0" method="GET" action="/suche">
-        <input class="form-control mr-sm-2" type="search" placeholder="In allen Berichten suchen" aria-label="Search"
-          name="q">
-        <button class="btn my-2 my-sm-0 btn-primary" type="submit">Suchen</button>
+        <input
+          class="form-control mr-sm-2"
+          type="search"
+          placeholder="In allen Berichten suchen"
+          aria-label="Search"
+          name="q"
+        />
+        <button class="btn my-2 my-sm-0 btn-primary" type="submit">
+          Suchen
+        </button>
       </form>
     </div>
   </div>
 </nav>
 
-{% endblock %}
-
-{% block content %}
+{% endblock %} {% block content %}
 
 <div style="padding-top: 54px;"></div>
 <h1 class="my-1 my-lg-5">Impressum</h1>
@@ -65,11 +81,11 @@
   Fax: +49 30 57 70 36 669 <br />
   Vereinsregister Nr: VR 30468 B <br />
   Umsatzsteuernummer: DE278022128 <br />
-  Registergericht: Amtsgericht Charlottenburg <br /> <br />
+  Registergericht: Amtsgericht Charlottenburg <br />
+  <br />
 
-  Vertreten durch den Vereinsvorstand: Andreas Pawelke, Daniel Dietrich, Jana Wichmann, Kristina
-  Klein, Lucy Chambers
+  Vertreten durch den Vereinsvorstand: Andreas Pawelke, Daniel Dietrich, Jana
+  Wichmann, Kristina Klein, Lucy Chambers
 </p>
-
 
 {% endblock %}
