@@ -8,48 +8,18 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
     />
     <meta http-equiv="X-UA-Compatible" content="chrome=1, IE=edge" />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='bootstrap.min.css') }}"
-    />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='Chart.min.css') }}"
-    />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='styles.css') }}"
-    />
-    <script
-      defer
-      src="{{ url_for('static', filename='jquery.min.js') }}"
-    ></script>
-    <script
-      defer
-      src="{{ url_for('static', filename='popper.min.js') }}"
-    ></script>
-    <script
-      defer
-      src="{{ url_for('static', filename='bootstrap.min.js') }}"
-    ></script>
-    <script
-      defer
-      src="{{ url_for('static', filename='lazysizes.min.js') }}"
-    ></script>
-    <script
-      defer
-      src="{{ url_for('static', filename='Chart.min.js') }}"
-    ></script>
-    <script defer src="{{ url_for('static', filename='unfetch.js') }}"></script>
-    <script
-      defer
-      src="{{ url_for('static', filename='es6-promise.auto.min.js') }}"
-    ></script>
-    <script
-      defer
-      src="{{ url_for('static', filename='FileSaver.min.js') }}"
-    ></script>
-    <script defer src="{{ url_for('static', filename='scripts.js') }}"></script>
+    <link rel="stylesheet" href="/static/css/lib/bootstrap.min.css" />
+    <link rel="stylesheet" href="/static/css/lib/Chart.min.css" />
+    <link rel="stylesheet" href="/static/css/lib/styles.css" />
+    <script defer src="/static/js/lib/jquery.min.js"></script>
+    <script defer src="/static/js/lib/popper.min.js"></script>
+    <script defer src="/static/js/lib/bootstrap.min.js"></script>
+    <script defer src="/static/js/lib/lazysizes.min.js"></script>
+    <script defer src="/static/js/lib/Chart.min.js"></script>
+    <script defer src="/static/js/lib/unfetch.js"></script>
+    <script defer src="/static/js/lib/es6-promise.auto.min.js"></script>
+    <script defer src="/static/js/lib/FileSaver.min.js"></script>
+    <script defer src="/static/js/scripts.js"></script>
     <title>{% block title %}{% endblock %}</title>
     <meta
       property="og:url"
@@ -126,7 +96,7 @@
             ><img
               height="20"
               width="20"
-              src=" {{ url_for('static', filename='twitter.svg') }}"
+              src="/static/twitter.svg"
             />@vsberichte</a
           >
         </li>

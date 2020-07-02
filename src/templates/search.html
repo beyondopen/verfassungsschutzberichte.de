@@ -1,6 +1,6 @@
-{% extends 'base.html' %} {% block title %}Suche Verfassungsschutzberichte.de{%
-endblock %} {% block social_media %}
-<meta property="og:title" content="Suche in Verfassungsschutzberichten" />
+{% extends 'base.html' %} {% block title %}Suche -
+Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
+<meta property="og:title" content="Suche - Verfassungsschutzberichte.de" />
 <meta
   property="description"
   content="Online-Archiv für Verfassungsschutzberichte. Über was informiert der Verfassungs­schutz? Die Berichte des Geheimdienstes: gesammelt, durchsuchbar und analysiert."
@@ -74,7 +74,7 @@ endblock %} {% block social_media %}
   <a href="/#suche">Mehr über die Suche erfahren</a>.
 </p>
 
-<script defer src="/static/bootstrap-autocomplete.min.js"></script>
+<script defer src="/static/js/lib/bootstrap-autocomplete.min.js"></script>
 <script>
   window.addEventListener("DOMContentLoaded", function () {
     $(".basicAutoComplete").autoComplete({
