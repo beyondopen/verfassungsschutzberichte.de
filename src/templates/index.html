@@ -80,7 +80,7 @@
       die Berichte erstmals <b>gesammelt</b>, <b>ausgewertet</b> und können <b>durchsucht</b> werden. -->
     </p>
     <div class="text-center text-md-left">
-      <a class="btn btn-primary mt-3" href="/trends?q=linksextrem&q=rechtsextrem" role="button">Mehr Trends: z. B.
+      <a class="btn btn-primary mt-3" href="/trends?q=linksextrem&q=rechtsextrem" role="button">Trend: z. B.
         links- vs rechtsextrem</a>
       <a class="btn btn-primary mt-3" href='/suche?q="NSU"' role="button">oder Suche "NSU"</a>
     </div>
@@ -98,6 +98,48 @@
   </div>
   <div id='chart3' class="push-down col-lg-6">
 
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <h2>{{total}} Verfassungs&shy;schutz&shy;berichte</h2>
+    {% for d in docs %}
+    {% if d.jurisdiction == 'Bund' %}
+    <p>Wir sammeln die PDFs der Berichte und stellen sie dem Web entsprechend dar. Hier sind nur
+      die {{d.years|count}}
+      Berichte des Bundesamtes für Verfassungsschutz (BfV) aufgeführt. <a href='/berichte'>Übersicht über alle Berichte.</a></p>
+    <a id="{{d.jurisdiction|lower}}" class="anchor"></a>
+    <h5 class="mt-5">Berichte des BfV</h5>
+    {% for y in d.years %}
+    <a class="mr-1" style="font-family: monospace;" href="{{d.jurisdiction|lower|urlencode}}/{{y}}">{{ y }} </a>
+    {% endfor %}
+    {% endif %}
+    {% endfor %}
+    <h3 class="mt-5">Verfassungsschutz Trends</h3>
+    <p>Durch die digitale Archivierung können Erwähnung im zeitlichen Verlauf betrachten werden: Wir präsentieren die <a
+        href="/trends">Verfassungsschutz Trends</a>. Hier auf der Seite sind nur einige Beispiele. Die Nutzer:innen sind eingeladen
+      durch eigene Begriffe interessante Grafiken zu kreieren und über Social Media zu verbreiten.</p>
+    <div id="chart4" class="mt-3"></div>
+  </div>
+  <div class="col-lg-4 mt-5 mt-lg-0" style='align-content: center;justify-content: center;display: flex;'>
+    <table class="table table-sm">
+      <tr>
+        <th scope="col">Land</th>
+        <th scope="col" class="text-right"># Berichte</th>
+      </tr>
+    </thead>
+      <tbody>
+        {% for d in docs %}
+          {% if d.jurisdiction != 'Bund' %}
+          <tr>
+            <td><small><a href="/berichte#{{d.jurisdiction|lower|urlencode}}">{{d.jurisdiction}}</a></small></td>
+            <td class="text-right"><small>{{d.years|count}}</small></td>
+          </tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 </div>
 
@@ -127,71 +169,13 @@
     window.drawLineChart(data, 'chart3', 300, 'rel. Häufigkeit', title = 'Erwähnungen von Medien', indexPage = true)
   })
 
-</script>
+  Promise.all(['/stats?q=cyber'].map(function (u) { return fetch(u) })).then(function (responses) {
+    return Promise.all(responses.map(function (res) { return res.json() }))
+  }
+  ).then(function (data) {
+    window.drawLineChart(data, 'chart4', 200, 'rel. Häufigkeit', title = 'Erwähnung von Cyber', indexPage = true)
+  })
 
-<div class="row">
-  <div class="col-lg-8">
-    <h2>{{total}} Verfassungs&shy;schutz&shy;berichte</h2>
-    {% for d in docs %}
-    {% if d.jurisdiction == 'Bund' %}
-    <p>Wir sammeln die PDFs der Berichte und stellen sie dem Web entsprechend dar. Hier sind nur
-      die {{d.years|count}}
-      Berichte des Bundesamtes für Verfassungsschutz aufgeführt. <a href='/berichte'>Alle {{total}} Berichte gibt es auf
-        der
-        Übersichtsseite.</a></p>
-    <a id="{{d.jurisdiction|lower}}" class="anchor"></a>
-    <h5 class="mt-5">Berichte des Bundesamtes</h5>
-    {% for y in d.years %}
-    <a class="mr-1" style="font-family: monospace;" href="{{d.jurisdiction|lower|urlencode}}/{{y}}">{{ y }} </a>
-    {% endfor %}
-    {% endif %}
-    {% endfor %}
-    <h3 class="mt-5">Verfassungsschutz Trends</h3>
-    <p>Durch die digitale Archivierung können Erwähnung im zeitlichen Verlauf betrachten werden: Wir präsentieren die <a
-        href="/trends">Verfassungsschutz Trends</a>. Oben sind nur drei Beispiele. Die Nutzer:innen sind eingeladen
-      durch eigene Begriffe interessante Grafiken zu kreieren und über Social Media zu verbreiten.</p>
-  </div>
-  <div class="col-lg-4 mt-5 mt-lg-0" style='align-content: center;justify-content: center;display: flex;'>
-    <table class="table table-sm">
-      <tr>
-        <th scope="col">Land</th>
-        <th scope="col" class="text-right"># Berichte</th>
-      </tr>
-    </thead>
-      <tbody>
-        {% for d in docs %}
-          {% if d.jurisdiction != 'Bund' %}
-          <tr>
-            <td><small><a href="/berichte#{{d.jurisdiction|lower|urlencode}}">{{d.jurisdiction}}</a></small></td>
-            <td class="text-right"><small>{{d.years|count}}</small></td>
-          </tr>
-          {% endif %}
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
-
-
-<script>
-  window.addEventListener("load", function () {
-    var svgObject = document.getElementById('tilemap').getSVGDocument();
-    var rects = svgObject.getElementsByTagName("rect");
-    var order = ['saarland', 'baden-württemberg', 'bayern', 'rheinland-pfalz', 'hessen', 'thüringen', 'sachsen', 'nordrhein-westfalen', 'niedersachsen', 'sachsen-anhalt', 'brandenburg', 'berlin', 'bremen', 'schleswig-holstein', 'hamburg', 'mecklenburg-vorpommern']
-    for (var i = 0; i < rects.length; i++) {
-      rects[i].style.cursor = 'pointer'
-      rects[i].onclick = function (x) {
-        return function () {
-          window.location = "/berichte#" + order[x];
-        }
-      }(i)
-    }
-    var texts = svgObject.getElementsByTagName("text");
-    for (var i = 0; i < texts.length; i++) {
-      texts[i].style.pointerEvents = 'none'
-      texts[i].style.cursor = 'pointer'
-    }
-  });
 </script>
 
 <hr>
@@ -288,7 +272,7 @@
 
       <a id='talk' class="anchor"></a>
       <h3 class="mt-5">Unser Talk auf dem 36C3</h3>
-      <p>Andreas Krämer (<a href="https://twitter.com/housetier84">@housetier84</a) und Johannes Filter (<a
+      <p>Andreas Krämer (<a href="https://twitter.com/housetier84">@housetier84</a>) und Johannes Filter (<a
           href="https://twitter.com/fil_ter">@fil_ter</a>) haben auf dem 36C3 (Jahreskongress des Chaos Computer Clubs)
         über Verfassungsschutzberichte
         gesprochen. Es ging vor allem darum, was der Verfassungsschutz über linke Gruppierung (wie z. B. VVN-BDA oder
