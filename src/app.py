@@ -103,7 +103,9 @@ if app.debug:
 db.session.commit()
 
 
-jurisdictions = ["Bund"] + [l[1] for l in sorted(report_info["abr"], key=lambda x: x[1])]
+jurisdictions = ["Bund"] + [
+    l[1] for l in sorted(report_info["abr"], key=lambda x: x[1])
+]
 
 nlp = spacy.blank("de")
 

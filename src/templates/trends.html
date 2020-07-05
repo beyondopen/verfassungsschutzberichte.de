@@ -5,20 +5,27 @@
 {% block social_media %}
 <meta property="og:title" content="Trends - Verfassungsschutzberichte.de">
 <meta property="description" content="Wie oft werden Begriffe in den Berichten des Verfassungsschutzes verwendet?">
-{% if qs|length == 0 %}
-<meta property="og:image" content="https://vsb-screenshots.app.vis.one/trends?q=raf&q=nsu">
-{% else %}
-<meta property="og:image" content="https://vsb-screenshots.app.vis.one{{request.full_path|safe}}">
-{% endif %}
+<meta property="og:image" content="https://verfassungsschutzberichte.de/static/thumbnail.jpg">
 {% endblock %}
 {% block nav %}
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container">
-    <a class="navbar-brand" href="/"><span class="d-none d-sm-inline">Verfassungsschutz&shy;berichte.de</span><span
-        class="d-block d-sm-none very-small-mobile">Verfassungsschutzberichte.de</span></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <a class="navbar-brand" href="/"
+      ><span class="d-none d-sm-inline">Verfassungsschutz&shy;berichte.de</span
+      ><span class="d-block d-sm-none very-small-mobile"
+        >Verfassungsschutzberichte.de</span
+      ></a
+    >
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
       <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -33,8 +40,22 @@
         <li class="nav-item">
           <a class="nav-link" href="/suche">Suche</a>
         </li>
-        <li class="nav-item active">
-          <a class="nav-link" href="/trends">Trends</a>
+        <li class="nav-item active dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="navbarDropdown"
+            role="button"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            Trends
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="/trends">Trends</a>
+            <a class="dropdown-item" href="/regional">Regional</a>
+          </div>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="/#ueber">Über</a>
@@ -256,6 +277,7 @@
 
 {% set js = ['alle', 'Bund', 'Baden-Württemberg', 'Bayern', 'Berlin', 'Brandenburg', 'Bremen', 'Hamburg', 'Hessen', 'Mecklenburg-Vorpommern', 'Niedersachsen', 'Nordrhein-Westfalen', 'Rheinland-Pfalz', 'Saarland', 'Sachsen', 'Sachsen-Anhalt', 'Schleswig-Holstein', 'Thüringen'] %}
 
+
 <h1 class="my-1 my-lg-5">Verfassungs&shy;schutz Trends</h1>
 
 <div class="row">
@@ -333,15 +355,6 @@
 
 <div class="my-3 my-lg-5" id='chart' style="position: relative; height: 50vh"></div>
 
-
-<p class='mt-2'>Diese Grafik auf <a
-    href="https://twitter.com/intent/tweet?text=Verfassungsschutz%20Trends:%20{{'%20vs%20'.join(qs)}}&url={{request.url|urlencode}}&hashtags=vsberichte"><img
-      height=20 width=20 src=" {{ url_for('static', filename='twitter.svg') }}"> Twitter</a>
-  oder <a href="https://www.facebook.com/sharer/sharer.php?u={{request.url|urlencode}}"><img height=20 width=20
-      src=" {{ url_for('static', filename='facebook.svg') }}"> Facebook</a> teilen. Mehr unter
-  dem
-  Hashtag <a href="https://twitter.com/hashtag/vsberichte?lang=de">#vsberichte</a>.
-</p>
 
 <div class="input-group input-group-sm my-5" id='sharebuttons'>
   <input class="form-control" type="text" value="" readonly id='clipboard-text'>
