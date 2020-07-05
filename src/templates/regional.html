@@ -1,0 +1,395 @@
+{% extends 'base.html' %} {% block title %}Regional -
+Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
+<meta property="og:title" content="Regional - Verfassungsschutzberichte.de" />
+<meta
+  property="description"
+  content="Ländervergleich: Wie oft werden Begriffe in den Berichten des Verfassungsschutzes verwendet?"
+/>
+<meta
+  property="og:image"
+  content="https://verfassungsschutzberichte.de/static/thumbnail.jpg"
+/>
+
+{% endblock %} {% block nav %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="/"
+      ><span class="d-none d-sm-inline">Verfassungsschutz&shy;berichte.de</span
+      ><span class="d-block d-sm-none very-small-mobile"
+        >Verfassungsschutzberichte.de</span
+      ></a
+    >
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/berichte">Berichte</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/suche">Suche</a>
+        </li>
+        <li class="nav-item active dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="navbarDropdown"
+            role="button"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            Trends
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="/trends">Trends</a>
+            <a class="dropdown-item" href="/regional">Regional</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/#ueber">Über</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="//blog.vsberichte.de">Blog</a>
+        </li>
+      </ul>
+      <!-- <form class="form-inline my-2 my-lg-0">
+          <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form> -->
+    </div>
+  </div>
+</nav>
+
+{% endblock %} {% block content %}
+
+<h1 class="my-1 my-lg-5">Verfassungs&shy;schutz Regional</h1>
+
+<div class="row">
+  <form id="form" class="col-lg-6">
+    <p>
+      Die Berichte des Verfassungsschutz im Ländervergleich. Wie oft werden
+      welche Begriffe wo erwähnt?
+    </p>
+    <div class="input-group mb-2 mt-1 mt-lg-5">
+      <input
+        id="input"
+        type="text"
+        class="form-control"
+        placeholder="Nach Begriffen suchen, z. B. 'vvn-bda'"
+        name="q"
+      />
+      <div class="input-group-append">
+        <button class="btn btn-primary">Suchen</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="my-3 my-lg-5" id="chart" style="min-height: 10rem;"></div>
+
+<div class="input-group input-group-sm my-5" id="sharebuttons">
+  <input
+    class="form-control"
+    type="text"
+    value=""
+    readonly
+    id="clipboard-text"
+  />
+  <div class="input-group-append">
+    <button class="btn btn-secondary" type="button" id="clipboard">
+      URL kopieren
+    </button>
+    <button type="button" class="btn btn-secondary" id="export-jpg">
+      JPG speichern
+    </button>
+    <button type="button" class="btn btn-secondary" id="export-csv">
+      CSV exportieren
+    </button>
+  </div>
+</div>
+
+<p>
+  <small>
+    Erklärung: Je blauer das Kästchen, desto öfter wurde der Begriff erwähnt.
+    Für orangene Kästchen gibt es keine Berichte.
+  </small>
+</p>
+
+<p>
+  <small
+    >Die Daten und die Grafiken stehen unter
+    <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.de">CC0</a>.
+    Das heißt sie können ohne Namensnennung und Verlinkung wiederverwendet
+    werden.</small
+  >
+</p>
+
+<script defer src="/static/js/lib/chartjs-chart-matrix.min.js"></script>
+
+<script>
+  // Copies a string to the clipboard. Must be called from within an
+  // event handler such as click. May return false if it failed, but
+  // this is not always possible. Browser support for Chrome 43+,
+  // Firefox 42+, Safari 10+, Edge and IE 10+.
+  // IE: The clipboard feature may be disabled by an administrator. By
+  // default a prompt is shown the first time the clipboard is
+  // used (per session).
+  function copyToClipboard(text) {
+    if (window.clipboardData && window.clipboardData.setData) {
+      // IE specific code path to prevent textarea being shown while dialog is visible.
+      return clipboardData.setData("Text", text);
+    } else if (
+      document.queryCommandSupported &&
+      document.queryCommandSupported("copy")
+    ) {
+      var textarea = document.createElement("textarea");
+      textarea.textContent = text;
+      textarea.style.position = "fixed"; // Prevent scrolling to bottom of page in MS Edge.
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        return document.execCommand("copy"); // Security exception may be thrown by some browsers.
+      } catch (ex) {
+        console.warn("Copy to clipboard failed.", ex);
+        return false;
+      } finally {
+        document.body.removeChild(textarea);
+      }
+    }
+  }
+
+  var jurisdictionNames = [
+    "Bund",
+    "Baden-Württemberg",
+    "Bayern",
+    "Berlin",
+    "Brandenburg",
+    "Bremen",
+    "Hamburg",
+    "Hessen",
+    "Mecklenburg-Vorpommern",
+    "Niedersachsen",
+    "Nordrhein-Westfalen",
+    "Rheinland-Pfalz",
+    "Saarland",
+    "Sachsen",
+    "Sachsen-Anhalt",
+    "Schleswig-Holstein",
+    "Thüringen",
+  ];
+
+  function getDataAndDraw(q) {
+    document.getElementById("chart").innerHTML =
+      '<div class="text-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div><div>';
+    fetch("/api/mentions?min_year=1993&q=" + q)
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (data) {
+        transformedData = [];
+        maxValue = -1;
+        for (var [j, years] of Object.entries(data)) {
+          for (var [year, v] of Object.entries(years)) {
+            if (v != 0) {
+              transformedData.push({
+                x: parseInt(year),
+                y: j,
+                v,
+              });
+              maxValue < v && (maxValue = v);
+            }
+          }
+        }
+        doChart(transformedData, maxValue, q);
+      });
+  }
+
+  function doChart(data, maxValue, q) {
+    var chartHeight = 400;
+    var ctx = document.createElement("canvas");
+    ctx.id = "someId";
+    ctx.chartHeight = chartHeight;
+    ctx.width = chartHeight;
+    ctx.style.height = chartHeight + "px";
+    ctx.style.width = chartHeight + "px";
+    document.getElementById("chart").innerHTML = "";
+    document.getElementById("chart").appendChild(ctx);
+    var newChart = new Chart(ctx, {
+      type: "matrix",
+      options: {
+        title: {
+          display: false,
+        },
+        legend: {
+          display: false,
+        },
+        scales: {
+          yAxes: [
+            {
+              type: "category",
+              labels: jurisdictionNames,
+            },
+          ],
+        },
+        events: ["mousemove"],
+        onHover: (event, chartElement) => {
+          event.target.style.cursor = chartElement[0] ? "pointer" : "default";
+        },
+        tooltips: {
+          callbacks: {
+            label: function (tooltipItem, data) {
+              var label = data.datasets[0].data[tooltipItem.index].v;
+              if (label == -1) return "keine Daten";
+              return label + " Erwähnungen";
+            },
+          },
+        },
+      },
+      data: {
+        datasets: [
+          {
+            data,
+            backgroundColor: function (ctx) {
+              var value = ctx.dataset.data[ctx.dataIndex].v;
+              if (value == -1) return Color("orange").alpha(0.5).rgbString();
+              var alpha = 0.5 + value / maxValue / 2;
+              return Color("#1f78b4").alpha(alpha).rgbString();
+            },
+            width: 10,
+            height: 10,
+          },
+        ],
+        scales: {
+          xAxes: [
+            {
+              type: "time",
+              position: "bottom",
+              offset: true,
+              time: {
+                unit: "year",
+                round: "year",
+                displayFormats: {
+                  week: "YYYY",
+                },
+              },
+              ticks: {
+                maxRotation: 90,
+              },
+              gridLines: {
+                display: false,
+                drawBorder: false,
+                tickMarkLength: 0,
+              },
+            },
+          ],
+        },
+      },
+    });
+
+    ctx.onclick = function (evt) {
+      var firstPoint = newChart.getElementAtEvent(evt)[0];
+
+      if (firstPoint) {
+        var item = newChart.data.datasets[0].data[firstPoint._index];
+        window.location.href =
+          "/suche?q=" +
+          q +
+          "&jurisdiction=" +
+          item.y +
+          "&min_year=" +
+          item.x +
+          "&max_year=" +
+          item.x;
+      }
+    };
+
+    document
+      .getElementById("clipboard-text")
+      .setAttribute(
+        "value",
+        window.location.href.replace(
+          "https://verfassungsschutzberichte.de",
+          "https://vsberichte.de"
+        )
+      );
+
+    var sharebuttons = document.getElementById("sharebuttons");
+    sharebuttons.style.display = "flex";
+  }
+  function submitAndDraw(event) {
+    var token = document.getElementById("input").value;
+    getDataAndDraw(token);
+    if (history.state !== token)
+      window.history.pushState(token, null, "/regional?q=" + token);
+
+    event.preventDefault();
+  }
+  window.addEventListener("DOMContentLoaded", (event) => {
+    var sharebuttons = document.getElementById("sharebuttons");
+    sharebuttons.style.display = "none";
+
+    var ele = document.getElementById("form");
+    if (ele.addEventListener) {
+      ele.addEventListener("submit", submitAndDraw, false); //Modern browsers
+    } else if (ele.attachEvent) {
+      ele.attachEvent("onsubmit", submitAndDraw); //Old IE
+    }
+
+    document
+      .getElementById("export-jpg")
+      .addEventListener("click", function () {
+        var canvas = document.getElementById("chart").childNodes[1];
+        canvas.toBlob(function (blob) {
+          saveAs(blob, "vsberichte-regional.jpg");
+        });
+      });
+
+    document.getElementById("clipboard").addEventListener("click", function () {
+      var txt = document.getElementById("clipboard-text").value;
+      copyToClipboard(txt);
+    });
+
+    document
+      .getElementById("export-csv")
+      .addEventListener("click", function () {
+        window.location =
+          "/api/mentions?csv&min_year=1993&" + window.location.search.substr(1);
+      });
+
+    var backgroundColor = "white";
+    Chart.plugins.register({
+      beforeDraw: function (c) {
+        var ctx = c.chart.ctx;
+        ctx.fillStyle = backgroundColor;
+        ctx.fillRect(0, 0, c.chart.width, c.chart.height);
+      },
+    });
+  });
+</script>
+
+{% if q != None %}
+
+<script>
+  document.getElementById("input").value = {{q|tojson}};
+
+  window.addEventListener("DOMContentLoaded", (event) => {
+    getDataAndDraw({{q|tojson}});
+  });
+</script>
+
+{% endif %} {% endblock %}

@@ -19,6 +19,7 @@ from flask import (
     render_template,
     request,
     send_from_directory,
+    redirect,
 )
 from flask_caching import Cache
 from flask_sqlalchemy import BaseQuery, SQLAlchemy
@@ -391,7 +392,18 @@ def stats():
 @cache.cached(query_string=True)
 def trends():
     qs = request.args.getlist("q")
+    if len(qs) == 0:
+        return redirect("/trends?q=nsu&q=raf")
     return render_template("trends.html", qs=qs)
+
+
+@app.route("/regional")
+@cache.cached(query_string=True)
+def regional():
+    q = request.args.get("q")
+    if q is None:
+        return redirect('/regional?q="vvn-bda"')
+    return render_template("regional.html", q=q)
 
 
 @app.route("/impressum")
@@ -583,7 +595,7 @@ def api_search_auto():
 
 
 @app.route("/api/mentions")
-# @cache.cached(query_string=True)
+@cache.cached(query_string=True)
 def api_mentions():
     q = request.args.get("q")
 
@@ -646,10 +658,6 @@ def api_mentions():
         )
     else:
         return jsonify(results)
-    # c_d = {}
-    # for c in counts:
-    #     c_d[c[0]] = c[1]
-    # counts = json.dumps(c_d)
 
 
 # text files
