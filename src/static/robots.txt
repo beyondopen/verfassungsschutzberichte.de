@@ -1,19 +1,2 @@
 user-agent: *
-Allow: /$
-Allow: /berichte
-Allow: /trends
-Allow: /static
-Allow: /images/*_0.jpg$
-Disallow: /
-
-User-agent: ia_archiver
-Disallow:
-
-User-agent: archive.org_bot
-Disallow:
-
-User-agent: ia_archiver-web.archive.org
-Disallow:
-
-User-agent: Twitterbot
 Disallow:
