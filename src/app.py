@@ -402,7 +402,7 @@ def trends():
 def regional():
     q = request.args.get("q")
     if q is None and not app.debug:
-        return redirect('https://verfassungsschutzberichte.de/regional?q=vvn-bda')
+        return redirect("https://verfassungsschutzberichte.de/regional?q=vvn-bda")
     return render_template("regional.html", q=q)
 
 
@@ -605,11 +605,6 @@ def api_mentions():
         abort(404)
     q = cleantext.clean(q, lang="de")
     query, page, jurisdiction, max_year, min_year = build_query()
-
-    if max_year is None:
-        max_year = 2018
-    if min_year is None:
-        min_year = 1993
 
     # get counts for the years, only select ID for performance
     count_sq = query.search(q).with_entities(DocumentPage.id)
