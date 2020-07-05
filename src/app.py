@@ -392,8 +392,8 @@ def stats():
 @cache.cached(query_string=True)
 def trends():
     qs = request.args.getlist("q")
-    if len(qs) == 0:
-        return redirect("/trends?q=nsu&q=raf")
+    if len(qs) == 0 and not app.debug:
+        return redirect("https://verfassungsschutzberichte.de/trends?q=nsu&q=raf")
     return render_template("trends.html", qs=qs)
 
 
@@ -401,8 +401,8 @@ def trends():
 @cache.cached(query_string=True)
 def regional():
     q = request.args.get("q")
-    if q is None:
-        return redirect('/regional?q="vvn-bda"')
+    if q is None and not app.debug:
+        return redirect('https://verfassungsschutzberichte.de/regional?q="vvn-bda"')
     return render_template("regional.html", q=q)
 
 
