@@ -402,7 +402,7 @@ def trends():
 def regional():
     q = request.args.get("q")
     if q is None and not app.debug:
-        return redirect('https://verfassungsschutzberichte.de/regional?q="vvn-bda"')
+        return redirect('https://verfassungsschutzberichte.de/regional?q=vvn-bda')
     return render_template("regional.html", q=q)
 
 
