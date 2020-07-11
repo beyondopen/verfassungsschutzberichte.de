@@ -64,6 +64,7 @@
 <p>Aktuell haben wir {{total}} Verfassungsschutzberichte aus Bund und Länder. Die Berichte die gelb makiert sind, fehlen
   uns noch. Wir sind noch dabei alte Berichte zu scannen.</p>
 
+<!-- ugly, but no other solution?
 {% set max_year_all = [] %}
 {% for d in docs %}
 {% if d.years %}
@@ -71,6 +72,7 @@
 {% endif %}
 {% endfor %}
 {% set max_year_total = max_year_all|max %}
+-->
 
 {% for d in docs %}
 <a id="{{d.jurisdiction|lower}}" class="anchor"></a>
