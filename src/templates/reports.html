@@ -64,6 +64,14 @@
 <p>Aktuell haben wir {{total}} Verfassungsschutzberichte aus Bund und Länder. Die Berichte die gelb makiert sind, fehlen
   uns noch. Wir sind noch dabei alte Berichte zu scannen.</p>
 
+{% set max_year_all = [] %}
+{% for d in docs %}
+{% if d.years %}
+{{ max_year_all.append( (d.years|max) ) }}
+{% endif %}
+{% endfor %}
+{% set max_year_total = max_year_all|max %}
+
 {% for d in docs %}
 <a id="{{d.jurisdiction|lower}}" class="anchor"></a>
 {% set button_title = "Verfassungsschutzbericht " + d.jurisdiction %}
@@ -77,7 +85,7 @@
 
 <div class="d-flex flex-wrap" style="font-family: monospace;">
   {% if d.years %}
-  {% for y in range(report_info['start_year'][d.jurisdiction], (d.years|max) + 1) | reverse %}
+  {% for y in range(report_info['start_year'][d.jurisdiction], max_year_total + 1) | reverse %}
   {% set title = y %}
   {% if d.jurisdiction in report_info['title'] and y in report_info['title'][d.jurisdiction] %}
   {% set title = report_info['title'][d.jurisdiction][y]['title'] %}
