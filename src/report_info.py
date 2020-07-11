@@ -2,6 +2,7 @@ title = {
     "Sachsen-Anhalt": {1992: {"title": "1992/1993"}},
     "Thüringen": {2015: {"title": "2014/2015"}},
     "Niedersachsen": {1984: {"title": "1983/1984"}},
+    "Bund": {1970: {"title": "1969/1970"}},
 }
 
 start_year = {
@@ -31,7 +32,7 @@ no_reports = {
     "Hamburg": [],
     "Bremen": [],
     "Berlin": [],
-    "Bund": [],
+    "Bund": [1969],
     "Baden-Württemberg": [],
     "Bayern": [],
     "Brandenburg": [],
