@@ -6,6 +6,10 @@ set -x
 
 # TODO: right now, you have to manually create a .raw folder to upload raw files
 
+# common commands:
+# images to pdf: convert *.jpg pictures.pdf
+# rotate: qpdf psplit.pdf  out.pdf --rotate=+90
+
 if [[ "$1" != /* ]]; then
     echo "only absolute paths"
     exit 1
