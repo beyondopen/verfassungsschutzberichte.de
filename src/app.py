@@ -618,24 +618,29 @@ def api_mentions():
 
     results = defaultdict(lambda: defaultdict(lambda: 0))
 
+    # -2: no reports were published
+    # -1: we don't have the published report
+
     for k, v in report_info["start_year"].items():
         for y in range(min_year, max_year + 1):
             results[k][y] = 0
         for y in range(min_year, v):
-            results[k][y] = -1
+            results[k][y] = -2
 
     for k, v in report_info["no_reports"].items():
-        for y in v:
-            if max_year >= y >= min_year:
-                results[k][y] = -1
+        # not sure about this?
         for y in range(min_year, max_year + 1):
             if (
+                results[k][y] != -2 and
                 0
                 == Document.query.filter(
                     Document.jurisdiction == k, Document.year == y
                 ).count()
             ):
                 results[k][y] = -1
+        for y in v:
+            if max_year >= y >= min_year:
+                results[k][y] = -2
 
     for c in counts:
         results[c[0]][c[1]] = c[2]

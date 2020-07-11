@@ -126,7 +126,8 @@ Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
 <p>
   <small>
     Erklärung: Je blauer das Kästchen, desto öfter wurde der Begriff erwähnt.
-    Für orangene Kästchen gibt es keine Berichte.
+    Für orangene Kästchen haben wir die Bericht (noch) nicht, bei braunen
+    Kästchen sind keine Berichte erschienen.
   </small>
 </p>
 
@@ -245,6 +246,13 @@ Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
               labels: jurisdictionNames,
             },
           ],
+          xAxes: [
+            {
+              ticks: {
+                padding: 10,
+              },
+            },
+          ],
         },
         events: ["mousemove"],
         onHover: (event, chartElement) => {
@@ -255,7 +263,8 @@ Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
             label: function (tooltipItem, data) {
               console.log(data.datasets[0]);
               var label = data.datasets[0].data[tooltipItem.index].v;
-              if (label == -1) return "keine Daten";
+              if (label == -1) return "Bericht fehlt uns noch";
+              if (label == -2) return "keine Bericht erschienen";
               return label + " Erwähnungen";
             },
           },
@@ -268,6 +277,7 @@ Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
             backgroundColor: function (ctx) {
               var value = ctx.dataset.data[ctx.dataIndex].v;
               if (value == -1) return Color("orange").alpha(0.5).rgbString();
+              if (value == -2) return Color("brown").alpha(0.5).rgbString();
               var alpha = 0.5 + value / maxValue / 2;
               return Color("#1f78b4").alpha(alpha).rgbString();
             },
