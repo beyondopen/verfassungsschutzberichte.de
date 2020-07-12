@@ -389,7 +389,7 @@ def stats():
 
 
 @app.route("/trends")
-@cache.cached(query_string=True)
+@cache.cached(query_string=True, timeout=60 * 60)
 def trends():
     qs = request.args.getlist("q")
     if len(qs) == 0 and not app.debug:
@@ -398,7 +398,7 @@ def trends():
 
 
 @app.route("/regional")
-@cache.cached(query_string=True)
+@cache.cached(query_string=True, timeout=60 * 60)
 def regional():
     q = request.args.get("q")
     if q is None and not app.debug:
@@ -631,8 +631,8 @@ def api_mentions():
         # not sure about this?
         for y in range(min_year, max_year + 1):
             if (
-                results[k][y] != -2 and
-                0
+                results[k][y] != -2
+                and 0
                 == Document.query.filter(
                     Document.jurisdiction == k, Document.year == y
                 ).count()
