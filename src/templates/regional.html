@@ -194,6 +194,26 @@ Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
     "Thüringen",
   ];
 
+  var jurisdictionNamesShort = [
+    "Bund",
+    "BaWü",
+    "Bayern",
+    "Berlin",
+    "Brandenburg",
+    "Bremen",
+    "Hamburg",
+    "Hessen",
+    "Meck-Pomm",
+    "Niedersachsen",
+    "NRW",
+    "Rheinland-Pfalz",
+    "Saarland",
+    "Sachsen",
+    "Sachsen-Anhalt",
+    "Schleswig-Holst.",
+    "Thüringen",
+  ];
+
   function getDataAndDraw(q) {
     document.getElementById("chart").innerHTML =
       '<div class="text-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div><div>';
@@ -247,7 +267,10 @@ Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
           yAxes: [
             {
               type: "category",
-              labels: jurisdictionNames,
+              labels:
+                window.innerWidth < mobileBreakPoint
+                  ? jurisdictionNamesShort
+                  : jurisdictionNames,
             },
           ],
           xAxes: [
@@ -265,10 +288,9 @@ Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
         tooltips: {
           callbacks: {
             label: function (tooltipItem, data) {
-              console.log(data.datasets[0]);
               var label = data.datasets[0].data[tooltipItem.index].v;
               if (label == -1) return "Bericht fehlt uns noch";
-              if (label == -2) return "keine Bericht erschienen";
+              if (label == -2) return "kein Bericht erschienen";
               return label + " Erwähnungen";
             },
           },
@@ -281,7 +303,7 @@ Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
             backgroundColor: function (ctx) {
               var value = ctx.dataset.data[ctx.dataIndex].v;
               if (value == -1) return Color("orange").alpha(0.5).rgbString();
-              if (value == -2) return Color("brown").alpha(0.5).rgbString();
+              if (value == -2) return Color("#B5651D").alpha(0.5).rgbString();
               var alpha = 0.5 + value / maxValue / 2;
               return Color("#1f78b4").alpha(alpha).rgbString();
             },
