@@ -100,7 +100,7 @@ Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
   </form>
 </div>
 
-<div class="my-3 my-lg-5" id="chart" style="min-height: 10rem;"></div>
+<div class="my-3 my-lg-5" id="chart" style="min-height: 15rem;"></div>
 
 <div class="input-group input-group-sm my-5" id="sharebuttons">
   <input
@@ -221,7 +221,11 @@ Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
   }
 
   function doChart(data, maxValue, q) {
+    var mobileBreakPoint = 768;
     var chartHeight = 400;
+    if (window.innerWidth < mobileBreakPoint) {
+      chartHeight = 100;
+    }
     var ctx = document.createElement("canvas");
     ctx.id = "someId";
     ctx.chartHeight = chartHeight;
@@ -281,8 +285,8 @@ Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
               var alpha = 0.5 + value / maxValue / 2;
               return Color("#1f78b4").alpha(alpha).rgbString();
             },
-            width: 10,
-            height: 10,
+            width: window.innerWidth < mobileBreakPoint ? 5 : 10,
+            height: window.innerWidth < mobileBreakPoint ? 5 : 10,
           },
         ],
         scales: {
