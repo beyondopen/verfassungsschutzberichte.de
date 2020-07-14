@@ -126,7 +126,7 @@ Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
 <p>
   <small>
     Erklärung: Je blauer das Kästchen, desto öfter wurde der Begriff erwähnt.
-    Für orangene Kästchen haben wir die Bericht (noch) nicht, bei braunen
+    Für orangene Kästchen haben wir die Bericht (noch) nicht, bei grauen
     Kästchen sind keine Berichte erschienen.
   </small>
 </p>
@@ -303,7 +303,7 @@ Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
             backgroundColor: function (ctx) {
               var value = ctx.dataset.data[ctx.dataIndex].v;
               if (value == -1) return Color("orange").alpha(0.5).rgbString();
-              if (value == -2) return Color("#B5651D").alpha(0.5).rgbString();
+              if (value == -2) return Color("grey").alpha(0.5).rgbString();
               var alpha = 0.5 + value / maxValue / 2;
               return Color("#1f78b4").alpha(alpha).rgbString();
             },
