@@ -215,6 +215,9 @@ Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
   ];
 
   function getDataAndDraw(q) {
+    var mobileBreakPoint = 768;
+    var isMobile = window.innerWidth < mobileBreakPoint;
+
     document.getElementById("chart").innerHTML =
       '<div class="text-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div><div>';
     fetch("/api/mentions?min_year=1993&max_year=2018&q=" + q)
@@ -225,6 +228,9 @@ Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
         transformedData = [];
         maxValue = -1;
         for (var [j, years] of Object.entries(data)) {
+          if (isMobile) {
+            j = jurisdictionNamesShort[jurisdictionNames.indexOf(j)];
+          }
           for (var [year, v] of Object.entries(years)) {
             if (v != 0) {
               transformedData.push({
