@@ -64,10 +64,24 @@ TH 	Thüringen"""
 
 abr = [x.split() for x in abr_text.split("\n")]
 
+
+changes = {
+    "Bayern": {
+        2019: [
+            (
+                "Verwaltungsgericht München: Zeitgeschichtliche Forschungsstelle Ingolstadt (ZFI) nicht rechtsextrem",
+                "https://web.archive.org/web/20200723110136/https://www.br.de/nachrichten/bayern/gericht-stoppt-bayerischen-verfassungsschutzbericht,S5P3sJi",
+            )
+        ]
+    }
+}
+
+
 report_info = {
     "title": title,
     "start_year": start_year,
     "no_reports": no_reports,
     "abr": abr,
+    "changes": changes,
 }
 

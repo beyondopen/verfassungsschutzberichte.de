@@ -150,7 +150,15 @@ report_info['title'][d.jurisdiction] %}
   <a href="/api/{{d.jurisdiction|lower|urlencode}}/{{d.year}}">JSON</a>.
 </p>
 
-{% for p in d.pages|sort(attribute='page_number') %}
+{% if d.jurisdiction in report_info['changes'] and d.year in
+report_info['changes'][d.jurisdiction] %}
+<h4>Änderungen nach Veröffentlichung</h4>
+<ul>
+  {% for change in report_info['changes'][d.jurisdiction][d.year] %}
+  <li><a href="{{change[1]}}">{{change[0]}}</a></li>
+  {% endfor %}
+</ul>
+{% endif %} {% for p in d.pages|sort(attribute='page_number') %}
 
 <div class="jump" id="{{p.page_number}}"></div>
 <a href="#{{p.page_number}}">
