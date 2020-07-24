@@ -4,7 +4,7 @@ Verfassungsschutz" %} {% else %} {% set jurfix = "Verfassungsschutz " +
 d.jurisdiction %} {% set jurfixshort = d.jurisdiction %} {% endif %} {% block
 title %}{{d.year}} {{d.jurisdiction}} Verfassungsschutzbericht{% endblock %} {%
 block social_media %}
-<meta name="robots" content="noindex" />
+<meta name="robots" content="noindex, nofollow" />
 <meta
   property="og:title"
   content="{{d.year}} {{jurfixshort}} Verfassungsschutzbericht"

@@ -493,6 +493,7 @@ def download_pdf(filename):
     response = make_response()
     response.headers["Content-Type"] = "application/pdf"
     response.headers["X-Accel-Redirect"] = "/x_pdfs/" + filename
+    response.headers["X-Robots-Tag"] = "noindex, nofollow"
     return response
 
 
@@ -504,6 +505,7 @@ def download_img(filename):
     response = make_response()
     response.headers["Content-Type"] = "image/jpeg"
     response.headers["X-Accel-Redirect"] = "/x_images/" + filename
+    response.headers["X-Robots-Tag"] = "noindex, nofollow"
     return response
 
 
@@ -673,5 +675,9 @@ def text_details(jurisdiction, year):
     return (
         "\n\n\n".join([x.content for x in d.pages]),
         200,
-        {"Content-Type": "text/plain; charset=utf-8"},
+        {
+            "Content-Type": "text/plain; charset=utf-8",
+            "X-Robots-Tag": "noindex, nofollow",
+        },
     )
+
