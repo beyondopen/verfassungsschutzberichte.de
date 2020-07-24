@@ -152,7 +152,7 @@ report_info['title'][d.jurisdiction] %}
 
 {% if d.jurisdiction in report_info['changes'] and d.year in
 report_info['changes'][d.jurisdiction] %}
-<h4>Änderungen nach Veröffentlichung</h4>
+<h4>Verfahren gegen den Bericht</h4>
 <ul>
   {% for change in report_info['changes'][d.jurisdiction][d.year] %}
   <li><a href="{{change[1]}}">{{change[0]}}</a></li>
