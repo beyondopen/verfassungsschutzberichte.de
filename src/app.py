@@ -493,7 +493,6 @@ def download_pdf(filename):
     response = make_response()
     response.headers["Content-Type"] = "application/pdf"
     response.headers["X-Accel-Redirect"] = "/x_pdfs/" + filename
-    response.headers["X-Robots-Tag"] = "noindex, nofollow"
     return response
 
 
@@ -505,7 +504,6 @@ def download_img(filename):
     response = make_response()
     response.headers["Content-Type"] = "image/jpeg"
     response.headers["X-Accel-Redirect"] = "/x_images/" + filename
-    response.headers["X-Robots-Tag"] = "noindex, nofollow"
     return response
 
 

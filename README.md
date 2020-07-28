@@ -38,16 +38,18 @@ Deploy with [Dokku](https://github.com/dokku/dokku).
 3. link a Redis cache
 4. Then mount a folder `data` with contains two folders (`pdfs` for PDFs and `images` for images of the PDF pages) for the static content: `dokku storage:mount $app $path:/data/`
 
-To serve the images and PDFs via nginx (xsendfile), adapt the nginx config of Dokku:
+To serve the images and PDFs via nginx (xsendfile), adapt the nginx config of Dokku (e.g. create `/home/dokku/vsb/nginx.conf.d/myconf.conf`):
 
 ```
 location /x_images {
   internal;
+  add_header X-Robots-Tag "noindex, nofollow"; # prevent search enginges from indexing files
   alias /folder/with/images;
 }
 
 location /x_pdfs {
   internal;
+  add_header X-Robots-Tag "noindex, nofollow";
   alias /folder/with/pdfs;
 }
 ```
