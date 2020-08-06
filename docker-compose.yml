@@ -7,14 +7,12 @@ services:
     volumes:
       - ./src/:/app/
       - ./data/:/data/
-
     depends_on:
       - db
-    container_name: vsb
     environment:
       - FLASK_ENV=development
   db:
-    image: postgres:11
+    image: postgres:11-alpine
     volumes:
       - ./misc/dbdata:/var/lib/postgresql/data
     expose:

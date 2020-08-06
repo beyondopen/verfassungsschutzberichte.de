@@ -27,7 +27,7 @@
 ### Add PDFs for Development
 
 To get started, put some PDFs in to `verfassungsschutzberichte.de/data/pdfs` and create the folder `verfassungsschutzberichte.de/data/images`.
-Then get the container id with `docker ps`, then enter the Docker container `docker exec -it f00d7aa42de8 bash` with the appropiate id. Finally run `flask update-docs '*'` inside the container to process PDFs.
+Then get the container id with `docker ps`, then enter the Docker container `docker exec -it f00d7aa42de8 bash` with the appropriate id. Finally run `flask update-docs '*'` inside the container to process PDFs.
 
 ## Production
 
