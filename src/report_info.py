@@ -76,6 +76,11 @@ changes = {
     }
 }
 
+comments = {
+    "Sachsen-Anhalt": {
+        2012: "Auf PDF-Seite 61 & 187 wurde eine Person anonymisert, die nur aufgrund einer Verwechselung in dem Bericht landete."
+    }
+}
 
 report_info = {
     "title": title,
@@ -83,5 +88,6 @@ report_info = {
     "no_reports": no_reports,
     "abr": abr,
     "changes": changes,
+    "comments": comments,
 }
 
