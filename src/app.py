@@ -459,7 +459,7 @@ def search():
     for s in snips:
         results[ids_int.index(s.id)].snips = s.text.split("XXX.....XXX")
 
-    return render_template(
+    response = make_response(render_template(
         "search.html",
         results=results,
         jurisdiction=jurisdiction,
@@ -472,7 +472,9 @@ def search():
         max_page=min((num_results - 1) // 20 + 1, page + 5),
         counts=counts,
         report_info=report_info,
-    )
+    ))
+    response.headers["X-Robots-Tag"] = "noindex, nofollow"
+    return response
 
 
 @app.route("/robots.txt")
