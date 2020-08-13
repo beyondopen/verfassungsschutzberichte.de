@@ -78,7 +78,7 @@ changes = {
 
 comments = {
     "Sachsen-Anhalt": {
-        2012: "Auf PDF-Seite 61 & 187 wurde eine Person anonymisert, die nur aufgrund einer Verwechselung in dem Bericht landete."
+        2012: ["Auf PDF-Seite 61 & 187 wurde eine Person anonymisert, die nur aufgrund einer Verwechselung in dem Bericht landete."]
     }
 }
 

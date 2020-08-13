@@ -160,10 +160,10 @@ report_info['changes'][d.jurisdiction] %}
 </ul>
 {% endif %} {% if d.jurisdiction in report_info['comments'] and d.year in
 report_info['comments'][d.jurisdiction] %}
-<h4>Verfahren gegen den Bericht</h4>
+<h4>Anmerkungen</h4>
 <ul>
   {% for change in report_info['comments'][d.jurisdiction][d.year] %}
-  <li><a href="{{change[1]}}">{{change[0]}}</a></li>
+  <li>{{change}}</li>
   {% endfor %}
 </ul>
 {% endif %} {% for p in d.pages|sort(attribute='page_number') %}
