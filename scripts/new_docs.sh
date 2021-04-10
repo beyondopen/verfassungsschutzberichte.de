@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 set -x
 
-# $1: location of folder with PDF-files
+# Arguments: 
+# $1: location of a folder with PDF files
 # $2: `process` or `upload`
 
-# TODO: right now, you have to manually create a .raw folder to upload raw files
+# Usage:
+# ./new_docs thefolder process 
+# ./new_docs thefolder upload
 
-# common commands:
-# images to pdf: convert *.jpg pictures.pdf
-# rotate: qpdf psplit.pdf  out.pdf --rotate=+90
+# Right now, you have to manually create a `thefolder.raw` folder to upload raw files.
 
 if [[ "$1" != /* ]]; then
     echo "only absolute paths"

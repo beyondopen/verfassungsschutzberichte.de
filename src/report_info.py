@@ -1,3 +1,5 @@
+# document various information (and special cases) about the reports
+
 title = {
     "Sachsen-Anhalt": {1992: {"title": "1992/1993"}},
     "Thüringen": {2015: {"title": "2014/2015"}},

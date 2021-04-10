@@ -64,23 +64,47 @@ Adjust the Postgres config and increase `shared_buffers` and `work_mem` to, e.g.
 - remove one document: `dokku run vsb flask remove-docs 'vsbericht-th-2002.pdf'`
 - clean all data from the database and adds all documents again: `dokku run vsb clear-data`
 
-## PDF preprocessing
+## Data Storage
 
-All documents should be PDF in a A4/A5 portrait format. Several helper scripts exists but occasionally, manual work is required. See [scripts](scripts).
+The reports are organized by folders and filenames.
+This has the limitation that we can't store different versions of a yearly report.
+
+### PDF preprocessing
+
+All documents should be PDF in a A4/A5 portrait format.
+Several pdf scripts exists but occasionally, manual work is required.
+See [scripts](scripts).
+
+### Folder Structures
 
 Two folders exists to store the PDFs:
 
-- 'raw', sometimes the original PDF requires manual help (e.g. some pages are in landscape format)
-- 'cleaned', normalized PDFs, but before the OCR & file reduction
+- `raw`, sometimes the original PDF requires manual help (e.g. some pages are in landscape format)
+- `cleaned`, normalized PDFs, but before the OCR & file reduction
+
+### Adding a New Report
 
 Naming: `vsbericht-nw-2000.pdf` for NRW 2000, `vsbericht-2000.pdf` for the federal report 2000.
 
-If a report is for multiple years, choose the latest year as the main date. And update [src/report_info.py](src/report_info.py) accordingly.
+If a report is for multiple years, choose the latest year as the main date.
+
+And update the title in [src/report_info.py](src/report_info.py) accordingly.
+
+1. Put the file in a folder, e.g. `x`
+2. cd `scripts`
+3. `./new_docs.sh /absolute/path/x process`
+4. verify the result in `x.done` is fine, optionally add a `x.raw` folder with the unprocessed files.
+5. `./new_docs.sh /absolute/path/x upload`
 
 ## Search
 
-Using Postgres' full-text search features via [sqlalchemy-searchable](https://github.com/kvesteri/sqlalchemy-searchable). Right now, there are some shortcomings. It's not possible to use trigram similarity. And wildcard queries are the default and can only be deactivated by using quotes, i.e., "query". Also the matching tokens are not displayed on the page/image. Further work is required to improve the search.
+Using Postgres' full-text search features via [sqlalchemy-searchable](https://github.com/kvesteri/sqlalchemy-searchable).
+Right now, there are some shortcomings.
+It's not possible to use trigram similarity.
+And wildcard queries are the default and can only be deactivated by using quotes, i.e., "query".
+Also the matching tokens are not displayed on the page/image.
+Further work is required to improve the search.
 
 ## License
 
-MIT.
+MIT
