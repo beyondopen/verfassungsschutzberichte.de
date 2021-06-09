@@ -41,7 +41,7 @@ else:
     url = os.environ["DATABASE_URL"]
     app.config["CACHE_TYPE"] = "redis"
     app.config["CACHE_REDIS_URL"] = os.environ["REDIS_URL"]
-    app.config["CACHE_DEFAULT_TIMEOUT"] = 60 * 60 * 24 * 14  # 2 weeks
+    app.config["CACHE_DEFAULT_TIMEOUT"] = 60 * 60  # 1 hour
 
 app.config["SQLALCHEMY_DATABASE_URI"] = url
 
