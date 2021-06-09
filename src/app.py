@@ -517,7 +517,7 @@ def serialize_doc(d):
         "year": d.year,
         "title": d.title,
         "jurisdiction": d.jurisdiction,
-        "file_url": request.base_url[:-1] + d.file_url,
+        "file_url": 'https://verfassungsschutzberichte.de' + d.file_url,
         "num_pages": d.num_pages,
     }
 
