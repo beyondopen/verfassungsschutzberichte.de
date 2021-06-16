@@ -10,7 +10,7 @@ title = {
 
 start_year = {
     "Sachsen-Anhalt": 1992,
-    "Thüringen": 1991,
+    "Thüringen": 1992,
     "Niedersachsen": 1984,
     "Hamburg": 1993,
     "Bremen": 2002,
