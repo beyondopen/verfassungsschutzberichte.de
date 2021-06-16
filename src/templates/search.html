@@ -50,7 +50,7 @@ Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
             aria-haspopup="true"
             aria-expanded="false"
           >
-            Trends
+            Analyse
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             <a class="dropdown-item" href="/trends">Trends</a>
@@ -78,7 +78,7 @@ Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
 'Rheinland-Pfalz', 'Saarland', 'Sachsen', 'Sachsen-Anhalt',
 'Schleswig-Holstein', 'Thüringen'] %}
 
-<div style="padding-top: 54px;"></div>
+<div style="padding-top: 54px"></div>
 <h1 class="my-1 my-lg-5">Verfassungs&shy;schutz Suche</h1>
 
 <p>
@@ -247,7 +247,7 @@ Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
 <div
   class="mb-3 mb-lg-5"
   id="chart"
-  style="position: relative; height: 150px;"
+  style="position: relative; height: 150px"
 ></div>
 
 {% if min_year != max_year or min_year is none %}
@@ -260,9 +260,7 @@ Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
 {% endif %}
 
 <div class="row">
-  <div class="col">
-    Treffer auf {{n}} Seiten
-  </div>
+  <div class="col">Treffer auf {{n}} Seiten</div>
   <div class="col text-right">
     "{{q}}" in den
     <a href="/trends?q={{q|urlencode}}">Verfassungsschutz Trends</a>
@@ -291,7 +289,7 @@ endif %}
     </ul>
     <div>
       <img
-        style="width: 100%;"
+        style="width: 100%"
         data-src="{{r.file_url}}"
         class="lazyload"
         alt="{{r.content}}"

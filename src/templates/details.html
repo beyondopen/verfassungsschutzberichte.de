@@ -56,7 +56,7 @@ block social_media %}
             aria-haspopup="true"
             aria-expanded="false"
           >
-            Trends
+            Analyse
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             <a class="dropdown-item" href="/trends">Trends</a>
@@ -76,7 +76,7 @@ block social_media %}
             >
           </div>
           <input
-            style="width: 5rem;"
+            style="width: 5rem"
             type="number"
             value="1"
             min="1"
@@ -126,7 +126,7 @@ block social_media %}
 
 {% endblock %} {% block content %}
 
-<div style="padding-top: 54px;"></div>
+<div style="padding-top: 54px"></div>
 
 {% if d.jurisdiction in report_info['title'] and d.year in
 report_info['title'][d.jurisdiction] %}
@@ -171,7 +171,7 @@ report_info['comments'][d.jurisdiction] %}
 </a>
 <div>
   <img
-    style="width: 100%;"
+    style="width: 100%"
     data-src="{{p.file_url}}"
     class="lazyload"
     alt="Seite {{p.page_number}}"
