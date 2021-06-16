@@ -5,6 +5,7 @@ title = {
     "Thüringen": {2015: {"title": "2014/2015"}},
     "Niedersachsen": {1984: {"title": "1983/1984"}},
     "Bund": {1970: {"title": "1969/1970"}},
+    "Schleswig-Holstein": {1985: {"title": "1985/1986"}},
 }
 
 start_year = {
@@ -80,7 +81,9 @@ changes = {
 
 comments = {
     "Sachsen-Anhalt": {
-        2012: ["Auf PDF-Seite 61 & 187 wurde eine Person anonymisert, die nur aufgrund einer Verwechselung in dem Bericht landete."]
+        2012: [
+            "Auf PDF-Seite 61 & 187 wurde eine Person anonymisert, die nur aufgrund einer Verwechselung in dem Bericht landete."
+        ]
     }
 }
 
@@ -92,4 +95,3 @@ report_info = {
     "changes": changes,
     "comments": comments,
 }
-

@@ -129,7 +129,11 @@ def special_pdf_preproc(s):
 
 def proc_pdf(pdf_path):
     # no engl for now, no kurzfassung
-    if pdf_path.stem.endswith("_en") or pdf_path.stem.endswith("kurzfassung"):
+    if (
+        pdf_path.stem.endswith("_en")
+        or pdf_path.stem.endswith("kurzfassung")
+        or pdf_path.stem.endswith("_parl")
+    ):
         return
 
     juris = "Bund"
@@ -459,20 +463,22 @@ def search():
     for s in snips:
         results[ids_int.index(s.id)].snips = s.text.split("XXX.....XXX")
 
-    response = make_response(render_template(
-        "search.html",
-        results=results,
-        jurisdiction=jurisdiction,
-        min_year=min_year,
-        max_year=max_year,
-        q=q,
-        n=num_results,
-        page=page,
-        min_page=max(1, page - 5),
-        max_page=min((num_results - 1) // 20 + 1, page + 5),
-        counts=counts,
-        report_info=report_info,
-    ))
+    response = make_response(
+        render_template(
+            "search.html",
+            results=results,
+            jurisdiction=jurisdiction,
+            min_year=min_year,
+            max_year=max_year,
+            q=q,
+            n=num_results,
+            page=page,
+            min_page=max(1, page - 5),
+            max_page=min((num_results - 1) // 20 + 1, page + 5),
+            counts=counts,
+            report_info=report_info,
+        )
+    )
     response.headers["X-Robots-Tag"] = "noindex, nofollow"
     return response
 
@@ -517,7 +523,7 @@ def serialize_doc(d):
         "year": d.year,
         "title": d.title,
         "jurisdiction": d.jurisdiction,
-        "file_url": 'https://verfassungsschutzberichte.de' + d.file_url,
+        "file_url": "https://verfassungsschutzberichte.de" + d.file_url,
         "num_pages": d.num_pages,
     }
 
@@ -680,4 +686,3 @@ def text_details(jurisdiction, year):
             "X-Robots-Tag": "noindex, nofollow",
         },
     )
-
