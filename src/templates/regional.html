@@ -217,7 +217,7 @@ Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
 
     document.getElementById("chart").innerHTML =
       '<div class="text-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div><div>';
-    fetch("/api/mentions?min_year=1993&q=" + q)
+    fetch("/api/mentions?min_year=1993&max_year=2100&q=" + q)
       .then(function (response) {
         return response.json();
       })
@@ -408,7 +408,8 @@ Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
       .getElementById("export-csv")
       .addEventListener("click", function () {
         window.location =
-          "/api/mentions?csv&min_year=1993&" + window.location.search.substr(1);
+          "/api/mentions?csv&min_year=1993&max_year=2100&" +
+          window.location.search.substr(1);
       });
 
     var backgroundColor = "white";
