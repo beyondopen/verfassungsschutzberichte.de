@@ -42,7 +42,7 @@ no_reports = {
     "Hessen": [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999],
     "Mecklenburg-Vorpommern": [],
     "Saarland": [],
-    "Schleswig-Holstein": [],
+    "Schleswig-Holstein": [1986],
     "Nordrhein-Westfalen": [],
     "Sachsen": [],
     "Rheinland-Pfalz": [],
