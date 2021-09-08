@@ -19,7 +19,7 @@ murmurhash==1.0.2
 numpy==1.16.4
 pdf2image==1.5.4
 pdftotext==2.1.1
-Pillow==8.2.0
+Pillow==8.3.2
 plac==0.9.6
 psycopg2==2.8.3
 pyrsistent==0.15.2
