@@ -6,7 +6,7 @@ title = {
     "Niedersachsen": {1984: {"title": "1983/1984"}},
     "Bund": {1970: {"title": "1969/1970"}},
     "Schleswig-Holstein": {1985: {"title": "1985/1986"}},
-    "Baden-Württemberg": {1976: {"title": "1976/1977"}},
+    "Baden-Württemberg": {1976: {"title": "1976/1977"}, 1975: {"title": "1975/1976"}},
 }
 
 start_year = {
@@ -17,7 +17,7 @@ start_year = {
     "Bremen": 2002,
     "Berlin": 1990,
     "Bund": 1968,
-    "Baden-Württemberg": 1975,
+    "Baden-Württemberg": 1973,
     "Bayern": 1976,
     "Brandenburg": 1993,
     "Hessen": 1977,
