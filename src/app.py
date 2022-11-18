@@ -6,30 +6,22 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from urllib.parse import quote, unquote
 
-import click
-
 import cleantext
+import click
 import pdftotext
 import spacy
-from flask import (
-    Flask,
-    abort,
-    jsonify,
-    make_response,
-    render_template,
-    request,
-    send_from_directory,
-    redirect,
-)
+from flask import (Flask, abort, jsonify, make_response, redirect,
+                   render_template, request, send_from_directory)
 from flask_caching import Cache
 from flask_sqlalchemy import BaseQuery, SQLAlchemy
 from pdf2image import convert_from_path
 from PIL import Image
-from report_info import report_info
 from sqlalchemy import func
 from sqlalchemy.sql import text
 from sqlalchemy_searchable import SearchQueryMixin, make_searchable
 from sqlalchemy_utils.types import TSVectorType
+
+from report_info import report_info
 
 app = Flask(__name__)
 
