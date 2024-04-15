@@ -490,6 +490,11 @@ def download_pdf(filename):
     if app.debug:
         return send_from_directory("/data/pdfs", filename)
 
+    resp = make_response(send_from_directory("/data/pdfs", filename))
+    resp.headers["Content-Type"] = "application/pdf"
+    resp.headers["X-Robots-Tag"] = "noindex, nofollow"
+    return resp
+
     response = make_response()
     response.headers["Content-Type"] = "application/pdf"
     response.headers["X-Accel-Redirect"] = "/x_pdfs/" + filename
@@ -500,6 +505,12 @@ def download_pdf(filename):
 def download_img(filename):
     if app.debug:
         return send_from_directory("/data/images", filename)
+
+
+    resp = make_response(send_from_directory("/data/pdfs", filename))
+    resp.headers["Content-Type"] = "image/jpeg"
+    resp.headers["X-Robots-Tag"] = "noindex, nofollow"
+    return resp
 
     response = make_response()
     response.headers["Content-Type"] = "image/jpeg"
