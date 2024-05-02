@@ -507,7 +507,7 @@ def download_img(filename):
         return send_from_directory("/data/images", filename)
 
 
-    resp = make_response(send_from_directory("/data/pdfs", filename))
+    resp = make_response(send_from_directory("/data/images", filename))
     resp.headers["Content-Type"] = "image/jpeg"
     resp.headers["X-Robots-Tag"] = "noindex, nofollow"
     return resp
