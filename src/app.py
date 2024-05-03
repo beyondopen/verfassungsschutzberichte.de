@@ -10,8 +10,16 @@ import cleantext
 import click
 import pdftotext
 import spacy
-from flask import (Flask, abort, jsonify, make_response, redirect,
-                   render_template, request, send_from_directory)
+from flask import (
+    Flask,
+    abort,
+    jsonify,
+    make_response,
+    redirect,
+    render_template,
+    request,
+    send_from_directory,
+)
 from flask_caching import Cache
 from flask_sqlalchemy import BaseQuery, SQLAlchemy
 from pdf2image import convert_from_path
@@ -389,7 +397,7 @@ def stats():
 def trends():
     qs = request.args.getlist("q")
     if len(qs) == 0 and not app.debug:
-        return redirect(request.headers["vsb-host"] + "/trends?q=nsu&q=raf")
+        return redirect("/trends?q=nsu&q=raf")
     return render_template("trends.html", qs=qs)
 
 
@@ -398,7 +406,7 @@ def trends():
 def regional():
     q = request.args.get("q")
     if q is None and not app.debug:
-        return redirect(request.headers["vsb-host"] + "/regional?q=vvn-bda")
+        return redirect("/regional?q=vvn-bda")
     return render_template("regional.html", q=q)
 
 
@@ -505,7 +513,6 @@ def download_pdf(filename):
 def download_img(filename):
     if app.debug:
         return send_from_directory("/data/images", filename)
-
 
     resp = make_response(send_from_directory("/data/images", filename))
     resp.headers["Content-Type"] = "image/jpeg"
@@ -689,3 +696,29 @@ def text_details(jurisdiction, year):
             "X-Robots-Tag": "noindex, nofollow",
         },
     )
+
+
+@app.after_request
+def add_headers(response):
+    headers = [
+        ["Cache-Control", "public, max-age=604800"],
+        ["Strict-Transport-Security", "max-age=31536000; includeSubdomains; preload"],
+        ["X-Frame-Options", "SAMEORIGIN"],
+        ["X-Content-Type-Options", "nosniff"],
+        [
+            "Content-Security-Policy",
+            "default-src 'self'; object-src 'none'; form-action 'self'; font-src *;img-src * data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://matomo.daten.cool; style-src 'self' 'unsafe-inline'; connect-src 'self' https://matomo.daten.cool",
+        ],
+        ["X-XSS-Protection", "1; mode=block"],
+        ["Referrer-Policy", "strict-origin"],
+        [
+            "Onion-Location",
+            "http://zq5xve7vxljrsccptc4wxmuebnuiglhylahfwahyw7dzlxc43em4w6yd.onion"
+            + request.full_path,
+        ],
+    ]
+
+    for x in headers:
+        response.headers[x[0]] = x[1]
+
+    return response
