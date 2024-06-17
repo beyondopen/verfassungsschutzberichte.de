@@ -1,0 +1,19 @@
+name: CI tests
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: ["master"]
+
+  push:
+    branches: ["master"]
+
+jobs:
+  build_image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Build docker image
+        run: docker-compose build
