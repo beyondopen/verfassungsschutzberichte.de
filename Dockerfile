@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.8
 
 RUN apt-get update -y && apt-get upgrade -y && apt-get install -y build-essential libpoppler-cpp-dev pkg-config python-dev-is-python3 poppler-utils
 
