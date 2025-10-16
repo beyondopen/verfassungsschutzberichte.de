@@ -26,7 +26,7 @@ from pdf2image import convert_from_path
 from PIL import Image
 from sqlalchemy import func
 from sqlalchemy.sql import text
-from sqlalchemy_searchable import SearchQueryMixin, make_searchable
+from sqlalchemy_searchable import SearchQueryMixin, make_searchable, sql_expressions
 from sqlalchemy_utils.types import TSVectorType
 
 from report_info import report_info
@@ -100,6 +100,14 @@ class TokenCount(db.Model):
 
 
 db.configure_mappers()  # very important!
+
+# Create parse_websearch function for SQLAlchemy-Searchable 2.0+
+try:
+    db.session.execute(text(sql_expressions.statement))
+    db.session.commit()
+except Exception:
+    # Function may already exist
+    db.session.rollback()
 
 if app.debug:
     db.create_all()
