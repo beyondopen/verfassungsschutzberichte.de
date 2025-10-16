@@ -464,7 +464,7 @@ def search():
     if len(ids_int) > 0:
         snips = db.session.execute(
             text(
-                f"SELECT id, ts_headline(content, tsq_parse('{q}'), 'MaxFragments=10, MinWords=5, MaxWords=20, FragmentDelimiter=XXX.....XXX') as text FROM {DocumentPage.__tablename__} WHERE id in ({ids})"
+                f"SELECT id, ts_headline(content, parse_websearch('pg_catalog.german', '{q}'), 'MaxFragments=10, MinWords=5, MaxWords=20, FragmentDelimiter=XXX.....XXX') as text FROM {DocumentPage.__tablename__} WHERE id in ({ids})"
             )
         )
     else:
