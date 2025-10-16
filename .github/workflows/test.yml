@@ -9,7 +9,7 @@ on:
     branches: ["master"]
 
 jobs:
-  build_image:
+  build_and_test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code Repository
@@ -17,3 +17,35 @@ jobs:
 
       - name: Build docker image
         run: docker compose build
+
+      - name: Start services
+        run: docker compose up -d
+
+      - name: Wait for services to be ready
+        run: |
+          echo "Waiting for app to be ready..."
+          timeout 60 bash -c 'until curl -f http://localhost:5000 > /dev/null 2>&1; do sleep 2; done'
+          echo "App is ready!"
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install test dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements-test.txt
+
+      - name: Run E2E tests
+        env:
+          TEST_BASE_URL: http://localhost:5000
+        run: pytest tests/ -v
+
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose logs
+
+      - name: Stop services
+        if: always()
+        run: docker compose down

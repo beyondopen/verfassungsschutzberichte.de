@@ -29,6 +29,34 @@
 To get started, put some PDFs in to `verfassungsschutzberichte.de/data/pdfs` and create the folder `verfassungsschutzberichte.de/data/images`.
 Then get the container id with `docker ps`, then enter the Docker container `docker exec -it f00d7aa42de8 bash` with the appropriate id. Finally run `flask update-docs '*'` inside the container to process PDFs.
 
+### Testing
+
+End-to-end tests verify that the application works correctly after updates (e.g., Python version upgrades).
+
+**Run tests locally:**
+```bash
+# Install test dependencies
+pip install -r requirements-test.txt
+
+# Run tests (requires Docker)
+./scripts/run_tests.sh
+```
+
+**Or manually:**
+```bash
+# Start services
+docker compose up -d
+
+# Wait for app to be ready, then run tests
+TEST_BASE_URL=http://localhost:5000 pytest tests/ -v
+
+# Stop services
+docker compose down
+```
+
+**CI/CD:**
+Tests run automatically on every push and pull request via GitHub Actions.
+
 ## Production
 
 Deploy with [Dokku](https://github.com/dokku/dokku).
