@@ -452,7 +452,7 @@ def search():
     ids = ", ".join([str(x.id) for x in results])
     ids_int = [x.id for x in results]
     if len(ids_int) > 0:
-        snips = db.engine.execute(
+        snips = db.session.execute(
             text(
                 f"SELECT id, ts_headline(content, tsq_parse('{q}'), 'MaxFragments=10, MinWords=5, MaxWords=20, FragmentDelimiter=XXX.....XXX') as text FROM {DocumentPage.__tablename__} WHERE id in ({ids})"
             )
