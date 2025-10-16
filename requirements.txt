@@ -4,7 +4,7 @@ Flask==2.3.2
 Flask-Caching==2.0.1
 Flask-SQLAlchemy==2.5.1
 gunicorn==22.0.0
-Jinja2==3.1.4
+Jinja2==3.1.6
 pdf2image==1.5.4
 pdftotext==2.1.1
 Pillow==10.3.0
