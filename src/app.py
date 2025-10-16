@@ -626,6 +626,12 @@ def api_mentions():
     q = cleantext.clean(q, lang="de")
     query, page, jurisdiction, max_year, min_year = build_query()
 
+    # Set default min/max years if not provided
+    if min_year is None:
+        min_year = db.session.query(func.min(Document.year)).scalar()
+    if max_year is None:
+        max_year = db.session.query(func.max(Document.year)).scalar()
+
     # get counts for the years, only select ID for performance
     count_sq = query.search(q).with_entities(DocumentPage.id)
     counts = (

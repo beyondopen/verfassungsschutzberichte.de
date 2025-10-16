@@ -27,20 +27,17 @@ jobs:
           timeout 60 bash -c 'until curl -f http://localhost:5000 > /dev/null 2>&1; do sleep 2; done'
           echo "App is ready!"
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      - name: Install test dependencies
+      - name: Load test data
         run: |
-          pip install --upgrade pip
-          pip install -r requirements-test.txt
+          echo "Loading test data into database..."
+          docker compose exec -T web bash /app/scripts/setup_test_data.sh
+          echo "Test data loaded!"
 
-      - name: Run E2E tests
-        env:
-          TEST_BASE_URL: http://localhost:5000
-        run: pytest tests/ -v
+      - name: Install test dependencies in container
+        run: docker compose exec -T web pip install -q -r requirements-test.txt
+
+      - name: Run E2E tests in container
+        run: docker compose exec -T web sh -c "TEST_BASE_URL=http://localhost:5000 pytest /app/tests/ -v"
 
       - name: Show logs on failure
         if: failure()

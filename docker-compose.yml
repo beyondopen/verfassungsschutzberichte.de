@@ -1,4 +1,3 @@
-version: "3"
 services:
   web:
     build: .
@@ -7,10 +6,13 @@ services:
     volumes:
       - ./src/:/app/
       - ./data/:/data/
+      - ./tests/:/app/tests/
+      - ./scripts/:/app/scripts/
+      - ./requirements-test.txt:/app/requirements-test.txt
     depends_on:
       - db
     environment:
-      - FLASK_ENV=development
+      - FLASK_DEBUG=1
   db:
     image: postgres:11-alpine
     volumes:

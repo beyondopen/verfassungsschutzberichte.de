@@ -22,7 +22,8 @@
 1. install and run [Docker](https://www.docker.com/)
 2. `git clone https://github.com/dmedak/verfassungsschutzberichte.de && cd verfassungsschutzberichte.de`
 3. `docker-compose up`
-4. http://localhost:5000
+4. http://localhost:5001
+
 
 ### Add PDFs for Development
 
@@ -35,24 +36,11 @@ End-to-end tests verify that the application works correctly after updates (e.g.
 
 **Run tests locally:**
 ```bash
-# Install test dependencies
-pip install -r requirements-test.txt
-
-# Run tests (requires Docker)
+# Simply run the test script (requires Docker)
 ./scripts/run_tests.sh
 ```
 
-**Or manually:**
-```bash
-# Start services
-docker compose up -d
-
-# Wait for app to be ready, then run tests
-TEST_BASE_URL=http://localhost:5000 pytest tests/ -v
-
-# Stop services
-docker compose down
-```
+All tests run inside Docker containers - no local Python dependencies needed!
 
 **CI/CD:**
 Tests run automatically on every push and pull request via GitHub Actions.
