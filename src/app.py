@@ -39,6 +39,9 @@ if app.debug:
     app.config["CACHE_TYPE"] = "null"
 else:
     url = os.environ["DATABASE_URL"]
+    # Fix for SQLAlchemy 1.4+: replace postgres:// with postgresql://
+    if url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql://", 1)
     app.config["CACHE_TYPE"] = "redis"
     app.config["CACHE_REDIS_URL"] = os.environ["REDIS_URL"]
     app.config["CACHE_DEFAULT_TIMEOUT"] = 60 * 60  # 1 hour
@@ -100,8 +103,7 @@ db.configure_mappers()  # very important!
 
 if app.debug:
     db.create_all()
-
-db.session.commit()
+    db.session.commit()
 
 
 jurisdictions = ["Bund"] + [
