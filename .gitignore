@@ -104,3 +104,4 @@ venv.bak/
 data
 misc
 settings.json
+.claude

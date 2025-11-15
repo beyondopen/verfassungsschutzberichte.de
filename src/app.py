@@ -3,11 +3,14 @@ import os
 import re
 import time
 from collections import Counter, defaultdict
+from datetime import datetime
 from pathlib import Path
 from urllib.parse import quote, unquote
 
 import cleantext
 import click
+import frontmatter
+import markdown
 import pdftotext
 import spacy
 from flask import (
@@ -276,6 +279,81 @@ def get_index():
     return res, total
 
 
+# Blog functions
+def get_blog_posts():
+    """Load all blog posts from markdown files."""
+    # In Docker, src/ is mounted at /app/, so blog posts are at /app/blog/posts/
+    blog_dir = Path("/app/blog/posts")
+    if not blog_dir.exists():
+        return []
+
+    posts = []
+    for md_file in blog_dir.glob("*.md"):
+        try:
+            with open(md_file, "r", encoding="utf-8") as f:
+                post = frontmatter.load(f)
+                # Render markdown and wrap tables for responsiveness
+                html_content = markdown.markdown(
+                    post.content,
+                    extensions=["fenced_code", "codehilite", "tables"]
+                )
+                # Wrap tables in a responsive container
+                html_content = html_content.replace(
+                    '<table>',
+                    '<div class="table-responsive"><table>'
+                ).replace('</table>', '</table></div>')
+
+                post_data = {
+                    "title": post.get("title", ""),
+                    "date": post.get("date"),
+                    "tags": post.get("tags", []),
+                    "slug": post.get("slug", md_file.stem),
+                    "content": html_content,
+                }
+                posts.append(post_data)
+        except Exception as e:
+            print(f"Error loading {md_file}: {e}")
+
+    # Sort by date, newest first
+    posts.sort(key=lambda x: x["date"], reverse=True)
+    return posts
+
+
+def get_blog_post(slug):
+    """Load a single blog post by slug."""
+    # In Docker, src/ is mounted at /app/, so blog posts are at /app/blog/posts/
+    blog_dir = Path("/app/blog/posts")
+
+    # Find the markdown file with this slug
+    for md_file in blog_dir.glob("*.md"):
+        try:
+            with open(md_file, "r", encoding="utf-8") as f:
+                post = frontmatter.load(f)
+                if post.get("slug") == slug or md_file.stem.endswith(slug):
+                    # Render markdown and wrap tables for responsiveness
+                    html_content = markdown.markdown(
+                        post.content,
+                        extensions=["fenced_code", "codehilite", "tables"]
+                    )
+                    # Wrap tables in a responsive container
+                    html_content = html_content.replace(
+                        '<table>',
+                        '<div class="table-responsive"><table>'
+                    ).replace('</table>', '</table></div>')
+
+                    return {
+                        "title": post.get("title", ""),
+                        "date": post.get("date"),
+                        "tags": post.get("tags", []),
+                        "slug": post.get("slug", md_file.stem),
+                        "content": html_content,
+                    }
+        except Exception as e:
+            print(f"Error loading {md_file}: {e}")
+
+    return None
+
+
 @app.route("/")
 @cache.cached(timeout=60 * 60)
 def index():
@@ -424,6 +502,30 @@ def regional():
 @cache.cached()
 def impressum():
     return render_template("impressum.html")
+
+
+# Blog routes
+@app.route("/blog/")
+@cache.cached(timeout=60 * 30)  # 30 minutes cache for blog index
+def blog_index():
+    posts = get_blog_posts()
+    return render_template("blog_index.html", posts=posts)
+
+
+@app.route("/blog/<slug>")
+@cache.cached(timeout=60 * 30)  # 30 minutes cache for blog posts
+def blog_post(slug):
+    post = get_blog_post(slug)
+    if post is None:
+        abort(404)
+    return render_template("blog_post.html", post=post)
+
+
+@app.route("/blog/images/<path:filename>")
+def blog_image(filename):
+    # In Docker, src/ is mounted at /app/, so blog images are at /app/blog/images/
+    blog_img_dir = "/app/blog/images"
+    return send_from_directory(blog_img_dir, filename)
 
 
 @app.route("/suche")

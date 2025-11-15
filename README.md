@@ -9,7 +9,7 @@
 - Spiegel Online: [„Netzaktivist startet Archiv für Verfassungsschutzberichte“](https://www.spiegel.de/netzwelt/web/netzaktivist-startet-online-archiv-fuer-verfassungsschutzberichte-a-1294435.html)
 - Netzpolitik.org: [„Wo der Verfassungsschutz hinschaut“](https://netzpolitik.org/2019/wo-der-verfassungsschutz-hinschaut/)
 - golem.de: [„Portal macht Verfassungsschutzberichte durchsuchbar“](https://www.golem.de/news/open-data-portal-macht-verfassungsschutzberichte-durchsuchbar-1911-144768.html)
-- [Unsere Pressemitteilung zum Launch](https://codefor.de/blog/Launch-Verfassungsschutzberichte.de.html)
+- [Unsere Pressemitteilung zum Launch](https://codefor.de/blog/launch-verfassungsschutzberichte/)
 
 ## English
 

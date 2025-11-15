@@ -1,7 +1,7 @@
 """
-End-to-End tests for verfassungsschutzberichte.de
+Integration tests for verfassungsschutzberichte.de
 
-These tests verify that the main functionality works after updates.
+These tests verify that HTTP endpoints work correctly after updates.
 Run with: pytest tests/
 """
 
@@ -141,6 +141,56 @@ class TestStaticFiles:
         """Test that robots.txt is accessible"""
         response = requests.get(f'{BASE_URL}/robots.txt', timeout=TIMEOUT)
         assert response.status_code == 200
+
+
+class TestBlogRoutes:
+    """Test blog functionality"""
+
+    def test_blog_index_loads(self):
+        """Test that blog index page loads"""
+        response = requests.get(f'{BASE_URL}/blog/', timeout=TIMEOUT)
+        assert response.status_code == 200
+        assert 'Blog' in response.text
+
+    def test_blog_post_launch(self):
+        """Test that launch blog post loads"""
+        response = requests.get(f'{BASE_URL}/blog/launch', timeout=TIMEOUT)
+        assert response.status_code == 200
+        assert 'Pressemitteilung: Launch' in response.text
+
+    def test_blog_post_36c3(self):
+        """Test that 36C3 blog post loads"""
+        response = requests.get(f'{BASE_URL}/blog/36c3', timeout=TIMEOUT)
+        assert response.status_code == 200
+        assert '36C3' in response.text or 'Chaos Computer Club' in response.text
+
+    def test_blog_post_neue_berichte(self):
+        """Test that neue-berichte-neues-feature blog post loads"""
+        response = requests.get(f'{BASE_URL}/blog/neue-berichte-neues-feature', timeout=TIMEOUT)
+        assert response.status_code == 200
+        assert 'Neue Berichte' in response.text
+
+    def test_blog_post_urteil_im_anhang(self):
+        """Test that urteil-im-anhang blog post loads with table"""
+        response = requests.get(f'{BASE_URL}/blog/urteil-im-anhang', timeout=TIMEOUT)
+        assert response.status_code == 200
+        assert 'Urteil im Anhang' in response.text
+        assert '<table' in response.text  # Should contain table
+
+    def test_blog_image_serves(self):
+        """Test that blog images are served correctly"""
+        response = requests.get(f'{BASE_URL}/blog/images/regional.png', timeout=TIMEOUT)
+        assert response.status_code == 200
+        assert 'image' in response.headers.get('Content-Type', '')
+
+    def test_blog_404_on_invalid_post(self):
+        """Test that invalid blog post returns 404"""
+        response = requests.get(
+            f'{BASE_URL}/blog/this-post-does-not-exist',
+            timeout=TIMEOUT,
+            allow_redirects=False
+        )
+        assert response.status_code == 404
 
 
 class TestErrorHandling:

@@ -17,3 +17,6 @@ SQLAlchemy-Searchable==2.1.0
 SQLAlchemy-Utils==0.41.2
 unidecode==1.1.1
 Werkzeug==3.0.6
+markdown==3.4.4
+python-frontmatter==1.0.1
+Pygments==2.16.1

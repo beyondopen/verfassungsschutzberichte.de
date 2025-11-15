@@ -24,8 +24,6 @@
       property="og:url"
       content="https://verfassungsschutzberichte.de{{ request.full_path }}"
     />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@vsberichte" />
     <!-- favicon -->
     <link
       rel="apple-touch-icon"
@@ -59,8 +57,106 @@
       <div class="push"></div>
     </div>
 
-    <hr />
-    <footer class="my-5">
+    <div class="container" style="min-height: auto">
+      <div style="margin: 3rem auto 2rem; max-width: 600px">
+        <div
+          style="
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+          "
+        >
+          <div style="text-align: center">
+            <h4
+              id="newsletter"
+              style="
+                color: white;
+                margin-bottom: 0.75rem;
+                font-weight: 600;
+                font-size: 1.5rem;
+              "
+            >
+              📬 Newsletter abonnieren
+            </h4>
+            <p style="color: rgba(255, 255, 255, 0.95); margin-bottom: 1.5rem">
+              Maximal einmal pro Monat informieren wir über Neuigkeiten bei
+              Verfassungsschutzberichte.de, wie neue Analysen oder neue
+              Berichte.
+            </p>
+          </div>
+
+          <form
+            method="post"
+            action="https://vsberichte.de"
+            class="listmonk-form"
+          >
+            <input type="hidden" name="nonce" />
+            <input
+              hidden
+              id="4539a"
+              type="checkbox"
+              name="l"
+              checked
+              value="4539a1e9-ea50-4a91-bd6e-6730ea3eedd0"
+            />
+
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: stretch">
+              <input
+                type="email"
+                name="email"
+                required
+                placeholder="Deine E-Mail-Adresse"
+                style="
+                  flex: 1 1 200px;
+                  padding: 0.75rem 1rem;
+                  border: 2px solid rgba(255, 255, 255, 0.3);
+                  border-radius: 8px;
+                  font-size: 1rem;
+                  background: rgba(255, 255, 255, 0.95);
+                  transition: all 0.3s ease;
+                "
+                onfocus="this.style.background='white'; this.style.borderColor='white';"
+                onblur="this.style.background='rgba(255, 255, 255, 0.95)'; this.style.borderColor='rgba(255, 255, 255, 0.3)';"
+              />
+              <button
+                type="submit"
+                class="btn btn-light"
+                style="
+                  flex: 0 0 auto;
+                  padding: 0.75rem 2rem;
+                  font-weight: 600;
+                  border-radius: 8px;
+                  border: none;
+                  font-size: 1rem;
+                  transition: all 0.3s ease;
+                  white-space: nowrap;
+                "
+                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)';"
+                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';"
+              >
+                Jetzt anmelden
+              </button>
+            </div>
+
+            <p
+              style="
+                color: rgba(255, 255, 255, 0.8);
+                font-size: 0.85rem;
+                margin-top: 1rem;
+                margin-bottom: 0;
+                text-align: center;
+              "
+            >
+              Kein Spam. Jederzeit abbestellbar.
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <hr style="margin-top: 0; margin-bottom: 2rem" />
+    <footer style="margin-top: 0; margin-bottom: 3rem">
       <ul class="nav justify-content-center">
         <li class="nav-item">
           <a class="nav-link" href="/#faq">FAQ</a>
@@ -81,56 +177,7 @@
             >Datenschutz</a
           >
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://twitter.com/vsberichte"
-            ><img
-              height="20"
-              width="20"
-              src="/static/twitter.svg"
-            />@vsberichte</a
-          >
-        </li>
       </ul>
-      <div
-        style="padding: 0.5rem; margin: 3rem auto; max-width: 30rem"
-        class="small"
-      >
-        <form
-          method="post"
-          action="https://vsberichte.de"
-          class="listmonk-form"
-        >
-          <div>
-            <h5 id="newsletter">Newsletter</h5>
-            <input type="hidden" name="nonce" />
-
-            <p>
-              <input
-                hidden
-                id="4539a"
-                type="checkbox"
-                name="l"
-                checked
-                value="4539a1e9-ea50-4a91-bd6e-6730ea3eedd0"
-              />
-              <span
-                >Maximal einmal pro Monate informieren wir über Neuigkeiten bei
-                Verfassungsschutzberichte.de, wie neue Analysen oder neue
-                Berichte.</span
-              >
-            </p>
-
-            <p>
-              <input type="email" name="email" required placeholder="E-Mail" />
-            </p>
-
-            <p>
-              <input type="submit" value="Abonnieren" class="btn btn-primary" />
-            </p>
-          </div>
-        </form>
-      </div>
-      <div style="padding-top: 54px"></div>
     </footer>
 
     <script>

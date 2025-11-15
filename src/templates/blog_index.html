@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Blog - Verfassungsschutzberichte.de{% endblock %}
+
+{% block social_media %}
+<meta property="og:title" content="Blog - Verfassungsschutzberichte.de">
+<meta name="description" content="Neuigkeiten und Updates zu Verfassungsschutzberichte.de">
+<meta property="og:image" content="https://verfassungsschutzberichte.de/static/thumbnail.jpg">
+{% endblock %}
+
+{% block nav %}
+<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="/"><span class="d-none d-sm-inline">Verfassungsschutz&shy;berichte.de</span><span
+        class="d-block d-sm-none very-small-mobile">Verfassungsschutzberichte.de</span></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/berichte">Berichte</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/suche">Suche</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="navbarDropdown"
+            role="button"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+          Analyse
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="/trends">Trends</a>
+            <a class="dropdown-item" href="/regional">Regional</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/#ueber">Über</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="/blog/">Blog</a>
+        </li>
+      </ul>
+      <form class="form-inline my-2 my-lg-0" method="GET" action="/suche">
+        <input class="form-control mr-sm-2" type="search" placeholder="In allen Berichten suchen" aria-label="Search"
+          name="q">
+        <button class="btn my-2 my-sm-0 btn-primary" type="submit">Suchen</button>
+      </form>
+    </div>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div style="padding-top: 54px;"></div>
+
+<div class="row my-5">
+  <div class="col-lg-8 offset-lg-2">
+    <h1 class="mb-4">Blog</h1>
+    <p class="lead">Neuigkeiten und Updates zu Verfassungsschutzberichte.de</p>
+    <hr class="my-4">
+
+    {% if posts %}
+      {% for post in posts %}
+      <article class="mb-5">
+        <h2 class="mb-2">
+          <a href="/blog/{{ post.slug }}" style="color: inherit; text-decoration: none;">
+            {{ post.title }}
+          </a>
+        </h2>
+        <p class="text-muted mb-3">
+          <small>
+            {{ post.date.strftime('%d. %B %Y') if post.date else '' }}
+            {% if post.tags %}
+              |
+              {% for tag in post.tags %}
+                <span class="badge badge-secondary">{{ tag }}</span>
+              {% endfor %}
+            {% endif %}
+          </small>
+        </p>
+        <div class="blog-excerpt">
+          {{ post.content|safe|truncate(300, True, '...') }}
+        </div>
+        <a href="/blog/{{ post.slug }}" class="btn btn-sm btn-outline-primary mt-2">Weiterlesen &rarr;</a>
+      </article>
+      <hr>
+      {% endfor %}
+    {% else %}
+      <p>Noch keine Blogposts vorhanden.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
