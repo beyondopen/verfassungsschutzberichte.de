@@ -825,7 +825,7 @@ def add_headers(response):
         ["X-Content-Type-Options", "nosniff"],
         [
             "Content-Security-Policy",
-            "default-src 'self'; object-src 'none'; form-action 'self'; font-src *;img-src * data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://matomo.daten.cool; style-src 'self' 'unsafe-inline'; connect-src 'self' https://matomo.daten.cool",
+            "default-src 'self'; object-src 'none'; form-action 'self' https://listen.daten.cool; font-src *;img-src * data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://matomo.daten.cool; style-src 'self' 'unsafe-inline'; connect-src 'self' https://matomo.daten.cool",
         ],
         ["X-XSS-Protection", "1; mode=block"],
         ["Referrer-Policy", "strict-origin"],
