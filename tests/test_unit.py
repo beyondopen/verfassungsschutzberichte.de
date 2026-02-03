@@ -202,5 +202,161 @@ class TestAutocompleteEdgeCases:
             assert response.get_json() == []
 
 
+# ---------------------------------------------------------------------------
+# CLI command tests: export-data / import-data
+# ---------------------------------------------------------------------------
+
+class TestExportData:
+    """Test the flask export-data CLI command."""
+
+    def test_export_creates_tarball_with_pdfs(self, tmp_path):
+        """Exporting should create a tar.gz containing all PDFs."""
+        import app as app_module
+        import tarfile
+
+        pdf_dir = tmp_path / "pdfs"
+        pdf_dir.mkdir()
+        (pdf_dir / "report-a.pdf").write_bytes(b"%PDF-fake-a")
+        (pdf_dir / "report-b.pdf").write_bytes(b"%PDF-fake-b")
+
+        output_file = tmp_path / "export.tar.gz"
+
+        runner = app_module.app.test_cli_runner(mix_stderr=False)
+        with patch.object(app_module, "PDF_DIR", pdf_dir):
+            result = runner.invoke(args=["export-data", str(output_file)])
+
+        assert result.exit_code == 0
+        assert "Exported 2 PDFs" in result.output
+
+        with tarfile.open(str(output_file), "r:gz") as tar:
+            names = sorted(tar.getnames())
+            assert names == ["report-a.pdf", "report-b.pdf"]
+
+    def test_export_no_pdfs_found(self, tmp_path):
+        """Exporting when no PDFs exist should print a message."""
+        import app as app_module
+
+        pdf_dir = tmp_path / "pdfs"
+        pdf_dir.mkdir()
+        output_file = tmp_path / "export.tar.gz"
+
+        runner = app_module.app.test_cli_runner(mix_stderr=False)
+        with patch.object(app_module, "PDF_DIR", pdf_dir):
+            result = runner.invoke(args=["export-data", str(output_file)])
+
+        assert result.exit_code == 0
+        assert "No PDF files found" in result.output
+        assert not output_file.exists()
+
+    def test_export_missing_directory(self, tmp_path):
+        """Exporting when pdf dir doesn't exist should print an error."""
+        import app as app_module
+
+        nonexistent = tmp_path / "nonexistent"
+        output_file = tmp_path / "export.tar.gz"
+
+        runner = app_module.app.test_cli_runner(mix_stderr=False)
+        with patch.object(app_module, "PDF_DIR", nonexistent):
+            result = runner.invoke(args=["export-data", str(output_file)])
+
+        assert result.exit_code == 0
+        assert "does not exist" in result.output
+
+
+class TestImportData:
+    """Test the flask import-data CLI command."""
+
+    def test_import_extracts_pdfs(self, tmp_path):
+        """Importing should extract PDFs from tarball."""
+        import app as app_module
+        import tarfile
+
+        archive_path = tmp_path / "import.tar.gz"
+        pdf_content_a = b"%PDF-fake-a"
+        pdf_content_b = b"%PDF-fake-b"
+
+        src_dir = tmp_path / "src"
+        src_dir.mkdir()
+        (src_dir / "report-a.pdf").write_bytes(pdf_content_a)
+        (src_dir / "report-b.pdf").write_bytes(pdf_content_b)
+
+        with tarfile.open(str(archive_path), "w:gz") as tar:
+            tar.add(str(src_dir / "report-a.pdf"), arcname="report-a.pdf")
+            tar.add(str(src_dir / "report-b.pdf"), arcname="report-b.pdf")
+
+        dest_dir = tmp_path / "data_pdfs"
+
+        runner = app_module.app.test_cli_runner(mix_stderr=False)
+        with patch.object(app_module, "PDF_DIR", dest_dir):
+            result = runner.invoke(args=["import-data", str(archive_path)])
+
+        assert result.exit_code == 0
+        assert "Imported 2 PDFs" in result.output
+        assert (dest_dir / "report-a.pdf").read_bytes() == pdf_content_a
+        assert (dest_dir / "report-b.pdf").read_bytes() == pdf_content_b
+
+    def test_import_skips_non_pdf_files(self, tmp_path):
+        """Importing should only extract .pdf files, ignoring others."""
+        import app as app_module
+        import tarfile
+
+        archive_path = tmp_path / "import.tar.gz"
+        src_dir = tmp_path / "src"
+        src_dir.mkdir()
+        (src_dir / "report.pdf").write_bytes(b"%PDF-fake")
+        (src_dir / "readme.txt").write_bytes(b"not a pdf")
+
+        with tarfile.open(str(archive_path), "w:gz") as tar:
+            tar.add(str(src_dir / "report.pdf"), arcname="report.pdf")
+            tar.add(str(src_dir / "readme.txt"), arcname="readme.txt")
+
+        dest_dir = tmp_path / "data_pdfs"
+
+        runner = app_module.app.test_cli_runner(mix_stderr=False)
+        with patch.object(app_module, "PDF_DIR", dest_dir):
+            result = runner.invoke(args=["import-data", str(archive_path)])
+
+        assert result.exit_code == 0
+        assert "Imported 1 PDFs" in result.output
+        assert (dest_dir / "report.pdf").exists()
+        assert not (dest_dir / "readme.txt").exists()
+
+    def test_import_missing_archive(self, tmp_path):
+        """Importing a nonexistent file should print an error."""
+        import app as app_module
+
+        runner = app_module.app.test_cli_runner(mix_stderr=False)
+        result = runner.invoke(args=["import-data", str(tmp_path / "nonexistent.tar.gz")])
+
+        assert result.exit_code == 0
+        assert "does not exist" in result.output
+
+    def test_export_then_import_roundtrip(self, tmp_path):
+        """Export and then import should produce identical files."""
+        import app as app_module
+
+        src_pdf_dir = tmp_path / "src_pdfs"
+        src_pdf_dir.mkdir()
+        pdf_content = b"%PDF-roundtrip-test"
+        (src_pdf_dir / "vsbericht-bund-2020.pdf").write_bytes(pdf_content)
+
+        archive_path = tmp_path / "roundtrip.tar.gz"
+
+        runner = app_module.app.test_cli_runner(mix_stderr=False)
+
+        # Export
+        with patch.object(app_module, "PDF_DIR", src_pdf_dir):
+            result = runner.invoke(args=["export-data", str(archive_path)])
+        assert result.exit_code == 0
+
+        # Import into a different directory
+        dest_pdf_dir = tmp_path / "dest_pdfs"
+        with patch.object(app_module, "PDF_DIR", dest_pdf_dir):
+            result = runner.invoke(args=["import-data", str(archive_path)])
+        assert result.exit_code == 0
+
+        assert (dest_pdf_dir / "vsbericht-bund-2020.pdf").read_bytes() == pdf_content
+
+
 if __name__ == '__main__':
     pytest.main([__file__, '-v'])

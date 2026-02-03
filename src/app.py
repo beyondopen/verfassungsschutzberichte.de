@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import tarfile
 import time
 from collections import Counter, defaultdict
 from datetime import datetime
@@ -117,6 +118,8 @@ if app.debug:
     db.create_all()
     db.session.commit()
 
+
+PDF_DIR = Path("/data/pdfs")
 
 jurisdictions = ["Bund"] + [
     l[1] for l in sorted(report_info["abr"], key=lambda x: x[1])
@@ -317,6 +320,50 @@ def generate_images(pattern="*", force=False):
 
             print(f"  Page {i + 1}/{num_pages}")
             generate_page_images(pdf_path, i)
+
+
+@app.cli.command()
+@click.argument("output_path")
+def export_data(output_path):
+    """Export all PDFs from /data/pdfs/ as a tar.gz archive."""
+    pdf_dir = PDF_DIR
+    if not pdf_dir.exists():
+        print(f"Error: {pdf_dir} does not exist")
+        return
+
+    pdfs = sorted(pdf_dir.glob("*.pdf"))
+    if not pdfs:
+        print("No PDF files found in /data/pdfs/")
+        return
+
+    with tarfile.open(output_path, "w:gz") as tar:
+        for pdf_path in pdfs:
+            tar.add(str(pdf_path), arcname=pdf_path.name)
+            print(f"  Added {pdf_path.name}")
+
+    print(f"Exported {len(pdfs)} PDFs to {output_path}")
+
+
+@app.cli.command()
+@click.argument("input_path")
+def import_data(input_path):
+    """Import PDFs from a tar.gz archive into /data/pdfs/."""
+    input_file = Path(input_path)
+    if not input_file.exists():
+        print(f"Error: {input_path} does not exist")
+        return
+
+    pdf_dir = PDF_DIR
+    pdf_dir.mkdir(parents=True, exist_ok=True)
+
+    with tarfile.open(input_path, "r:gz") as tar:
+        members = [m for m in tar.getmembers() if m.name.endswith(".pdf")]
+        for member in members:
+            member.name = Path(member.name).name  # strip any directory prefix
+            tar.extract(member, path=str(pdf_dir))
+            print(f"  Extracted {member.name}")
+
+    print(f"Imported {len(members)} PDFs to {pdf_dir}")
 
 
 def get_index():
