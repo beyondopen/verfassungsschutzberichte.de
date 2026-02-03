@@ -213,6 +213,12 @@ def proc_pdf(pdf_path):
 
 
 @app.cli.command()
+def init_db():
+    db.create_all()
+    db.session.commit()
+
+
+@app.cli.command()
 def clear_cache():
     cache.clear()
 
