@@ -210,7 +210,7 @@ class TestExportData:
     """Test the flask export-data CLI command."""
 
     def test_export_creates_tarball_with_pdfs(self, tmp_path):
-        """Exporting should create a tar.gz containing all PDFs."""
+        """Exporting should create a tar containing all PDFs."""
         import app as app_module
         import tarfile
 
@@ -219,7 +219,7 @@ class TestExportData:
         (pdf_dir / "report-a.pdf").write_bytes(b"%PDF-fake-a")
         (pdf_dir / "report-b.pdf").write_bytes(b"%PDF-fake-b")
 
-        output_file = tmp_path / "export.tar.gz"
+        output_file = tmp_path / "export.tar"
 
         runner = app_module.app.test_cli_runner(mix_stderr=False)
         with patch.object(app_module, "PDF_DIR", pdf_dir):
@@ -228,7 +228,7 @@ class TestExportData:
         assert result.exit_code == 0
         assert "Exported 2 PDFs" in result.output
 
-        with tarfile.open(str(output_file), "r:gz") as tar:
+        with tarfile.open(str(output_file), "r") as tar:
             names = sorted(tar.getnames())
             assert names == ["report-a.pdf", "report-b.pdf"]
 
@@ -340,7 +340,7 @@ class TestImportData:
         pdf_content = b"%PDF-roundtrip-test"
         (src_pdf_dir / "vsbericht-bund-2020.pdf").write_bytes(pdf_content)
 
-        archive_path = tmp_path / "roundtrip.tar.gz"
+        archive_path = tmp_path / "roundtrip.tar"
 
         runner = app_module.app.test_cli_runner(mix_stderr=False)
 

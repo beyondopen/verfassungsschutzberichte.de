@@ -325,7 +325,7 @@ def generate_images(pattern="*", force=False):
 @app.cli.command()
 @click.argument("output_path")
 def export_data(output_path):
-    """Export all PDFs from /data/pdfs/ as a tar.gz archive."""
+    """Export all PDFs from /data/pdfs/ as a tar archive."""
     pdf_dir = PDF_DIR
     if not pdf_dir.exists():
         print(f"Error: {pdf_dir} does not exist")
@@ -336,7 +336,7 @@ def export_data(output_path):
         print("No PDF files found in /data/pdfs/")
         return
 
-    with tarfile.open(output_path, "w:gz") as tar:
+    with tarfile.open(output_path, "w") as tar:
         for pdf_path in pdfs:
             tar.add(str(pdf_path), arcname=pdf_path.name)
             print(f"  Added {pdf_path.name}")
@@ -347,7 +347,7 @@ def export_data(output_path):
 @app.cli.command()
 @click.argument("input_path")
 def import_data(input_path):
-    """Import PDFs from a tar.gz archive into /data/pdfs/."""
+    """Import PDFs from a tar archive into /data/pdfs/."""
     input_file = Path(input_path)
     if not input_file.exists():
         print(f"Error: {input_path} does not exist")
@@ -356,7 +356,7 @@ def import_data(input_path):
     pdf_dir = PDF_DIR
     pdf_dir.mkdir(parents=True, exist_ok=True)
 
-    with tarfile.open(input_path, "r:gz") as tar:
+    with tarfile.open(input_path, "r:*") as tar:
         members = [m for m in tar.getmembers() if m.name.endswith(".pdf")]
         for member in members:
             member.name = Path(member.name).name  # strip any directory prefix
