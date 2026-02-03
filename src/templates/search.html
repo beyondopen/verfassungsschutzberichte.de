@@ -288,12 +288,18 @@ endif %}
       {% endfor %}
     </ul>
     <div>
-      <img
-        style="width: 100%"
-        data-src="{{r.file_url}}"
-        class="lazyload"
-        alt="{{r.content}}"
-      />
+      <picture>
+        <source
+          type="image/avif"
+          data-srcset="{{r.file_url|replace('.jpg', '.avif')}}"
+        />
+        <img
+          style="width: 100%"
+          data-src="{{r.file_url}}"
+          class="lazyload"
+          alt="{{r.content}}"
+        />
+      </picture>
     </div>
   </div>
 </div>

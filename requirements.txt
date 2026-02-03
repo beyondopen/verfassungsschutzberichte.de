@@ -8,6 +8,7 @@ Jinja2==3.1.6
 pdf2image==1.5.4
 pdftotext==2.1.1
 Pillow==10.3.0
+pillow-avif-plugin==1.5.5
 psycopg2==2.9.5
 redis==4.4.4
 requests==2.32.4

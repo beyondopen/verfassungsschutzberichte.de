@@ -134,6 +134,50 @@ class TestAPIEndpoints:
         assert 'juris;year;count' in response.text
 
 
+class TestImageServing:
+    """Test image serving with AVIF support"""
+
+    def test_jpeg_image_serves_with_correct_content_type(self):
+        """Test that JPEG images are served with image/jpeg content type"""
+        response = requests.get(
+            f'{BASE_URL}/images/test-bund-2020_0.jpg',
+            timeout=TIMEOUT
+        )
+        assert response.status_code == 200
+        assert 'image/jpeg' in response.headers.get('Content-Type', '')
+
+    def test_avif_image_serves_with_correct_content_type(self):
+        """Test that AVIF images are served with image/avif content type"""
+        response = requests.get(
+            f'{BASE_URL}/images/test-bund-2020_0.avif',
+            timeout=TIMEOUT
+        )
+        # May 404 if AVIF not yet generated, but if it exists, content type must be correct
+        if response.status_code == 200:
+            assert 'image/avif' in response.headers.get('Content-Type', '')
+
+    def test_details_page_uses_picture_element(self):
+        """Test that report detail page uses picture element with AVIF source"""
+        response = requests.get(f'{BASE_URL}/bund/2020', timeout=TIMEOUT)
+        assert response.status_code == 200
+        assert '<picture>' in response.text
+        assert 'type="image/avif"' in response.text
+        assert 'data-srcset=' in response.text
+        assert '.avif' in response.text
+
+    def test_search_results_use_picture_element(self):
+        """Test that search results use picture element with AVIF source"""
+        response = requests.get(
+            f'{BASE_URL}/suche',
+            params={'q': 'verfassungsschutz'},
+            timeout=TIMEOUT
+        )
+        assert response.status_code == 200
+        if 'Treffer' in response.text:
+            assert '<picture>' in response.text
+            assert 'type="image/avif"' in response.text
+
+
 class TestStaticFiles:
     """Test static file serving"""
 

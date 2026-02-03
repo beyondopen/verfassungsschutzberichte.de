@@ -26,6 +26,7 @@ from flask import (
 from flask_caching import Cache
 from flask_sqlalchemy import BaseQuery, SQLAlchemy
 from pdf2image import convert_from_path
+import pillow_avif  # noqa: F401 - registers AVIF plugin with Pillow
 from PIL import Image
 from sqlalchemy import func
 from sqlalchemy.sql import text
@@ -140,6 +141,37 @@ def special_pdf_preproc(s):
     return s
 
 
+def generate_page_images(pdf_path, page_index, dpi=300):
+    """Generate JPEG (900px) and AVIF (1800px) for a single PDF page."""
+    images = convert_from_path(str(pdf_path), first_page=page_index + 1, last_page=page_index + 1, dpi=dpi)
+    img = images[0]
+    stem = pdf_path.stem
+    base = "/data/images/" + stem + "_" + str(page_index)
+
+    # JPEG at 900px
+    jpg_path = base + ".jpg"
+    jpg_img = img
+    basewidth = 900
+    if img.size[0] > basewidth:
+        wpercent = basewidth / float(img.size[0])
+        hsize = int(float(img.size[1]) * wpercent)
+        jpg_img = img.resize((basewidth, hsize), Image.Resampling.LANCZOS)
+    jpg_img.save(jpg_path, "JPEG", optimize=True)
+
+    # AVIF at 1800px
+    avif_path = base + ".avif"
+    avif_width = 1800
+    if img.size[0] > avif_width:
+        wpercent = avif_width / float(img.size[0])
+        hsize = int(float(img.size[1]) * wpercent)
+        avif_img = img.resize((avif_width, hsize), Image.Resampling.LANCZOS)
+    else:
+        avif_img = img
+    avif_img.save(avif_path, "AVIF", quality=63)
+
+    return jpg_path
+
+
 def proc_pdf(pdf_path):
     # no engl for now, no kurzfassung
     if (
@@ -181,18 +213,7 @@ def proc_pdf(pdf_path):
             texts.append(page_text)
             num_pages += 1
             print(i)
-            images = convert_from_path(str(pdf_path), first_page=i + 1, last_page=i + 1)
-
-            fname = "/data" + "/images/" + pdf_path.stem + "_" + str(i) + ".jpg"
-            img = images[0]
-            basewidth = 900
-
-            # resize to 900px width
-            if img.size[0] > basewidth:
-                wpercent = basewidth / float(img.size[0])
-                hsize = int((float(img.size[1]) * float(wpercent)))
-                img = img.resize((basewidth, hsize), Image.Resampling.LANCZOS)
-            img.save(fname, optimize=True)
+            fname = generate_page_images(pdf_path, i)
 
             p = DocumentPage(
                 document=doc,
@@ -267,6 +288,35 @@ def clear_data():
 
     for pdf_path in Path("/data/pdfs").glob("*.pdf"):
         proc_pdf(pdf_path)
+
+
+@app.cli.command()
+@click.argument("pattern")
+@click.option("--force", is_flag=True, help="Regenerate existing images")
+def generate_images(pattern="*", force=False):
+    """Generate JPEG and AVIF images from PDFs. Usage: flask generate-images '*'"""
+    for pdf_path in sorted(Path("/data/pdfs").glob(pattern + ".pdf")):
+        if (
+            pdf_path.stem.endswith("_en")
+            or pdf_path.stem.endswith("kurzfassung")
+            or pdf_path.stem.endswith("_parl")
+        ):
+            continue
+
+        print(f"Processing {pdf_path.name}")
+        with open(pdf_path, "rb") as f:
+            pdf = pdftotext.PDF(f)
+            num_pages = len(pdf)
+
+        for i in range(num_pages):
+            jpg_path = "/data/images/" + pdf_path.stem + "_" + str(i) + ".jpg"
+            avif_path = "/data/images/" + pdf_path.stem + "_" + str(i) + ".avif"
+
+            if not force and Path(jpg_path).exists() and Path(avif_path).exists():
+                continue
+
+            print(f"  Page {i + 1}/{num_pages}")
+            generate_page_images(pdf_path, i)
 
 
 def get_index():
@@ -632,15 +682,11 @@ def download_img(filename):
     if app.debug:
         return send_from_directory("/data/images", filename)
 
+    content_type = "image/avif" if filename.endswith(".avif") else "image/jpeg"
     resp = make_response(send_from_directory("/data/images", filename))
-    resp.headers["Content-Type"] = "image/jpeg"
+    resp.headers["Content-Type"] = content_type
     resp.headers["X-Robots-Tag"] = "noindex, nofollow"
     return resp
-
-    response = make_response()
-    response.headers["Content-Type"] = "image/jpeg"
-    response.headers["X-Accel-Redirect"] = "/x_images/" + filename
-    return response
 
 
 # API

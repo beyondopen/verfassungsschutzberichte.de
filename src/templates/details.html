@@ -170,11 +170,17 @@ report_info['comments'][d.jurisdiction] %}
   <h3>{{p.page_number}}</h3>
 </a>
 <div>
-  <img
-    style="width: 100%"
-    data-src="{{p.file_url}}"
-    class="lazyload"
-    alt="Seite {{p.page_number}}"
-  />
+  <picture>
+    <source
+      type="image/avif"
+      data-srcset="{{p.file_url|replace('.jpg', '.avif')}}"
+    />
+    <img
+      style="width: 100%"
+      data-src="{{p.file_url}}"
+      class="lazyload"
+      alt="Seite {{p.page_number}}"
+    />
+  </picture>
 </div>
 {% endfor %} {% endblock %}
