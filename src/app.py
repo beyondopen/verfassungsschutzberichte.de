@@ -753,15 +753,17 @@ def api_search_auto():
         # make sure previous tokens appear on the same document page
         ids = None
         for t in q_list[:-1]:
-            res = (
-                TokenCount.query.filter(TokenCount.token == t)
+            res = set(
+                r[0] for r in TokenCount.query.filter(TokenCount.token == t)
                 .with_entities(TokenCount.document_id)
                 .all()
             )
             if ids is None:
-                ids = set(res)
+                ids = res
             else:
                 ids = ids.intersection(res)
+        if not ids:
+            return jsonify([])
         results = (
             TokenCount.query.filter(TokenCount.token.like(q + "%"))
             .filter(TokenCount.document_id.in_(ids))

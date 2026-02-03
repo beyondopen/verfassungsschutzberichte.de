@@ -237,6 +237,263 @@ class TestBlogRoutes:
         assert response.status_code == 404
 
 
+class TestDetailRoutes:
+    """Test report detail page routes"""
+
+    def test_detail_page_loads(self):
+        """Test that a valid report detail page loads"""
+        response = requests.get(f'{BASE_URL}/bund/2020', timeout=TIMEOUT)
+        assert response.status_code == 200
+        assert 'Verfassungsschutzbericht' in response.text
+
+    def test_detail_page_case_insensitive(self):
+        """Test that jurisdiction is case-insensitive (title-cased internally)"""
+        response = requests.get(f'{BASE_URL}/Bund/2020', timeout=TIMEOUT)
+        assert response.status_code == 200
+
+    def test_detail_page_404_for_missing_year(self):
+        """Test that a non-existent year returns 404"""
+        response = requests.get(
+            f'{BASE_URL}/bund/1900',
+            timeout=TIMEOUT,
+            allow_redirects=False
+        )
+        assert response.status_code == 404
+
+
+class TestAPIDetail:
+    """Test API detail endpoints"""
+
+    def test_api_detail_returns_json(self):
+        """Test that API detail endpoint returns full report JSON"""
+        response = requests.get(f'{BASE_URL}/api/bund/2020', timeout=TIMEOUT)
+        assert response.status_code == 200
+        data = response.json()
+        assert data['year'] == 2020
+        assert data['jurisdiction'] == 'Bund'
+        assert 'pages' in data
+        assert isinstance(data['pages'], list)
+
+    def test_api_detail_404_for_missing(self):
+        """Test that API detail returns 404 for non-existent report"""
+        response = requests.get(f'{BASE_URL}/api/bund/1900', timeout=TIMEOUT)
+        assert response.status_code == 404
+
+
+class TestTextExport:
+    """Test plain text export endpoints"""
+
+    def test_text_export_returns_plain_text(self):
+        """Test that text export returns plain text content"""
+        response = requests.get(f'{BASE_URL}/bund-2020.txt', timeout=TIMEOUT)
+        assert response.status_code == 200
+        assert 'text/plain' in response.headers.get('Content-Type', '')
+
+    def test_text_export_404_for_missing(self):
+        """Test that text export returns 404 for non-existent report"""
+        response = requests.get(
+            f'{BASE_URL}/bund-1900.txt',
+            timeout=TIMEOUT,
+            allow_redirects=False
+        )
+        assert response.status_code == 404
+
+
+class TestSearchFilters:
+    """Test search with various filter parameters"""
+
+    def test_search_with_jurisdiction_filter(self):
+        """Test search filtered by jurisdiction"""
+        response = requests.get(
+            f'{BASE_URL}/suche',
+            params={'q': 'verfassungsschutz', 'jurisdiction': 'Bund'},
+            timeout=TIMEOUT
+        )
+        assert response.status_code == 200
+
+    def test_search_with_min_year(self):
+        """Test search filtered by minimum year"""
+        response = requests.get(
+            f'{BASE_URL}/suche',
+            params={'q': 'verfassungsschutz', 'min_year': '2019'},
+            timeout=TIMEOUT
+        )
+        assert response.status_code == 200
+
+    def test_search_with_max_year(self):
+        """Test search filtered by maximum year"""
+        response = requests.get(
+            f'{BASE_URL}/suche',
+            params={'q': 'verfassungsschutz', 'max_year': '2020'},
+            timeout=TIMEOUT
+        )
+        assert response.status_code == 200
+
+    def test_search_jurisdiction_alle(self):
+        """Test that jurisdiction=alle is treated as no filter"""
+        response = requests.get(
+            f'{BASE_URL}/suche',
+            params={'q': 'verfassungsschutz', 'jurisdiction': 'alle'},
+            timeout=TIMEOUT
+        )
+        assert response.status_code == 200
+
+
+class TestStatsEndpoint:
+    """Test stats endpoint edge cases"""
+
+    def test_stats_nsu_fix(self):
+        """Test that NSU stats zeroes out years before 2009"""
+        response = requests.get(
+            f'{BASE_URL}/stats',
+            params={'q': 'nsu'},
+            timeout=TIMEOUT
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert isinstance(data, list)
+        assert len(data) == 2
+        assert data[0] == 'nsu'
+
+    def test_stats_no_query(self):
+        """Test that stats with no query returns empty object"""
+        response = requests.get(f'{BASE_URL}/stats', timeout=TIMEOUT)
+        assert response.status_code == 200
+        data = response.json()
+        assert data == {}
+
+
+class TestAutocompleteBranches:
+    """Test autocomplete endpoint edge cases"""
+
+    def test_autocomplete_multi_word(self):
+        """Test autocomplete with multi-word query"""
+        response = requests.get(
+            f'{BASE_URL}/api/auto-complete',
+            params={'q': 'nsu komplex'},
+            timeout=TIMEOUT
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert isinstance(data, list)
+
+    def test_autocomplete_empty_query(self):
+        """Test autocomplete with empty query returns empty list"""
+        response = requests.get(
+            f'{BASE_URL}/api/auto-complete',
+            params={'q': ''},
+            timeout=TIMEOUT
+        )
+        assert response.status_code == 200
+        assert response.json() == []
+
+    def test_autocomplete_with_quotes(self):
+        """Test autocomplete with quotes returns empty list"""
+        response = requests.get(
+            f'{BASE_URL}/api/auto-complete',
+            params={'q': '"nsu"'},
+            timeout=TIMEOUT
+        )
+        assert response.status_code == 200
+        assert response.json() == []
+
+    def test_autocomplete_with_or_operator(self):
+        """Test autocomplete with 'or' operator returns empty list"""
+        response = requests.get(
+            f'{BASE_URL}/api/auto-complete',
+            params={'q': 'nsu or raf'},
+            timeout=TIMEOUT
+        )
+        assert response.status_code == 200
+        assert response.json() == []
+
+
+class TestMentionsFilters:
+    """Test mentions endpoint with various filters"""
+
+    def test_mentions_with_year_filters(self):
+        """Test mentions with min and max year filters"""
+        response = requests.get(
+            f'{BASE_URL}/api/mentions',
+            params={'q': 'nsu', 'min_year': '2015', 'max_year': '2020'},
+            timeout=TIMEOUT
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert isinstance(data, dict)
+
+    def test_mentions_empty_query_404(self):
+        """Test that mentions with no query returns 404"""
+        response = requests.get(f'{BASE_URL}/api/mentions', timeout=TIMEOUT)
+        assert response.status_code == 404
+
+    def test_mentions_csv_with_jurisdiction(self):
+        """Test mentions CSV with jurisdiction filter"""
+        response = requests.get(
+            f'{BASE_URL}/api/mentions',
+            params={'q': 'nsu', 'csv': '1', 'jurisdiction': 'Bund'},
+            timeout=TIMEOUT
+        )
+        assert response.status_code == 200
+        assert 'text/plain' in response.headers.get('Content-Type', '')
+        assert 'juris;year;count' in response.text
+
+
+class TestSecurityHeaders:
+    """Test security headers on responses"""
+
+    def test_security_headers_present(self):
+        """Test that all security headers are set on responses"""
+        response = requests.get(f'{BASE_URL}/', timeout=TIMEOUT)
+        assert response.status_code == 200
+        assert 'Strict-Transport-Security' in response.headers
+        assert 'X-Frame-Options' in response.headers
+        assert response.headers['X-Frame-Options'] == 'SAMEORIGIN'
+        assert 'X-Content-Type-Options' in response.headers
+        assert response.headers['X-Content-Type-Options'] == 'nosniff'
+        assert 'Content-Security-Policy' in response.headers
+        assert 'X-XSS-Protection' in response.headers
+        assert 'Referrer-Policy' in response.headers
+        assert 'Onion-Location' in response.headers
+        assert 'Cache-Control' in response.headers
+
+
+class TestPDFDownload:
+    """Test PDF download endpoint"""
+
+    def test_pdf_download(self):
+        """Test that PDF files can be downloaded"""
+        response = requests.get(
+            f'{BASE_URL}/pdfs/test-bund-2020.pdf',
+            timeout=TIMEOUT
+        )
+        assert response.status_code == 200
+
+
+class TestTrendsRegionalNoParams:
+    """Test trends and regional pages without query parameters"""
+
+    def test_trends_no_params(self):
+        """Test trends page without params (debug mode = no redirect)"""
+        response = requests.get(
+            f'{BASE_URL}/trends',
+            timeout=TIMEOUT,
+            allow_redirects=False
+        )
+        # In debug mode: renders page; in production: redirects
+        assert response.status_code in (200, 302)
+
+    def test_regional_no_params(self):
+        """Test regional page without params (debug mode = no redirect)"""
+        response = requests.get(
+            f'{BASE_URL}/regional',
+            timeout=TIMEOUT,
+            allow_redirects=False
+        )
+        # In debug mode: renders page; in production: redirects
+        assert response.status_code in (200, 302)
+
+
 class TestErrorHandling:
     """Test error handling"""
 

@@ -1,0 +1,15 @@
+[run]
+source = /app
+data_file = .coverage
+parallel = true
+
+[paths]
+source =
+    .
+    /app
+
+[report]
+show_missing = true
+omit =
+    */tests/*
+    */.venv/*

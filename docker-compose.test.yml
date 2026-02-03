@@ -1,0 +1,6 @@
+services:
+  web:
+    stop_signal: SIGINT
+    command: >
+      sh -c "pip install -q coverage==7.4.0 &&
+             exec coverage run --source=/app --data-file=/app/.coverage.e2e -m flask run --host 0.0.0.0 --no-reload"
