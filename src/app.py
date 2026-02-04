@@ -146,32 +146,25 @@ def special_pdf_preproc(s):
 
 
 def generate_page_images(pdf_path, page_index, dpi=300):
-    """Generate JPEG (900px) and AVIF (1800px) for a single PDF page."""
+    """Generate JPEG (900px) and AVIF (900px) for a single PDF page."""
     images = convert_from_path(str(pdf_path), first_page=page_index + 1, last_page=page_index + 1, dpi=dpi)
     img = images[0]
     stem = pdf_path.stem
     base = "/data/images/" + stem + "_" + str(page_index)
 
-    # JPEG at 900px
-    jpg_path = base + ".jpg"
-    jpg_img = img
     basewidth = 900
     if img.size[0] > basewidth:
         wpercent = basewidth / float(img.size[0])
         hsize = int(float(img.size[1]) * wpercent)
-        jpg_img = img.resize((basewidth, hsize), Image.Resampling.LANCZOS)
-    jpg_img.save(jpg_path, "JPEG", optimize=True)
+        img = img.resize((basewidth, hsize), Image.Resampling.LANCZOS)
 
-    # AVIF at 1800px
+    # JPEG at 900px
+    jpg_path = base + ".jpg"
+    img.save(jpg_path, "JPEG", optimize=True)
+
+    # AVIF at 900px
     avif_path = base + ".avif"
-    avif_width = 1800
-    if img.size[0] > avif_width:
-        wpercent = avif_width / float(img.size[0])
-        hsize = int(float(img.size[1]) * wpercent)
-        avif_img = img.resize((avif_width, hsize), Image.Resampling.LANCZOS)
-    else:
-        avif_img = img
-    avif_img.save(avif_path, "AVIF", quality=63)
+    img.save(avif_path, "AVIF", quality=50)
 
     return jpg_path
 
