@@ -336,9 +336,10 @@ def export_data(output_path):
             dir_path = DATA_DIR / dir_name
             if not dir_path.exists():
                 continue
-            for f in sorted(dir_path.glob("*.pdf")):
-                tar.add(str(f), arcname=f"{dir_name}/{f.name}")
-                print(f"  Added {dir_name}/{f.name}")
+            for f in sorted(dir_path.rglob("*.pdf")):
+                rel = f.relative_to(DATA_DIR)
+                tar.add(str(f), arcname=str(rel))
+                print(f"  Added {rel}")
                 total += 1
 
     if total == 0:
@@ -361,12 +362,11 @@ def import_data(input_path):
         total = 0
         for member in members:
             parts = Path(member.name).parts
-            if len(parts) == 2 and parts[0] in DATA_DIRS:
-                dest = DATA_DIR / parts[0]
+            if len(parts) >= 2 and parts[0] in DATA_DIRS:
+                dest = DATA_DIR / Path(member.name).parent
                 dest.mkdir(parents=True, exist_ok=True)
-                member.name = parts[1]
-                tar.extract(member, path=str(dest))
-                print(f"  Extracted {parts[0]}/{parts[1]}")
+                tar.extract(member, path=str(DATA_DIR))
+                print(f"  Extracted {member.name}")
                 total += 1
 
     print(f"Imported {total} PDFs")

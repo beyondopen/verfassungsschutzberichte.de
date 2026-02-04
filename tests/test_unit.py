@@ -210,15 +210,16 @@ class TestExportData:
     """Test the flask export-data CLI command."""
 
     def test_export_creates_tarball_with_pdfs(self, tmp_path):
-        """Exporting should create a tar containing all PDFs from all dirs."""
+        """Exporting should create a tar containing all PDFs including nested subdirs."""
         import app as app_module
         import tarfile
 
         data_dir = tmp_path / "data"
         (data_dir / "pdfs").mkdir(parents=True)
-        (data_dir / "cleaned").mkdir()
+        (data_dir / "cleaned" / "bb").mkdir(parents=True)
         (data_dir / "pdfs" / "report-a.pdf").write_bytes(b"%PDF-fake-a")
         (data_dir / "cleaned" / "report-a.pdf").write_bytes(b"%PDF-fake-a-clean")
+        (data_dir / "cleaned" / "bb" / "report-bb.pdf").write_bytes(b"%PDF-fake-bb")
 
         output_file = tmp_path / "export.tar"
 
@@ -227,11 +228,11 @@ class TestExportData:
             result = runner.invoke(args=["export-data", str(output_file)])
 
         assert result.exit_code == 0
-        assert "Exported 2 PDFs" in result.output
+        assert "Exported 3 PDFs" in result.output
 
         with tarfile.open(str(output_file), "r") as tar:
             names = sorted(tar.getnames())
-            assert names == ["cleaned/report-a.pdf", "pdfs/report-a.pdf"]
+            assert names == ["cleaned/bb/report-bb.pdf", "cleaned/report-a.pdf", "pdfs/report-a.pdf"]
 
     def test_export_no_pdfs_found(self, tmp_path):
         """Exporting when no PDFs exist should print a message."""
@@ -275,23 +276,26 @@ class TestImportData:
     """Test the flask import-data CLI command."""
 
     def test_import_extracts_pdfs(self, tmp_path):
-        """Importing should extract PDFs into correct subdirectories."""
+        """Importing should extract PDFs into correct subdirectories including nested."""
         import app as app_module
         import tarfile
 
         archive_path = tmp_path / "import.tar.gz"
         pdf_content_a = b"%PDF-fake-a"
         pdf_content_b = b"%PDF-fake-b"
+        pdf_content_c = b"%PDF-fake-c"
 
         src_dir = tmp_path / "src"
         (src_dir / "pdfs").mkdir(parents=True)
-        (src_dir / "cleaned").mkdir()
+        (src_dir / "cleaned" / "bb").mkdir(parents=True)
         (src_dir / "pdfs" / "report-a.pdf").write_bytes(pdf_content_a)
         (src_dir / "cleaned" / "report-b.pdf").write_bytes(pdf_content_b)
+        (src_dir / "cleaned" / "bb" / "report-bb.pdf").write_bytes(pdf_content_c)
 
         with tarfile.open(str(archive_path), "w:gz") as tar:
             tar.add(str(src_dir / "pdfs" / "report-a.pdf"), arcname="pdfs/report-a.pdf")
             tar.add(str(src_dir / "cleaned" / "report-b.pdf"), arcname="cleaned/report-b.pdf")
+            tar.add(str(src_dir / "cleaned" / "bb" / "report-bb.pdf"), arcname="cleaned/bb/report-bb.pdf")
 
         data_dir = tmp_path / "dest"
 
@@ -300,9 +304,10 @@ class TestImportData:
             result = runner.invoke(args=["import-data", str(archive_path)])
 
         assert result.exit_code == 0
-        assert "Imported 2 PDFs" in result.output
+        assert "Imported 3 PDFs" in result.output
         assert (data_dir / "pdfs" / "report-a.pdf").read_bytes() == pdf_content_a
         assert (data_dir / "cleaned" / "report-b.pdf").read_bytes() == pdf_content_b
+        assert (data_dir / "cleaned" / "bb" / "report-bb.pdf").read_bytes() == pdf_content_c
 
     def test_import_skips_non_pdf_files(self, tmp_path):
         """Importing should only extract .pdf files, ignoring others."""
@@ -363,18 +368,18 @@ class TestImportData:
         assert "does not exist" in result.output
 
     def test_export_then_import_roundtrip(self, tmp_path):
-        """Export and then import should produce identical files across all dirs."""
+        """Export and then import should produce identical files including nested dirs."""
         import app as app_module
 
         src_data = tmp_path / "src_data"
         (src_data / "pdfs").mkdir(parents=True)
-        (src_data / "cleaned").mkdir()
-        (src_data / "raw").mkdir()
+        (src_data / "cleaned" / "bund").mkdir(parents=True)
+        (src_data / "raw" / "bund").mkdir(parents=True)
         pdf_content = b"%PDF-roundtrip-test"
         raw_content = b"%PDF-raw-test"
         (src_data / "pdfs" / "vsbericht-bund-2020.pdf").write_bytes(pdf_content)
-        (src_data / "cleaned" / "vsbericht-bund-2020.pdf").write_bytes(pdf_content)
-        (src_data / "raw" / "vsbericht-bund-2020.pdf").write_bytes(raw_content)
+        (src_data / "cleaned" / "bund" / "vsbericht-bund-2020.pdf").write_bytes(pdf_content)
+        (src_data / "raw" / "bund" / "vsbericht-bund-2020.pdf").write_bytes(raw_content)
 
         archive_path = tmp_path / "roundtrip.tar"
 
@@ -392,8 +397,8 @@ class TestImportData:
         assert result.exit_code == 0
 
         assert (dest_data / "pdfs" / "vsbericht-bund-2020.pdf").read_bytes() == pdf_content
-        assert (dest_data / "cleaned" / "vsbericht-bund-2020.pdf").read_bytes() == pdf_content
-        assert (dest_data / "raw" / "vsbericht-bund-2020.pdf").read_bytes() == raw_content
+        assert (dest_data / "cleaned" / "bund" / "vsbericht-bund-2020.pdf").read_bytes() == pdf_content
+        assert (dest_data / "raw" / "bund" / "vsbericht-bund-2020.pdf").read_bytes() == raw_content
 
 
 if __name__ == '__main__':
