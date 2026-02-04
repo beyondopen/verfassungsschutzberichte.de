@@ -251,6 +251,7 @@ def clear_cache():
 @app.cli.command()
 @click.argument("pattern")
 def update_docs(pattern="*"):
+    Path("/data/images").mkdir(parents=True, exist_ok=True)
     # only add documents that are not already entered
     for pdf_path in Path("/data" + "/pdfs").glob(pattern + ".pdf"):
         try:
@@ -290,6 +291,7 @@ def clear_data():
     db.create_all()
     db.session.commit()
 
+    Path("/data/images").mkdir(parents=True, exist_ok=True)
     for pdf_path in Path("/data/pdfs").glob("*.pdf"):
         proc_pdf(pdf_path)
 
@@ -299,6 +301,7 @@ def clear_data():
 @click.option("--force", is_flag=True, help="Regenerate existing images")
 def generate_images(pattern="*", force=False):
     """Generate JPEG and AVIF images from PDFs. Usage: flask generate-images '*'"""
+    Path("/data/images").mkdir(parents=True, exist_ok=True)
     for pdf_path in sorted(Path("/data/pdfs").glob(pattern + ".pdf")):
         if (
             pdf_path.stem.endswith("_en")
