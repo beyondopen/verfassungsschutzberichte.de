@@ -119,7 +119,8 @@ if app.debug:
     db.session.commit()
 
 
-PDF_DIR = Path("/data/pdfs")
+DATA_DIR = Path("/data")
+PDF_DIR = DATA_DIR / "pdfs"
 
 jurisdictions = ["Bund"] + [
     l[1] for l in sorted(report_info["abr"], key=lambda x: x[1])
@@ -322,48 +323,53 @@ def generate_images(pattern="*", force=False):
             generate_page_images(pdf_path, i)
 
 
+DATA_DIRS = ["pdfs", "cleaned", "raw", "deleted"]
+
+
 @app.cli.command()
 @click.argument("output_path")
 def export_data(output_path):
-    """Export all PDFs from /data/pdfs/ as a tar archive."""
-    pdf_dir = PDF_DIR
-    if not pdf_dir.exists():
-        print(f"Error: {pdf_dir} does not exist")
-        return
-
-    pdfs = sorted(pdf_dir.glob("*.pdf"))
-    if not pdfs:
-        print("No PDF files found in /data/pdfs/")
-        return
-
+    """Export all data directories as a tar archive."""
+    total = 0
     with tarfile.open(output_path, "w") as tar:
-        for pdf_path in pdfs:
-            tar.add(str(pdf_path), arcname=pdf_path.name)
-            print(f"  Added {pdf_path.name}")
+        for dir_name in DATA_DIRS:
+            dir_path = DATA_DIR / dir_name
+            if not dir_path.exists():
+                continue
+            for f in sorted(dir_path.glob("*.pdf")):
+                tar.add(str(f), arcname=f"{dir_name}/{f.name}")
+                print(f"  Added {dir_name}/{f.name}")
+                total += 1
 
-    print(f"Exported {len(pdfs)} PDFs to {output_path}")
+    if total == 0:
+        print("No PDF files found")
+    else:
+        print(f"Exported {total} PDFs to {output_path}")
 
 
 @app.cli.command()
 @click.argument("input_path")
 def import_data(input_path):
-    """Import PDFs from a tar archive into /data/pdfs/."""
+    """Import PDFs from a tar archive into /data/ directories."""
     input_file = Path(input_path)
     if not input_file.exists():
         print(f"Error: {input_path} does not exist")
         return
 
-    pdf_dir = PDF_DIR
-    pdf_dir.mkdir(parents=True, exist_ok=True)
-
     with tarfile.open(input_path, "r:*") as tar:
         members = [m for m in tar.getmembers() if m.name.endswith(".pdf")]
+        total = 0
         for member in members:
-            member.name = Path(member.name).name  # strip any directory prefix
-            tar.extract(member, path=str(pdf_dir))
-            print(f"  Extracted {member.name}")
+            parts = Path(member.name).parts
+            if len(parts) == 2 and parts[0] in DATA_DIRS:
+                dest = DATA_DIR / parts[0]
+                dest.mkdir(parents=True, exist_ok=True)
+                member.name = parts[1]
+                tar.extract(member, path=str(dest))
+                print(f"  Extracted {parts[0]}/{parts[1]}")
+                total += 1
 
-    print(f"Imported {len(members)} PDFs to {pdf_dir}")
+    print(f"Imported {total} PDFs")
 
 
 def get_index():
