@@ -592,8 +592,8 @@ def stats():
     return jsonify([q, d])
 
 
-# dont cache due to headers
 @app.route("/trends")
+@cache.cached(query_string=True)
 def trends():
     qs = request.args.getlist("q")
     if len(qs) == 0 and not app.debug:
@@ -601,8 +601,8 @@ def trends():
     return render_template("trends.html", qs=qs)
 
 
-# dont cache due to headers
 @app.route("/regional")
+@cache.cached(query_string=True)
 def regional():
     q = request.args.get("q")
     if q is None and not app.debug:
