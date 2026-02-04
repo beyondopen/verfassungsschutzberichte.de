@@ -20,15 +20,18 @@
 ## Development
 
 1. install and run [Docker](https://www.docker.com/)
-2. `git clone https://github.com/dmedak/verfassungsschutzberichte.de && cd verfassungsschutzberichte.de`
-3. `docker-compose up`
+2. `git clone https://github.com/beyondopen/verfassungsschutzberichte.de && cd verfassungsschutzberichte.de`
+3. `docker compose up`
 4. http://localhost:5001
 
 
 ### Add PDFs for Development
 
-To get started, put some PDFs in to `verfassungsschutzberichte.de/data/pdfs` and create the folder `verfassungsschutzberichte.de/data/images`.
-Then get the container id with `docker ps`, then enter the Docker container `docker exec -it f00d7aa42de8 bash` with the appropriate id. Finally run `flask update-docs '*'` inside the container to process PDFs.
+Put some PDFs into `data/pdfs/`, then process them:
+
+```bash
+docker compose exec web flask update-docs '*'
+```
 
 ### Testing
 
@@ -52,33 +55,49 @@ Deploy with [Dokku](https://github.com/dokku/dokku).
 1. create a Dokku app, e.g. with the name `vsb`
 2. link a Postgres db
 3. link a Redis cache
-4. Then mount a folder `data` with contains two folders (`pdfs` for PDFs and `images` for images of the PDF pages) for the static content: `dokku storage:mount $app $path:/data/`
-
-To serve the images and PDFs via nginx (xsendfile), adapt the nginx config of Dokku (e.g. create `/home/dokku/vsb/nginx.conf.d/myconf.conf`):
-
-```
-location /x_images {
-  internal;
-  add_header X-Robots-Tag "noindex, nofollow"; # prevent search enginges from indexing files
-  alias /folder/with/images;
-}
-
-location /x_pdfs {
-  internal;
-  add_header X-Robots-Tag "noindex, nofollow";
-  alias /folder/with/pdfs;
-}
-```
+4. Mount a data directory: `dokku storage:mount <app> <data-dir>:/data`
 
 Adjust the Postgres config and increase `shared_buffers` and `work_mem` to, e.g., `1GB` and `128MB` respectively.
 
+## Data Export & Import
+
+Export and import all PDF data (processed, cleaned, raw, deleted) as a tar archive.
+
+### Export
+
+```bash
+dokku run <app> flask export-data /data/export.tar
+```
+
+Then copy the tar from the server's mounted data directory.
+
+### Import to a New Instance
+
+```bash
+# 1. Copy the tar to the server's mounted data directory
+scp export.tar <server>:<data-dir>/export.tar
+
+# 2. Import the PDFs
+dokku run <app> flask import-data /data/export.tar
+
+# 3. Process PDFs into the database
+dokku run <app> flask update-docs '*'
+
+# 4. Generate page images
+dokku run <app> flask generate-images '*'
+
+# 5. Clean up
+rm <data-dir>/export.tar
+```
+
 ## One-off commands
 
-- clear cache: `dokku run vsb flask clear-cache`
-- add documents: `dokku run vsb flask update-docs '*'`
-- remove all documents: `dokku run vsb flask remove-docs '*'`
-- remove one document: `dokku run vsb flask remove-docs 'vsbericht-th-2002.pdf'`
-- clean all data from the database and adds all documents again: `dokku run vsb clear-data`
+- clear cache: `dokku run <app> flask clear-cache`
+- add documents: `dokku run <app> flask update-docs '*'`
+- remove all documents: `dokku run <app> flask remove-docs '*'`
+- remove one document: `dokku run <app> flask remove-docs 'vsbericht-th-2002.pdf'`
+- clean all data from the database and add all documents again: `dokku run <app> flask clear-data`
+- initialize database schema: `dokku run <app> flask init-db`
 
 ## Data Storage
 
@@ -91,12 +110,16 @@ All documents should be PDF in a A4/A5 portrait format.
 Several pdf scripts exists but occasionally, manual work is required.
 See [scripts](scripts).
 
-### Folder Structures
+### Folder Structure
 
-Two folders exists to store the PDFs:
-
-- `raw`, sometimes the original PDF requires manual help (e.g. some pages are in landscape format)
-- `cleaned`, normalized PDFs, but before the OCR & file reduction
+```
+/data/
+├── pdfs/       # processed PDFs used by the app
+├── cleaned/    # normalized PDFs, before OCR & file reduction
+├── raw/        # original unprocessed PDFs
+├── deleted/    # removed PDFs kept for reference
+└── images/     # generated page scans (JPG + AVIF)
+```
 
 ### Adding a New Report
 
@@ -106,11 +129,9 @@ If a report is for multiple years, choose the latest year as the main date.
 
 And update the title in [src/report_info.py](src/report_info.py) accordingly.
 
-1. Put the file in a folder, e.g. `x`
-2. cd `scripts`
-3. `./new_docs.sh /absolute/path/x process`
-4. verify the result in `x.done` is fine, optionally add a `x.raw` folder with the unprocessed files.
-5. `./new_docs.sh /absolute/path/x upload`
+1. Put the file in `data/pdfs/`
+2. Process it: `dokku run <app> flask update-docs 'vsbericht-nw-2000'`
+3. Optionally store the original in `data/raw/` and the cleaned version in `data/cleaned/`
 
 ## Search
 
