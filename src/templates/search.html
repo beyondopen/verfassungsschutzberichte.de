@@ -108,7 +108,7 @@ Verfassungsschutzberichte.de{% endblock %} {% block social_media %}
     });
 
     $(".basicAutoComplete").on("autocomplete.select", function (evt, item) {
-      $("form").submit();
+      $(this).closest("form").submit();
     });
   });
 </script>
