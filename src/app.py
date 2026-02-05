@@ -429,7 +429,7 @@ def _build_pdf_zip(force):
         # Full rebuild
         if tmp.exists():
             tmp.unlink()
-        with zipfile.ZipFile(str(tmp), "w", compression=zipfile.ZIP_STORED) as zf:
+        with zipfile.ZipFile(str(tmp), "w", compression=zipfile.ZIP_DEFLATED) as zf:
             for pdf in pdfs:
                 zf.write(str(pdf), pdf.name)
         shutil.move(str(tmp), str(dest))
@@ -480,6 +480,13 @@ def create_zips(force, pdfs, texts):
     if texts:
         print("Building text ZIP...")
         _build_text_zip()
+    # Fix ownership when running as root (e.g. dokku run) so the web
+    # process (herokuish UID 32767) can serve the files consistently.
+    if os.getuid() == 0 and ZIP_DIR.exists():
+        stat = DATA_DIR.stat()
+        for f in ZIP_DIR.iterdir():
+            os.chown(f, stat.st_uid, stat.st_gid)
+        os.chown(ZIP_DIR, stat.st_uid, stat.st_gid)
     print("Done.")
 
 
