@@ -1,2 +1,2 @@
 release: flask init-db && flask clear-cache
-web: flask create-zips & gunicorn app:app --workers=5
+web: bash -c 'flask create-zips & exec gunicorn app:app --workers=5'
