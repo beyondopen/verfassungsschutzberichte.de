@@ -146,12 +146,14 @@ def special_pdf_preproc(s):
     return s
 
 
-def generate_page_images(pdf_path, page_index, dpi=300):
-    """Generate JPEG (900px) and AVIF (900px) for a single PDF page."""
-    images = convert_from_path(str(pdf_path), first_page=page_index + 1, last_page=page_index + 1, dpi=dpi)
-    img = images[0]
-    stem = pdf_path.stem
-    base = "/data/images/" + stem + "_" + str(page_index)
+def convert_pdf_to_images(pdf_path, dpi=150):
+    """Convert entire PDF to images at once (much faster than per-page)."""
+    return convert_from_path(str(pdf_path), dpi=dpi)
+
+
+def save_page_image(img, pdf_stem, page_index):
+    """Save a single page image as JPEG and AVIF at 900px width."""
+    base = "/data/images/" + pdf_stem + "_" + str(page_index)
 
     basewidth = 900
     if img.size[0] > basewidth:
@@ -183,7 +185,11 @@ def proc_pdf(pdf_path):
     for [a, b] in report_info["abr"]:
         if a.lower() == str(pdf_path.name.split("-")[1]):
             juris = b
-    year = int(pdf_path.stem.split("-")[-1])
+    try:
+        year = int(pdf_path.stem.split("-")[-1])
+    except ValueError:
+        print(f"Skipping {pdf_path.name}: cannot parse year from filename")
+        return
 
     doc = Document(
         year=year,
@@ -196,6 +202,9 @@ def proc_pdf(pdf_path):
 
     db.session.add(doc)
     db.session.commit()
+
+    # Convert all PDF pages to images at once (much faster than per-page)
+    page_images = convert_pdf_to_images(pdf_path)
 
     with open(pdf_path, "rb") as f:
         pdf = pdftotext.PDF(f)
@@ -211,7 +220,7 @@ def proc_pdf(pdf_path):
             texts.append(page_text)
             num_pages += 1
             print(i)
-            fname = generate_page_images(pdf_path, i)
+            fname = save_page_image(page_images[i], pdf_path.stem, i)
 
             p = DocumentPage(
                 document=doc,
@@ -304,20 +313,27 @@ def generate_images(pattern="*", force=False):
         ):
             continue
 
-        print(f"Processing {pdf_path.name}")
+        # Check which pages need generating
         with open(pdf_path, "rb") as f:
             pdf = pdftotext.PDF(f)
             num_pages = len(pdf)
 
+        pages_to_generate = []
         for i in range(num_pages):
             jpg_path = "/data/images/" + pdf_path.stem + "_" + str(i) + ".jpg"
             avif_path = "/data/images/" + pdf_path.stem + "_" + str(i) + ".avif"
+            if force or not (Path(jpg_path).exists() and Path(avif_path).exists()):
+                pages_to_generate.append(i)
 
-            if not force and Path(jpg_path).exists() and Path(avif_path).exists():
-                continue
+        if not pages_to_generate:
+            continue
 
+        print(f"Processing {pdf_path.name} ({len(pages_to_generate)} pages)")
+        page_images = convert_pdf_to_images(pdf_path)
+
+        for i in pages_to_generate:
             print(f"  Page {i + 1}/{num_pages}")
-            generate_page_images(pdf_path, i)
+            save_page_image(page_images[i], pdf_path.stem, i)
 
 
 DATA_DIRS = ["pdfs", "cleaned", "raw", "deleted"]
