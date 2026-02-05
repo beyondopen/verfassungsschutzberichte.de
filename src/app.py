@@ -4,6 +4,7 @@ import re
 import tarfile
 import time
 from collections import Counter, defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
 from urllib.parse import quote, unquote
@@ -208,27 +209,36 @@ def proc_pdf(pdf_path):
 
     with open(pdf_path, "rb") as f:
         pdf = pdftotext.PDF(f)
-        num_pages = 0
         texts = []
-        # iterate over all pages of the PDF
-        for i, page_text in enumerate(pdf):
+
+        # Extract text from all pages (fast, sequential)
+        for page_text in pdf:
             page_text = cleantext.clean(
                 page_text, lang="de", lower=False, no_line_breaks=True
             )
             page_text = special_pdf_preproc(page_text)
-
             texts.append(page_text)
-            num_pages += 1
-            print(i)
-            fname = save_page_image(page_images[i], pdf_path.stem, i)
 
+        num_pages = len(texts)
+
+        # Save images in parallel - ThreadPoolExecutor achieves true parallelism here
+        # because Pillow's AVIF encoder releases the GIL during encoding operations
+        with ThreadPoolExecutor() as executor:
+            futures = [
+                executor.submit(save_page_image, page_images[i], pdf_path.stem, i)
+                for i in range(num_pages)
+            ]
+            image_paths = [f.result() for f in futures]
+
+        # Create DocumentPage objects with results
+        for i, (page_text, fname) in enumerate(zip(texts, image_paths)):
+            print(i)
             p = DocumentPage(
                 document=doc,
                 content=page_text,
                 page_number=i + 1,
                 file_url=fname.replace("/data", ""),
             )
-
             db.session.add(p)
 
         counts = count_tokens(texts)
@@ -331,9 +341,15 @@ def generate_images(pattern="*", force=False):
         print(f"Processing {pdf_path.name} ({len(pages_to_generate)} pages)")
         page_images = convert_pdf_to_images(pdf_path)
 
-        for i in pages_to_generate:
-            print(f"  Page {i + 1}/{num_pages}")
-            save_page_image(page_images[i], pdf_path.stem, i)
+        # Save images in parallel - ThreadPoolExecutor achieves true parallelism
+        # because Pillow's AVIF encoder releases the GIL during encoding
+        with ThreadPoolExecutor() as executor:
+            futures = [
+                executor.submit(save_page_image, page_images[i], pdf_path.stem, i)
+                for i in pages_to_generate
+            ]
+            for f in futures:
+                f.result()  # Wait for completion and raise any exceptions
 
 
 DATA_DIRS = ["pdfs", "cleaned", "raw", "deleted"]
