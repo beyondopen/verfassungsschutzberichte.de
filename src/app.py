@@ -25,9 +25,9 @@ from flask import (
     send_from_directory,
 )
 from flask_caching import Cache
-from flask_sqlalchemy import BaseQuery, SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy.query import Query
 from pdf2image import convert_from_path
-import pillow_avif  # noqa: F401 - registers AVIF plugin with Pillow
 from PIL import Image
 from sqlalchemy import func
 from sqlalchemy.sql import text
@@ -65,7 +65,7 @@ db = SQLAlchemy(app)
 make_searchable(db.metadata, options={"regconfig": "pg_catalog.german"})
 
 
-class DocumentQuery(BaseQuery, SearchQueryMixin):
+class DocumentQuery(Query, SearchQueryMixin):
     pass
 
 
@@ -107,16 +107,17 @@ class TokenCount(db.Model):
 db.configure_mappers()  # very important!
 
 # Create parse_websearch function for SQLAlchemy-Searchable 2.0+
-try:
-    db.session.execute(text(sql_expressions.statement))
-    db.session.commit()
-except Exception:
-    # Function may already exist
-    db.session.rollback()
+with app.app_context():
+    try:
+        db.session.execute(text(sql_expressions.statement))
+        db.session.commit()
+    except Exception:
+        # Function may already exist
+        db.session.rollback()
 
-if app.debug:
-    db.create_all()
-    db.session.commit()
+    if app.debug:
+        db.create_all()
+        db.session.commit()
 
 
 DATA_DIR = Path("/data")
@@ -642,7 +643,7 @@ def search():
     q = cleantext.clean(q, lang="de")
     query, page, jurisdiction, max_year, min_year = build_query()
 
-    results = query.search(q, sort=True).paginate(page, 20, True).items
+    results = query.search(q, sort=True).paginate(page=page, per_page=20, error_out=True).items
 
     # get counts for the years, only select ID for performance
     count_sq = query.search(q).with_entities(DocumentPage.id)
