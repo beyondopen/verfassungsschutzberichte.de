@@ -405,36 +405,48 @@ def import_data(input_path):
 
 
 def _build_pdf_zip(force):
-    """Build ZIP archive of all PDFs. Incremental: only adds new files."""
+    """Build ZIP archive of all PDFs."""
     ZIP_DIR.mkdir(parents=True, exist_ok=True)
     dest = ZIP_DIR / "vsberichte.zip"
     tmp = ZIP_DIR / "vsberichte.zip.tmp"
 
-    existing = set()
-    if not force and dest.exists():
-        shutil.copy2(str(dest), str(tmp))
-        with zipfile.ZipFile(str(tmp), "r") as zf:
-            existing = set(zf.namelist())
-    else:
-        # Start fresh
+    pdfs = sorted(PDF_DIR.glob("*.pdf"))
+    disk_files = {p.name: p.stat().st_size for p in pdfs}
+
+    existing = {}
+    needs_rebuild = force or not dest.exists()
+
+    if not needs_rebuild:
+        with zipfile.ZipFile(str(dest), "r") as zf:
+            existing = {i.filename: i.file_size for i in zf.infolist()}
+        # Check if any zip entry was deleted or changed on disk
+        for name, size in existing.items():
+            if disk_files.get(name) != size:
+                needs_rebuild = True
+                break
+
+    if needs_rebuild:
+        # Full rebuild
         if tmp.exists():
             tmp.unlink()
-
-    pdfs = sorted(PDF_DIR.glob("*.pdf"))
-    added = 0
-    mode = "a" if tmp.exists() else "w"
-    with zipfile.ZipFile(str(tmp), mode, compression=zipfile.ZIP_STORED) as zf:
-        for pdf in pdfs:
-            if pdf.name not in existing:
+        with zipfile.ZipFile(str(tmp), "w", compression=zipfile.ZIP_STORED) as zf:
+            for pdf in pdfs:
                 zf.write(str(pdf), pdf.name)
-                added += 1
-                print(f"  Added {pdf.name}")
+        shutil.move(str(tmp), str(dest))
+        print(f"PDF ZIP: {len(pdfs)} files (rebuilt)")
+    else:
+        new_files = [p for p in pdfs if p.name not in existing]
+        if not new_files:
+            print(f"PDF ZIP: {len(existing)} files (up to date)")
+            return
+        # Append only new files
+        with zipfile.ZipFile(str(dest), "a") as zf:
+            for pdf in new_files:
+                zf.write(str(pdf), pdf.name)
+        print(f"PDF ZIP: {len(existing) + len(new_files)} files ({len(new_files)} new)")
 
-    shutil.move(str(tmp), str(dest))
-    print(f"PDF ZIP: {len(existing) + added} files ({added} new)")
 
-
-def _build_text_zip(force):
+def _build_text_zip():
     """Build ZIP archive of text exports from the database."""
     ZIP_DIR.mkdir(parents=True, exist_ok=True)
     dest = ZIP_DIR / "vsberichte-texts.zip"
@@ -448,7 +460,7 @@ def _build_text_zip(force):
     with zipfile.ZipFile(str(tmp), "w", compression=zipfile.ZIP_DEFLATED) as zf:
         for doc in docs:
             text = "\n\n\n".join([p.content for p in doc.pages])
-            fname = f"{doc.jurisdiction.lower()}-{doc.year}.txt"
+            fname = Path(doc.file_url).stem + ".txt"
             zf.writestr(fname, text)
             total += 1
 
@@ -467,7 +479,7 @@ def create_zips(force, pdfs, texts):
         _build_pdf_zip(force)
     if texts:
         print("Building text ZIP...")
-        _build_text_zip(force)
+        _build_text_zip()
     print("Done.")
 
 
