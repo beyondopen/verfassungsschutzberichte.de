@@ -6,6 +6,7 @@ where a running server is not needed.
 """
 
 import re
+import zipfile
 from collections import Counter
 from unittest.mock import MagicMock, patch
 
@@ -144,7 +145,7 @@ class TestNonDebugBranches:
             app.debug = True
 
     def test_pdf_download_non_debug(self):
-        """Test PDF download sets Content-Type and X-Robots-Tag in non-debug mode."""
+        """Test PDF download uses X-Accel-Redirect in non-debug mode."""
         from app import app
         app.debug = False
         try:
@@ -152,12 +153,13 @@ class TestNonDebugBranches:
                 response = client.get('/pdfs/test-bund-2020.pdf')
                 assert response.status_code == 200
                 assert response.headers['Content-Type'] == 'application/pdf'
+                assert response.headers['X-Accel-Redirect'] == '/internal-pdfs/test-bund-2020.pdf'
                 assert 'noindex' in response.headers.get('X-Robots-Tag', '')
         finally:
             app.debug = True
 
     def test_image_download_jpeg_non_debug(self):
-        """Test JPEG image download sets correct headers in non-debug mode."""
+        """Test JPEG image download uses X-Accel-Redirect in non-debug mode."""
         from app import app
         app.debug = False
         try:
@@ -165,6 +167,21 @@ class TestNonDebugBranches:
                 response = client.get('/images/test-bund-2020_0.jpg')
                 assert response.status_code == 200
                 assert response.headers['Content-Type'] == 'image/jpeg'
+                assert response.headers['X-Accel-Redirect'] == '/internal-images/test-bund-2020_0.jpg'
+                assert 'noindex' in response.headers.get('X-Robots-Tag', '')
+        finally:
+            app.debug = True
+
+    def test_image_download_avif_non_debug(self):
+        """Test AVIF image download uses X-Accel-Redirect with correct content type."""
+        from app import app
+        app.debug = False
+        try:
+            with app.test_client() as client:
+                response = client.get('/images/test-bund-2020_0.avif')
+                assert response.status_code == 200
+                assert response.headers['Content-Type'] == 'image/avif'
+                assert response.headers['X-Accel-Redirect'] == '/internal-images/test-bund-2020_0.avif'
                 assert 'noindex' in response.headers.get('X-Robots-Tag', '')
         finally:
             app.debug = True
@@ -619,6 +636,127 @@ class TestGenerateImagesCommand:
                 pages_to_generate.append(i)
 
         assert pages_to_generate == [0, 1, 2]  # All pages need generating
+
+
+# ---------------------------------------------------------------------------
+# CLI command tests: create-zips
+# ---------------------------------------------------------------------------
+
+class TestCreateZips:
+    """Test the flask create-zips CLI command."""
+
+    def test_creates_pdf_zip(self, tmp_path):
+        """ZIP should contain all PDFs from PDF_DIR."""
+        import app as app_module
+
+        data_dir = tmp_path / "data"
+        pdf_dir = data_dir / "pdfs"
+        zip_dir = data_dir / "zips"
+        pdf_dir.mkdir(parents=True)
+
+        (pdf_dir / "report-a.pdf").write_bytes(b"%PDF-fake-a")
+        (pdf_dir / "report-b.pdf").write_bytes(b"%PDF-fake-b")
+
+        runner = app_module.app.test_cli_runner(mix_stderr=False)
+        with patch.object(app_module, "DATA_DIR", data_dir), \
+             patch.object(app_module, "PDF_DIR", pdf_dir), \
+             patch.object(app_module, "ZIP_DIR", zip_dir):
+            result = runner.invoke(args=["create-zips", "--no-texts"])
+
+        assert result.exit_code == 0
+        assert (zip_dir / "vsberichte.zip").exists()
+
+        with zipfile.ZipFile(str(zip_dir / "vsberichte.zip"), "r") as zf:
+            names = sorted(zf.namelist())
+            assert names == ["report-a.pdf", "report-b.pdf"]
+
+    def test_incremental_no_duplicates(self, tmp_path):
+        """Running twice should not duplicate entries in the ZIP."""
+        import app as app_module
+
+        data_dir = tmp_path / "data"
+        pdf_dir = data_dir / "pdfs"
+        zip_dir = data_dir / "zips"
+        pdf_dir.mkdir(parents=True)
+
+        (pdf_dir / "report-a.pdf").write_bytes(b"%PDF-fake-a")
+
+        runner = app_module.app.test_cli_runner(mix_stderr=False)
+        with patch.object(app_module, "DATA_DIR", data_dir), \
+             patch.object(app_module, "PDF_DIR", pdf_dir), \
+             patch.object(app_module, "ZIP_DIR", zip_dir):
+            runner.invoke(args=["create-zips", "--no-texts"])
+            result = runner.invoke(args=["create-zips", "--no-texts"])
+
+        assert result.exit_code == 0
+        with zipfile.ZipFile(str(zip_dir / "vsberichte.zip"), "r") as zf:
+            assert zf.namelist() == ["report-a.pdf"]
+
+    def test_force_rebuilds(self, tmp_path):
+        """--force should rebuild the ZIP from scratch."""
+        import app as app_module
+
+        data_dir = tmp_path / "data"
+        pdf_dir = data_dir / "pdfs"
+        zip_dir = data_dir / "zips"
+        pdf_dir.mkdir(parents=True)
+
+        (pdf_dir / "report-a.pdf").write_bytes(b"%PDF-fake-a")
+
+        runner = app_module.app.test_cli_runner(mix_stderr=False)
+        with patch.object(app_module, "DATA_DIR", data_dir), \
+             patch.object(app_module, "PDF_DIR", pdf_dir), \
+             patch.object(app_module, "ZIP_DIR", zip_dir):
+            runner.invoke(args=["create-zips", "--no-texts"])
+            # Remove the PDF so force rebuild produces an empty ZIP
+            (pdf_dir / "report-a.pdf").unlink()
+            result = runner.invoke(args=["create-zips", "--no-texts", "--force"])
+
+        assert result.exit_code == 0
+        with zipfile.ZipFile(str(zip_dir / "vsberichte.zip"), "r") as zf:
+            assert zf.namelist() == []
+
+    def test_text_zip_from_database(self, tmp_path):
+        """Text ZIP should be built from database, not HTTP."""
+        import app as app_module
+
+        data_dir = tmp_path / "data"
+        zip_dir = data_dir / "zips"
+
+        mock_page1 = MagicMock()
+        mock_page1.content = "Page 1 text"
+        mock_page2 = MagicMock()
+        mock_page2.content = "Page 2 text"
+
+        mock_doc = MagicMock()
+        mock_doc.jurisdiction = "Bund"
+        mock_doc.year = 2020
+        mock_doc.pages = [mock_page1, mock_page2]
+
+        runner = app_module.app.test_cli_runner(mix_stderr=False)
+        with app_module.app.app_context(), \
+             patch.object(app_module, "DATA_DIR", data_dir), \
+             patch.object(app_module, "ZIP_DIR", zip_dir), \
+             patch.object(app_module.Document, "query") as mock_query:
+            mock_query.order_by.return_value.all.return_value = [mock_doc]
+            result = runner.invoke(args=["create-zips", "--no-pdfs"])
+
+        assert result.exit_code == 0
+        assert (zip_dir / "vsberichte-texts.zip").exists()
+
+        with zipfile.ZipFile(str(zip_dir / "vsberichte-texts.zip"), "r") as zf:
+            names = zf.namelist()
+            assert "bund-2020.txt" in names
+            content = zf.read("bund-2020.txt").decode("utf-8")
+            assert "Page 1 text" in content
+            assert "Page 2 text" in content
+
+    def test_download_route_unknown_404(self):
+        """Requesting an unknown filename should return 404."""
+        from app import app
+        with app.test_client() as client:
+            response = client.get("/downloads/evil.zip")
+            assert response.status_code == 404
 
 
 if __name__ == '__main__':

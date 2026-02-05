@@ -1,8 +1,10 @@
 import json
 import os
 import re
+import shutil
 import tarfile
 import time
+import zipfile
 from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
@@ -123,6 +125,7 @@ with app.app_context():
 
 DATA_DIR = Path("/data")
 PDF_DIR = DATA_DIR / "pdfs"
+ZIP_DIR = DATA_DIR / "zips"
 
 jurisdictions = ["Bund"] + [
     l[1] for l in sorted(report_info["abr"], key=lambda x: x[1])
@@ -399,6 +402,73 @@ def import_data(input_path):
                 total += 1
 
     print(f"Imported {total} PDFs")
+
+
+def _build_pdf_zip(force):
+    """Build ZIP archive of all PDFs. Incremental: only adds new files."""
+    ZIP_DIR.mkdir(parents=True, exist_ok=True)
+    dest = ZIP_DIR / "vsberichte.zip"
+    tmp = ZIP_DIR / "vsberichte.zip.tmp"
+
+    existing = set()
+    if not force and dest.exists():
+        shutil.copy2(str(dest), str(tmp))
+        with zipfile.ZipFile(str(tmp), "r") as zf:
+            existing = set(zf.namelist())
+    else:
+        # Start fresh
+        if tmp.exists():
+            tmp.unlink()
+
+    pdfs = sorted(PDF_DIR.glob("*.pdf"))
+    added = 0
+    mode = "a" if tmp.exists() else "w"
+    with zipfile.ZipFile(str(tmp), mode, compression=zipfile.ZIP_STORED) as zf:
+        for pdf in pdfs:
+            if pdf.name not in existing:
+                zf.write(str(pdf), pdf.name)
+                added += 1
+                print(f"  Added {pdf.name}")
+
+    shutil.move(str(tmp), str(dest))
+    print(f"PDF ZIP: {len(existing) + added} files ({added} new)")
+
+
+def _build_text_zip(force):
+    """Build ZIP archive of text exports from the database."""
+    ZIP_DIR.mkdir(parents=True, exist_ok=True)
+    dest = ZIP_DIR / "vsberichte-texts.zip"
+    tmp = ZIP_DIR / "vsberichte-texts.zip.tmp"
+
+    if tmp.exists():
+        tmp.unlink()
+
+    docs = Document.query.order_by(Document.jurisdiction, Document.year).all()
+    total = 0
+    with zipfile.ZipFile(str(tmp), "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        for doc in docs:
+            text = "\n\n\n".join([p.content for p in doc.pages])
+            fname = f"{doc.jurisdiction.lower()}-{doc.year}.txt"
+            zf.writestr(fname, text)
+            total += 1
+
+    shutil.move(str(tmp), str(dest))
+    print(f"Text ZIP: {total} files")
+
+
+@app.cli.command("create-zips")
+@click.option("--force", is_flag=True, help="Rebuild from scratch")
+@click.option("--pdfs/--no-pdfs", default=True)
+@click.option("--texts/--no-texts", default=True)
+def create_zips(force, pdfs, texts):
+    """Create ZIP archives of all PDFs and text exports."""
+    if pdfs:
+        print("Building PDF ZIP...")
+        _build_pdf_zip(force)
+    if texts:
+        print("Building text ZIP...")
+        _build_text_zip(force)
+    print("Done.")
 
 
 def get_index():
@@ -747,26 +817,36 @@ def static_from_root():
 def download_pdf(filename):
     if app.debug:
         return send_from_directory("/data/pdfs", filename)
-
-    resp = make_response(send_from_directory("/data/pdfs", filename))
+    resp = make_response()
+    resp.headers["X-Accel-Redirect"] = f"/internal-pdfs/{filename}"
     resp.headers["Content-Type"] = "application/pdf"
     resp.headers["X-Robots-Tag"] = "noindex, nofollow"
     return resp
-
-    response = make_response()
-    response.headers["Content-Type"] = "application/pdf"
-    response.headers["X-Accel-Redirect"] = "/x_pdfs/" + filename
-    return response
 
 
 @app.route("/images/<path:filename>")
 def download_img(filename):
     if app.debug:
         return send_from_directory("/data/images", filename)
-
     content_type = "image/avif" if filename.endswith(".avif") else "image/jpeg"
-    resp = make_response(send_from_directory("/data/images", filename))
+    resp = make_response()
+    resp.headers["X-Accel-Redirect"] = f"/internal-images/{filename}"
     resp.headers["Content-Type"] = content_type
+    resp.headers["X-Robots-Tag"] = "noindex, nofollow"
+    return resp
+
+
+@app.route("/downloads/<path:filename>")
+def download_file(filename):
+    allowed = {"vsberichte.zip", "vsberichte-texts.zip"}
+    if filename not in allowed:
+        abort(404)
+    if app.debug:
+        return send_from_directory(str(ZIP_DIR), filename)
+    resp = make_response()
+    resp.headers["X-Accel-Redirect"] = f"/internal-zips/{filename}"
+    resp.headers["Content-Type"] = "application/zip"
+    resp.headers["Content-Disposition"] = f"attachment; filename={filename}"
     resp.headers["X-Robots-Tag"] = "noindex, nofollow"
     return resp
 
