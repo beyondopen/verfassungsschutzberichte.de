@@ -1,10 +1,9 @@
-name: CI tests
+name: CI
 
 on:
   workflow_dispatch:
   pull_request:
     branches: ["main"]
-
   push:
     branches: ["main"]
 
@@ -46,3 +45,14 @@ jobs:
       - name: Stop services
         if: always()
         run: docker compose down
+
+  deploy:
+    needs: build_and_test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy
+        run: |
+          output=$(curl --fail --show-error --max-time 300 -X POST "${{ secrets.DEPLOY_URL }}")
+          echo "$output"
+          echo "$output" | tail -1 | grep -q "Deploy successful"
