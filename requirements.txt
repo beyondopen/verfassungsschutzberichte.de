@@ -7,7 +7,7 @@ gunicorn==23.0.0
 Jinja2==3.1.6
 pdf2image==1.5.4
 pdftotext==2.1.1
-Pillow==12.1.0
+Pillow==12.1.1
 psycopg2==2.9.5
 redis==4.4.4
 requests==2.32.4
