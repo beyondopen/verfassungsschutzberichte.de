@@ -1,2 +1,5 @@
 user-agent: *
-Disallow:
+Disallow: /suche
+Disallow: /stats
+Disallow: /api/auto-complete
+Disallow: /api/mentions

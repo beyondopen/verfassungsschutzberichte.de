@@ -616,7 +616,12 @@ def details(jurisdiction, year):
 
 def build_query():
     q = request.args.get("q")
-    page = int(request.args.get("page", 1))
+
+    try:
+        page = int(request.args.get("page", 1))
+    except (ValueError, TypeError):
+        abort(400)
+
     jurisdiction = request.args.get("jurisdiction")
     min_year = request.args.get("min_year", "kein")
     max_year = request.args.get("max_year", "kein")
@@ -630,12 +635,18 @@ def build_query():
     if min_year == "kein":
         min_year = None
     else:
-        min_year = int(min_year)
+        try:
+            min_year = int(min_year)
+        except (ValueError, TypeError):
+            abort(400)
 
     if max_year == "kein":
         max_year = None
     else:
-        max_year = int(max_year)
+        try:
+            max_year = int(max_year)
+        except (ValueError, TypeError):
+            abort(400)
 
     if q is None:
         return None
