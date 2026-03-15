@@ -798,14 +798,14 @@ def search():
     # filter out negations
     tokens = [t for t in tokens if t[0] != "-" and t.lower() not in ("or", "and")]
 
-    # generate the snippets to display search results, use text against sql injection
-    ids = ", ".join([str(x.id) for x in results])
+    # generate the snippets to display search results
     ids_int = [x.id for x in results]
     if len(ids_int) > 0:
         snips = db.session.execute(
             text(
-                f"SELECT id, ts_headline(content, parse_websearch('pg_catalog.german', '{q}'), 'MaxFragments=10, MinWords=5, MaxWords=20, FragmentDelimiter=XXX.....XXX') as text FROM {DocumentPage.__tablename__} WHERE id in ({ids})"
-            )
+                "SELECT id, ts_headline(content, websearch_to_tsquery('pg_catalog.german', :q), 'MaxFragments=10, MinWords=5, MaxWords=20, FragmentDelimiter=XXX.....XXX') as text FROM document_page WHERE id = ANY(:ids)"
+            ),
+            {"q": q, "ids": ids_int},
         )
     else:
         snips = []
