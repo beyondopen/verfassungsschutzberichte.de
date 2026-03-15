@@ -1,3 +1,4 @@
+import gzip
 import json
 import os
 import re
@@ -15,6 +16,7 @@ import cleantext
 import click
 import frontmatter
 import markdown
+import pdfplumber
 import pdftotext
 import spacy
 from flask import (
@@ -126,6 +128,7 @@ with app.app_context():
 DATA_DIR = Path("/data")
 PDF_DIR = DATA_DIR / "pdfs"
 ZIP_DIR = DATA_DIR / "zips"
+WORDPOS_DIR = DATA_DIR / "wordpos"
 
 jurisdictions = ["Bund"] + [
     l[1] for l in sorted(report_info["abr"], key=lambda x: x[1])
@@ -148,6 +151,75 @@ regex_join_words = re.compile(r"(?<=\S\S)-\s+(?=\S{2,})")
 def special_pdf_preproc(s):
     s = regex_join_words.sub("", s)
     return s
+
+
+def extract_word_positions(pdf_path):
+    """Extract word bounding boxes from a PDF and save as compressed JSON files."""
+    WORDPOS_DIR.mkdir(parents=True, exist_ok=True)
+    pdf_stem = pdf_path.stem
+
+    try:
+        pdf = pdfplumber.open(pdf_path)
+    except Exception as e:
+        print(f"  Warning: cannot open {pdf_path.name} with pdfplumber: {e}")
+        return
+
+    with pdf:
+        for page_index, page in enumerate(pdf.pages):
+            try:
+                words = page.extract_words(
+                    keep_blank_chars=False, x_tolerance=3, y_tolerance=3
+                )
+            except Exception:
+                continue
+
+            page_w = float(page.width)
+            page_h = float(page.height)
+
+            normalized_words = []
+            for w in words:
+                normalized_words.append(
+                    {
+                        "t": w["text"],
+                        "x": round(w["x0"] / page_w, 5),
+                        "y": round(w["top"] / page_h, 5),
+                        "w": round((w["x1"] - w["x0"]) / page_w, 5),
+                        "h": round((w["bottom"] - w["top"]) / page_h, 5),
+                    }
+                )
+
+            out_path = WORDPOS_DIR / f"{pdf_stem}_{page_index}.json.gz"
+            data = json.dumps(
+                {"page_width": page_w, "page_height": page_h, "words": normalized_words},
+                separators=(",", ":"),
+            )
+
+            with gzip.open(out_path, "wt", encoding="utf-8") as f:
+                f.write(data)
+
+
+def get_highlight_boxes(file_url, search_tokens):
+    """Load word positions for a page and return bounding boxes for matching words."""
+    basename = Path(file_url).stem
+    wordpos_path = WORDPOS_DIR / f"{basename}.json.gz"
+
+    if not wordpos_path.exists():
+        return []
+
+    with gzip.open(wordpos_path, "rt", encoding="utf-8") as f:
+        data = json.loads(f.read())
+
+    lower_tokens = [t.lower() for t in search_tokens]
+    boxes = []
+    for word in data["words"]:
+        word_lower = word["t"].lower()
+        for token in lower_tokens:
+            if token in word_lower:
+                boxes.append(
+                    {"x": word["x"], "y": word["y"], "w": word["w"], "h": word["h"]}
+                )
+                break
+    return boxes[:50]
 
 
 def convert_pdf_to_images(pdf_path, dpi=150):
@@ -252,6 +324,8 @@ def proc_pdf(pdf_path):
     doc.num_pages = num_pages
     db.session.commit()
 
+    extract_word_positions(pdf_path)
+
 
 @app.cli.command()
 def init_db():
@@ -353,6 +427,29 @@ def generate_images(pattern="*", force=False):
             ]
             for f in futures:
                 f.result()  # Wait for completion and raise any exceptions
+
+
+@app.cli.command("extract-wordpos")
+@click.argument("pattern")
+@click.option("--force", is_flag=True, help="Regenerate existing word positions")
+def extract_wordpos(pattern="*", force=False):
+    """Extract word positions from PDFs. Usage: flask extract-wordpos '*'"""
+    WORDPOS_DIR.mkdir(parents=True, exist_ok=True)
+    for pdf_path in sorted(PDF_DIR.glob(pattern + ".pdf")):
+        if (
+            pdf_path.stem.endswith("_en")
+            or pdf_path.stem.endswith("kurzfassung")
+            or pdf_path.stem.endswith("_parl")
+        ):
+            continue
+
+        if not force:
+            first_file = WORDPOS_DIR / f"{pdf_path.stem}_0.json.gz"
+            if first_file.exists():
+                continue
+
+        print(f"Extracting word positions: {pdf_path.name}")
+        extract_word_positions(pdf_path)
 
 
 DATA_DIRS = ["pdfs", "cleaned", "raw", "deleted"]
@@ -812,6 +909,9 @@ def search():
 
     for s in snips:
         results[ids_int.index(s.id)].snips = s.text.split("XXX.....XXX")
+
+    for r in results:
+        r.highlight_boxes = get_highlight_boxes(r.file_url, tokens)
 
     response = make_response(
         render_template(

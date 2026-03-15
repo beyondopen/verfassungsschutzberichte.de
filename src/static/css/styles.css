@@ -61,3 +61,14 @@ body {
   -moz-hyphens: auto;
   hyphens: auto;
 }
+
+.search-page-container {
+  position: relative;
+}
+
+.search-highlight {
+  position: absolute;
+  background: rgba(255, 235, 59, 0.35);
+  pointer-events: none;
+  border-radius: 2px;
+}

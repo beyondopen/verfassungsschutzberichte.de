@@ -287,7 +287,7 @@ endif %}
       <li>{{s|safe}}</li>
       {% endfor %}
     </ul>
-    <div>
+    <div class="search-page-container">
       <picture>
         <source
           type="image/avif"
@@ -300,6 +300,9 @@ endif %}
           alt="{{r.content}}"
         />
       </picture>
+      {% for box in r.highlight_boxes %}
+      <div class="search-highlight" style="left:{{(box.x*100)|round(2)}}%;top:{{(box.y*100)|round(2)}}%;width:{{(box.w*100)|round(2)}}%;height:{{(box.h*100)|round(2)}}%"></div>
+      {% endfor %}
     </div>
   </div>
 </div>
