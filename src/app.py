@@ -803,7 +803,7 @@ def search():
     if len(ids_int) > 0:
         snips = db.session.execute(
             text(
-                "SELECT id, ts_headline(content, websearch_to_tsquery('pg_catalog.german', :q), 'MaxFragments=10, MinWords=5, MaxWords=20, FragmentDelimiter=XXX.....XXX') as text FROM document_page WHERE id = ANY(:ids)"
+                "SELECT id, ts_headline('pg_catalog.german', content, websearch_to_tsquery('pg_catalog.german', :q), 'MaxFragments=10, MinWords=5, MaxWords=20, FragmentDelimiter=XXX.....XXX') as text FROM document_page WHERE id = ANY(:ids)"
             ),
             {"q": q, "ids": ids_int},
         )
