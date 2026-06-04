@@ -863,12 +863,22 @@ def blog_image(filename):
     return send_from_directory(blog_img_dir, filename)
 
 
+def get_search_years():
+    """Year options for the search filters, derived from the stored documents."""
+    min_year, max_year = db.session.query(
+        func.min(Document.year), func.max(Document.year)
+    ).first()
+    if min_year is None:
+        return []
+    return range(min_year, max_year + 1)
+
+
 @app.route("/suche")
 @cache.cached(query_string=True)
 def search():
     q = request.args.get("q")
     if q is None or len(q) == 0:
-        return render_template("search.html", q=None)
+        return render_template("search.html", q=None, years=get_search_years())
     q = cleantext.clean(q, lang="de")
     query, page, jurisdiction, max_year, min_year = build_query()
 
@@ -927,6 +937,7 @@ def search():
             max_page=min((num_results - 1) // 20 + 1, page + 5),
             counts=counts,
             report_info=report_info,
+            years=get_search_years(),
         )
     )
     response.headers["X-Robots-Tag"] = "noindex, nofollow"
