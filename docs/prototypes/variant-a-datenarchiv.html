@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="de" class="">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verfassungsschutzberichte.de - Datenarchiv</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#1d4ed8',
+            accent: '#f59e0b',
+            hero: '#0f172a',
+            surface: '#f8fafc',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    details summary::-webkit-details-marker { display: none; }
+    details summary::marker { display: none; content: ""; }
+    details summary { list-style: none; }
+  </style>
+</head>
+<body class="bg-surface text-slate-900 dark:bg-slate-900 dark:text-slate-100 font-sans antialiased">
+
+  <!-- Skip to content -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-white focus:text-primary focus:px-4 focus:py-2 focus:rounded focus:shadow-lg">
+    Zum Inhalt springen
+  </a>
+
+  <!-- Navbar -->
+  <nav class="sticky top-0 z-40 bg-slate-900 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo -->
+        <a href="/" class="text-lg font-bold tracking-tight text-white hover:text-amber-400 transition-colors shrink-0">
+          Verfassungsschutzberichte.de
+        </a>
+
+        <!-- Desktop links -->
+        <div class="hidden md:flex items-center gap-6">
+          <a href="/berichte" class="text-slate-300 hover:text-white transition-colors text-sm font-medium">Berichte</a>
+          <a href="/suche" class="text-slate-300 hover:text-white transition-colors text-sm font-medium">Suche</a>
+          <a href="/trends" class="text-slate-300 hover:text-white transition-colors text-sm font-medium">Trends</a>
+          <a href="/regional" class="text-slate-300 hover:text-white transition-colors text-sm font-medium">Regional</a>
+          <a href="/blog" class="text-slate-300 hover:text-white transition-colors text-sm font-medium">Blog</a>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <!-- Dark mode toggle -->
+          <button id="dark-toggle" type="button" aria-label="Dunkelmodus umschalten" class="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700 transition-colors">
+            <!-- Sun icon (shown in dark mode) -->
+            <svg id="icon-sun" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.95l-.71.71M21 12h-1M4 12H3m16.66 7.66l-.71-.71M4.05 4.05l-.71-.71M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+            <!-- Moon icon (shown in light mode) -->
+            <svg id="icon-moon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>
+            </svg>
+          </button>
+
+          <!-- Hamburger menu (mobile) -->
+          <button id="mobile-menu-btn" type="button" aria-label="Menue oeffnen" class="md:hidden p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path id="hamburger-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+              <path id="close-icon" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div id="mobile-menu" class="hidden md:hidden border-t border-slate-700">
+      <div class="px-4 py-3 space-y-2">
+        <a href="/berichte" class="block px-3 py-2 rounded text-slate-300 hover:text-white hover:bg-slate-700 text-sm font-medium">Berichte</a>
+        <a href="/suche" class="block px-3 py-2 rounded text-slate-300 hover:text-white hover:bg-slate-700 text-sm font-medium">Suche</a>
+        <a href="/trends" class="block px-3 py-2 rounded text-slate-300 hover:text-white hover:bg-slate-700 text-sm font-medium">Trends</a>
+        <a href="/regional" class="block px-3 py-2 rounded text-slate-300 hover:text-white hover:bg-slate-700 text-sm font-medium">Regional</a>
+        <a href="/blog" class="block px-3 py-2 rounded text-slate-300 hover:text-white hover:bg-slate-700 text-sm font-medium">Blog</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main-content">
+
+    <!-- Hero section -->
+    <section class="bg-hero text-white py-20 sm:py-28 relative overflow-hidden">
+      <!-- Subtle background pattern -->
+      <div class="absolute inset-0 opacity-5" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+      <div class="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="sr-only">Verfassungsschutzberichte.de - Das Datenarchiv</h1>
+
+        <!-- Stat counters -->
+        <div class="grid grid-cols-3 gap-4 sm:gap-8 mb-12 sm:mb-16 max-w-2xl mx-auto">
+          <div>
+            <span class="block text-4xl sm:text-6xl font-extrabold text-white">487</span>
+            <span class="block mt-1 text-sm sm:text-lg font-medium text-amber-400">Berichte</span>
+          </div>
+          <div>
+            <span class="block text-4xl sm:text-6xl font-extrabold text-white">17</span>
+            <span class="block mt-1 text-sm sm:text-lg font-medium text-amber-400">Beh&ouml;rden</span>
+          </div>
+          <div>
+            <span class="block text-4xl sm:text-6xl font-extrabold text-white">seit 1950</span>
+            <span class="block mt-1 text-sm sm:text-lg font-medium text-amber-400">archiviert</span>
+          </div>
+        </div>
+
+        <!-- Search bar -->
+        <form action="/suche" method="get" class="max-w-2xl mx-auto">
+          <div class="flex rounded-lg overflow-hidden shadow-2xl">
+            <label for="search-input" class="sr-only">Suchbegriff</label>
+            <input
+              id="search-input"
+              type="search"
+              name="q"
+              placeholder="In allen Berichten suchen..."
+              class="flex-1 px-5 py-4 text-slate-900 text-lg placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400 border-0"
+            >
+            <button type="submit" class="bg-primary hover:bg-blue-800 text-white px-6 sm:px-8 py-4 font-semibold transition-colors flex items-center gap-2 shrink-0">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 3a7.5 7.5 0 006.15 13.65z"/>
+              </svg>
+              <span class="hidden sm:inline">Suchen</span>
+            </button>
+          </div>
+        </form>
+      </div>
+      <!-- Bottom gradient -->
+      <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-surface dark:from-slate-900 to-transparent"></div>
+    </section>
+
+    <!-- Charts section -->
+    <section class="py-16 sm:py-20 bg-surface dark:bg-slate-900">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl sm:text-3xl font-bold text-center mb-10 text-slate-900 dark:text-white">
+          Verfassungsschutz Trends
+        </h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8">
+          <!-- Chart card 1 -->
+          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+            <h3 class="text-base font-semibold text-slate-900 dark:text-white mb-4">Erw&auml;hnungen von RAF und NSU</h3>
+            <div class="h-48 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg flex items-center justify-center text-slate-400 dark:text-slate-500 text-sm">
+              Chart: RAF &amp; NSU
+            </div>
+          </div>
+
+          <!-- Chart card 2 -->
+          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+            <h3 class="text-base font-semibold text-slate-900 dark:text-white mb-4">Erw&auml;hnungen von Parteien</h3>
+            <div class="h-48 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg flex items-center justify-center text-slate-400 dark:text-slate-500 text-sm">
+              Chart: Parteien
+            </div>
+          </div>
+
+          <!-- Chart card 3 -->
+          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+            <h3 class="text-base font-semibold text-slate-900 dark:text-white mb-4">Erw&auml;hnungen von Medien</h3>
+            <div class="h-48 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg flex items-center justify-center text-slate-400 dark:text-slate-500 text-sm">
+              Chart: Medien
+            </div>
+          </div>
+
+          <!-- Chart card 4 -->
+          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+            <h3 class="text-base font-semibold text-slate-900 dark:text-white mb-4">Erw&auml;hnung von Cyber</h3>
+            <div class="h-48 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg flex items-center justify-center text-slate-400 dark:text-slate-500 text-sm">
+              Chart: Cyber
+            </div>
+          </div>
+        </div>
+
+        <p class="text-center mt-8 text-slate-600 dark:text-slate-400">
+          Mehr entdecken:
+          <a href="/trends" class="text-primary dark:text-blue-400 font-medium hover:underline ml-1">Trends</a>
+          <span class="mx-1">&middot;</span>
+          <a href="/regional" class="text-primary dark:text-blue-400 font-medium hover:underline">Regional</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- About section -->
+    <section class="py-16 sm:py-20 bg-slate-100 dark:bg-slate-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl sm:text-3xl font-bold text-center mb-6 text-slate-900 dark:text-white">
+          &Uuml;ber uns
+        </h2>
+        <p class="max-w-3xl mx-auto text-center text-lg text-slate-600 dark:text-slate-300 mb-12 leading-relaxed">
+          Wir sammeln alle Berichte des Verfassungsschutzes und erleichtern den Zugang zu ihnen. Dieses Archiv soll Wissenschaftler:innen, Journalist:innen, Aktivist:innen und allen interessierten B&uuml;rger:innen in ihrer Recherche unterst&uuml;tzen.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-8">
+          <!-- Feature 1 -->
+          <div class="bg-white dark:bg-slate-700 rounded-xl shadow-sm p-6 text-center">
+            <div class="w-12 h-12 mx-auto mb-4 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+              <svg class="w-6 h-6 text-primary dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 3a7.5 7.5 0 006.15 13.65z"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">Volltextsuche</h3>
+            <p class="text-slate-600 dark:text-slate-300 text-sm">Durchsuche alle Seiten aller Berichte</p>
+          </div>
+
+          <!-- Feature 2 -->
+          <div class="bg-white dark:bg-slate-700 rounded-xl shadow-sm p-6 text-center">
+            <div class="w-12 h-12 mx-auto mb-4 bg-amber-100 dark:bg-amber-900 rounded-full flex items-center justify-center">
+              <svg class="w-6 h-6 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">Trends</h3>
+            <p class="text-slate-600 dark:text-slate-300 text-sm">Vergleiche Begriffe im zeitlichen Verlauf</p>
+          </div>
+
+          <!-- Feature 3 -->
+          <div class="bg-white dark:bg-slate-700 rounded-xl shadow-sm p-6 text-center">
+            <div class="w-12 h-12 mx-auto mb-4 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+              <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">Regional</h3>
+            <p class="text-slate-600 dark:text-slate-300 text-sm">Analysiere Erw&auml;hnungen nach Bundesland</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials section -->
+    <section class="py-16 sm:py-20 bg-surface dark:bg-slate-900">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl sm:text-3xl font-bold text-center mb-10 text-slate-900 dark:text-white">
+          Das sagen andere &uuml;ber uns
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Testimonial 1 -->
+          <blockquote class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 sm:p-8">
+            <div class="flex items-center gap-4 mb-4">
+              <div class="w-12 h-12 rounded-full bg-slate-200 dark:bg-slate-600 flex items-center justify-center shrink-0" aria-hidden="true">
+                <span class="text-slate-500 dark:text-slate-400 text-lg font-semibold">KN</span>
+              </div>
+              <div>
+                <cite class="not-italic font-semibold text-slate-900 dark:text-white">Katharina Nocun</cite>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Autorin &amp; Netzaktivistin</p>
+              </div>
+            </div>
+            <p class="text-slate-600 dark:text-slate-300 italic leading-relaxed">
+              &bdquo;Ein unverzichtbares Werkzeug f&uuml;r alle, die sich mit dem Verfassungsschutz auseinandersetzen. Die Volltextsuche spart enorm viel Zeit bei der Recherche.&ldquo;
+            </p>
+          </blockquote>
+
+          <!-- Testimonial 2 -->
+          <blockquote class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 sm:p-8">
+            <div class="flex items-center gap-4 mb-4">
+              <div class="w-12 h-12 rounded-full bg-slate-200 dark:bg-slate-600 flex items-center justify-center shrink-0" aria-hidden="true">
+                <span class="text-slate-500 dark:text-slate-400 text-lg font-semibold">LN</span>
+              </div>
+              <div>
+                <cite class="not-italic font-semibold text-slate-900 dark:text-white">Linus Neumann</cite>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Sprecher des Chaos Computer Club</p>
+              </div>
+            </div>
+            <p class="text-slate-600 dark:text-slate-300 italic leading-relaxed">
+              &bdquo;Endlich sind die Verfassungsschutzberichte digital durchsuchbar. Ein wichtiges Projekt f&uuml;r Transparenz und demokratische Kontrolle.&ldquo;
+            </p>
+          </blockquote>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ section -->
+    <section class="py-16 sm:py-20 bg-slate-100 dark:bg-slate-800">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl sm:text-3xl font-bold text-center mb-10 text-slate-900 dark:text-white">
+          H&auml;ufig gestellte Fragen
+        </h2>
+
+        <div class="space-y-4">
+          <details class="bg-white dark:bg-slate-700 rounded-xl shadow-sm group">
+            <summary class="cursor-pointer px-6 py-4 flex items-center justify-between text-slate-900 dark:text-white font-medium hover:bg-slate-50 dark:hover:bg-slate-600 rounded-xl transition-colors">
+              Was ist verfassungsschutzberichte.de?
+              <svg class="w-5 h-5 text-slate-400 shrink-0 ml-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </summary>
+            <div class="px-6 pb-4 text-slate-600 dark:text-slate-300 leading-relaxed">
+              verfassungsschutzberichte.de ist ein ehrenamtliches Projekt, das alle Berichte der Verfassungsschutz&auml;mter des Bundes und der L&auml;nder digital zug&auml;nglich macht. Die Berichte werden gesammelt, digitalisiert und mit einer Volltextsuche versehen.
+            </div>
+          </details>
+
+          <details class="bg-white dark:bg-slate-700 rounded-xl shadow-sm group">
+            <summary class="cursor-pointer px-6 py-4 flex items-center justify-between text-slate-900 dark:text-white font-medium hover:bg-slate-50 dark:hover:bg-slate-600 rounded-xl transition-colors">
+              Welche Berichte sind enthalten?
+              <svg class="w-5 h-5 text-slate-400 shrink-0 ml-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </summary>
+            <div class="px-6 pb-4 text-slate-600 dark:text-slate-300 leading-relaxed">
+              Das Archiv umfasst Berichte des Bundesamtes f&uuml;r Verfassungsschutz sowie der Landes&auml;mter f&uuml;r Verfassungsschutz aller 16 Bundesl&auml;nder. Die &auml;ltesten Berichte reichen bis in die 1950er Jahre zur&uuml;ck.
+            </div>
+          </details>
+
+          <details class="bg-white dark:bg-slate-700 rounded-xl shadow-sm group">
+            <summary class="cursor-pointer px-6 py-4 flex items-center justify-between text-slate-900 dark:text-white font-medium hover:bg-slate-50 dark:hover:bg-slate-600 rounded-xl transition-colors">
+              Kann ich die Daten herunterladen?
+              <svg class="w-5 h-5 text-slate-400 shrink-0 ml-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </summary>
+            <div class="px-6 pb-4 text-slate-600 dark:text-slate-300 leading-relaxed">
+              Ja, alle Berichte sind als PDF-Dateien verf&uuml;gbar und k&ouml;nnen einzeln oder gesammelt heruntergeladen werden. Zus&auml;tzlich bieten wir maschinenlesbare Volltexte als offene Daten an.
+            </div>
+          </details>
+
+          <details class="bg-white dark:bg-slate-700 rounded-xl shadow-sm group">
+            <summary class="cursor-pointer px-6 py-4 flex items-center justify-between text-slate-900 dark:text-white font-medium hover:bg-slate-50 dark:hover:bg-slate-600 rounded-xl transition-colors">
+              Wer steckt hinter dem Projekt?
+              <svg class="w-5 h-5 text-slate-400 shrink-0 ml-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </summary>
+            <div class="px-6 pb-4 text-slate-600 dark:text-slate-300 leading-relaxed">
+              Das Projekt wird ehrenamtlich von Johannes Filter umgesetzt und durch verschiedene zivilgesellschaftliche Organisationen unterst&uuml;tzt. Es ist ein Open-Source-Projekt und freut sich &uuml;ber Mithilfe.
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Partners section -->
+    <section class="py-16 sm:py-20 bg-surface dark:bg-slate-900">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl sm:text-3xl font-bold text-center mb-10 text-slate-900 dark:text-white">
+          Partner:innen
+        </h2>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
+          <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-4 flex items-center justify-center h-20">
+            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300 text-center">apabiz</span>
+          </div>
+          <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-4 flex items-center justify-center h-20">
+            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300 text-center">Humanistische Union</span>
+          </div>
+          <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-4 flex items-center justify-center h-20">
+            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300 text-center">Blackbox VS</span>
+          </div>
+          <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-4 flex items-center justify-center h-20">
+            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300 text-center">FragDenStaat</span>
+          </div>
+          <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-4 flex items-center justify-center h-20">
+            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300 text-center">kleine Anfragen</span>
+          </div>
+          <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-4 flex items-center justify-center h-20">
+            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300 text-center">Offene Gesetze</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Newsletter section -->
+    <section class="py-16 sm:py-20 bg-gradient-to-br from-primary to-purple-700 text-white">
+      <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-2xl sm:text-3xl font-bold mb-4">
+          Newsletter abonnieren
+        </h2>
+        <p class="text-blue-100 mb-8">
+          Erhalte Updates zu neuen Berichten und Funktionen.
+        </p>
+
+        <form class="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
+          <label for="newsletter-email" class="sr-only">E-Mail-Adresse</label>
+          <input
+            id="newsletter-email"
+            type="email"
+            placeholder="deine@email.de"
+            required
+            class="flex-1 px-5 py-3 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
+          >
+          <button type="submit" class="bg-accent hover:bg-amber-600 text-slate-900 font-semibold px-6 py-3 rounded-lg transition-colors shrink-0">
+            Jetzt anmelden
+          </button>
+        </form>
+
+        <p class="text-blue-200 text-sm mt-4">
+          Kein Spam. Jederzeit abbestellbar.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
+        <!-- Links -->
+        <div>
+          <h3 class="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Navigation</h3>
+          <ul class="space-y-2">
+            <li><a href="/faq" class="hover:text-white transition-colors text-sm">FAQ</a></li>
+            <li><a href="/daten" class="hover:text-white transition-colors text-sm">Daten</a></li>
+            <li><a href="/kontakt" class="hover:text-white transition-colors text-sm">Kontakt</a></li>
+            <li><a href="/impressum" class="hover:text-white transition-colors text-sm">Impressum</a></li>
+            <li><a href="/datenschutz" class="hover:text-white transition-colors text-sm">Datenschutz</a></li>
+          </ul>
+        </div>
+
+        <!-- Social -->
+        <div>
+          <h3 class="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Social</h3>
+          <ul class="space-y-2">
+            <li><a href="https://www.instagram.com/verfassungsschutzberichte/" class="hover:text-white transition-colors text-sm" rel="noopener noreferrer" target="_blank">Instagram</a></li>
+            <li><a href="https://mastodon.social/@vsberichte" class="hover:text-white transition-colors text-sm" rel="noopener noreferrer me" target="_blank">Mastodon</a></li>
+            <li><a href="https://bsky.app/profile/vsberichte.bsky.social" class="hover:text-white transition-colors text-sm" rel="noopener noreferrer" target="_blank">BlueSky</a></li>
+          </ul>
+        </div>
+
+        <!-- Credit -->
+        <div>
+          <h3 class="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Projekt</h3>
+          <p class="text-sm leading-relaxed">
+            Ehrenamtlich umgesetzt von<br>
+            <a href="https://johannesfilter.com" class="text-white hover:text-amber-400 transition-colors" rel="noopener noreferrer" target="_blank">Johannes Filter</a>
+          </p>
+        </div>
+      </div>
+
+      <div class="border-t border-slate-800 pt-6 text-center text-sm">
+        <p>&copy; 2024 verfassungsschutzberichte.de</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Dark mode & mobile menu script -->
+  <script>
+    (function() {
+      // Dark mode toggle
+      var html = document.documentElement;
+      var toggle = document.getElementById('dark-toggle');
+      var iconSun = document.getElementById('icon-sun');
+      var iconMoon = document.getElementById('icon-moon');
+
+      function applyTheme(dark) {
+        if (dark) {
+          html.classList.add('dark');
+          iconSun.classList.remove('hidden');
+          iconMoon.classList.add('hidden');
+        } else {
+          html.classList.remove('dark');
+          iconSun.classList.add('hidden');
+          iconMoon.classList.remove('hidden');
+        }
+      }
+
+      // Load saved preference or respect system preference
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark') {
+        applyTheme(true);
+      } else if (saved === 'light') {
+        applyTheme(false);
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        applyTheme(true);
+      }
+
+      toggle.addEventListener('click', function() {
+        var isDark = html.classList.contains('dark');
+        applyTheme(!isDark);
+        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+      });
+
+      // Mobile menu toggle
+      var menuBtn = document.getElementById('mobile-menu-btn');
+      var menu = document.getElementById('mobile-menu');
+      var hamburgerIcon = document.getElementById('hamburger-icon');
+      var closeIcon = document.getElementById('close-icon');
+
+      menuBtn.addEventListener('click', function() {
+        var isOpen = !menu.classList.contains('hidden');
+        menu.classList.toggle('hidden');
+        hamburgerIcon.classList.toggle('hidden');
+        closeIcon.classList.toggle('hidden');
+        menuBtn.setAttribute('aria-label', isOpen ? 'Menue oeffnen' : 'Menue schliessen');
+      });
+    })();
+  </script>
+
+</body>
+</html>

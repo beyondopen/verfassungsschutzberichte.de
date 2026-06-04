@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="de" class="">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Berichte &ndash; Verfassungsschutzberichte.de</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { serif: ['"Source Serif 4"', 'Georgia', 'serif'] } } } }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 antialiased">
+
+  <!-- Skip to content -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-blue-700 focus:text-white focus:px-4 focus:py-2 focus:rounded">
+    Zum Inhalt springen
+  </a>
+
+  <!-- Navbar -->
+  <nav class="sticky top-0 z-40 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
+    <div class="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
+      <a href="/" class="font-serif font-bold text-xl tracking-tight">Verfassungsschutzberichte.de</a>
+      <div class="hidden md:flex items-center gap-8 text-sm">
+        <a href="/berichte" class="text-gray-900 dark:text-white font-medium">Berichte</a>
+        <a href="/suche" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Suche</a>
+        <a href="/trends" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Trends</a>
+        <a href="/regional" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Regional</a>
+        <a href="/blog" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Blog</a>
+      </div>
+      <div class="flex items-center gap-4">
+        <button id="dark-mode-toggle" aria-label="Dunkelmodus umschalten" class="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+          <svg class="hidden dark:block w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.95l-.71.71M21 12h-1M4 12H3m16.66 7.66l-.71-.71M4.05 4.05l-.71-.71M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          <svg class="block dark:hidden w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.005 9.005 0 0012 21a9.005 9.005 0 008.354-5.646z" />
+          </svg>
+        </button>
+        <button id="mobile-menu-toggle" class="md:hidden p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="Men&uuml; &ouml;ffnen">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 px-6 pb-4 pt-2 space-y-3">
+      <a href="/berichte" class="block text-gray-900 dark:text-white font-medium text-sm py-1">Berichte</a>
+      <a href="/suche" class="block text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm py-1">Suche</a>
+      <a href="/trends" class="block text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm py-1">Trends</a>
+      <a href="/regional" class="block text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm py-1">Regional</a>
+      <a href="/blog" class="block text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm py-1">Blog</a>
+    </div>
+  </nav>
+
+  <main id="main-content">
+
+    <!-- Page Header -->
+    <section class="pt-16 pb-10">
+      <div class="max-w-6xl mx-auto px-6">
+        <h1 class="font-serif font-bold text-4xl lg:text-5xl tracking-tight mb-3">Berichte</h1>
+        <p class="text-xl text-gray-600 dark:text-gray-400 mb-4">487 Verfassungsschutzberichte von Bund und L&auml;ndern</p>
+        <p class="text-gray-600 dark:text-gray-400 leading-relaxed max-w-3xl">
+          Wir sammeln die PDFs der Berichte und stellen sie dem Web entsprechend dar. Jeder verf&uuml;gbare Bericht ist durchsuchbar, mit Seitenbildern versehen und als PDF herunterladbar.
+        </p>
+      </div>
+    </section>
+
+    <!-- Legend -->
+    <section class="pb-8">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="flex flex-wrap items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
+          <div class="flex items-center gap-2">
+            <span class="inline-block w-4 h-4 rounded bg-blue-600"></span>
+            Verf&uuml;gbar
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="inline-block w-4 h-4 rounded border-2 border-amber-400"></span>
+            Fehlt uns noch
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="inline-block w-4 h-4 rounded bg-gray-200 dark:bg-gray-800"></span>
+            Nicht erschienen
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reports Grid -->
+    <section class="pb-24">
+      <div class="max-w-6xl mx-auto px-6 space-y-12" id="grid-container">
+        <!-- Grid is rendered by JavaScript below -->
+      </div>
+    </section>
+
+    <!-- Open Data Section -->
+    <section class="bg-gray-50 dark:bg-gray-900 py-20">
+      <div class="max-w-6xl mx-auto px-6">
+        <h2 class="font-serif font-bold text-3xl tracking-tight mb-6">Offene Daten</h2>
+        <p class="text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mb-8">
+          Alle gesammelten Berichte und extrahierten Texte stehen als offene Daten zur Verf&uuml;gung. Nutzen Sie die Daten f&uuml;r Ihre eigene Forschung oder Projekte.
+        </p>
+        <div class="flex flex-wrap gap-4">
+          <a href="#" class="inline-flex items-center gap-2 px-5 py-3 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500 transition-colors font-medium text-sm">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+            Alle PDFs herunterladen (ZIP, >6GB)
+          </a>
+          <a href="#" class="inline-flex items-center gap-2 px-5 py-3 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500 transition-colors font-medium text-sm">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+            Alle Texte herunterladen (ZIP)
+          </a>
+          <a href="#" class="inline-flex items-center gap-2 px-5 py-3 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500 transition-colors font-medium text-sm">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+            JSON-API verf&uuml;gbar
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 dark:bg-black text-gray-400 py-16">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+        <div>
+          <h3 class="font-serif font-bold text-white text-lg mb-4">Verfassungsschutz&shy;berichte.de</h3>
+          <p class="text-sm leading-relaxed">
+            Ein zivilgesellschaftliches Projekt f&uuml;r Transparenz und Aufkl&auml;rung.
+          </p>
+        </div>
+        <div>
+          <h4 class="font-bold text-white text-sm uppercase tracking-wider mb-4">Entdecken</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="/berichte" class="hover:text-white transition-colors">Alle Berichte</a></li>
+            <li><a href="/suche" class="hover:text-white transition-colors">Volltextsuche</a></li>
+            <li><a href="/trends" class="hover:text-white transition-colors">Trend-Analyse</a></li>
+            <li><a href="/regional" class="hover:text-white transition-colors">Regionale Analyse</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-white text-sm uppercase tracking-wider mb-4">Projekt</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="hover:text-white transition-colors">&Uuml;ber uns</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Blog</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Presse</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Kontakt</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-white text-sm uppercase tracking-wider mb-4">Folge uns</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="hover:text-white transition-colors">GitHub</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Mastodon</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Twitter / X</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">RSS-Feed</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-gray-800 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm">
+        <p>&copy; 2024 Verfassungsschutzberichte.de &ndash; Ein Open-Source-Projekt</p>
+        <div class="flex gap-6">
+          <a href="#" class="hover:text-white transition-colors">Impressum</a>
+          <a href="#" class="hover:text-white transition-colors">Datenschutz</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Dark mode toggle
+    (function () {
+      const toggle = document.getElementById('dark-mode-toggle');
+      const html = document.documentElement;
+      function getPreference() {
+        const stored = localStorage.getItem('dark-mode');
+        if (stored !== null) return stored === 'true';
+        return window.matchMedia('(prefers-color-scheme: dark)').matches;
+      }
+      function applyDarkMode(isDark) {
+        if (isDark) { html.classList.add('dark'); } else { html.classList.remove('dark'); }
+      }
+      applyDarkMode(getPreference());
+      toggle.addEventListener('click', function () {
+        const isDark = html.classList.toggle('dark');
+        localStorage.setItem('dark-mode', isDark);
+      });
+    })();
+
+    // Mobile menu toggle
+    (function () {
+      const menuToggle = document.getElementById('mobile-menu-toggle');
+      const menu = document.getElementById('mobile-menu');
+      menuToggle.addEventListener('click', function () {
+        const isOpen = !menu.classList.contains('hidden');
+        menu.classList.toggle('hidden');
+        menuToggle.setAttribute('aria-expanded', !isOpen);
+        menuToggle.setAttribute('aria-label', isOpen ? 'Men\u00fc \u00f6ffnen' : 'Men\u00fc schlie\u00dfen');
+      });
+    })();
+
+    // Jurisdiction data and grid rendering
+    (function () {
+      // Seeded pseudo-random for deterministic "random" missing/available assignments
+      function seededRandom(seed) {
+        let s = seed;
+        return function () {
+          s = (s * 16807 + 0) % 2147483647;
+          return (s - 1) / 2147483646;
+        };
+      }
+
+      // status: 'available', 'missing', 'notpublished'
+      // For each jurisdiction we define: name, slug, startYear, endYear, notPublished (set of years), missing (set of years)
+      // Remaining years default to available, but we also randomly flip ~12% to missing for realism
+
+      const jurisdictions = [
+        {
+          name: 'Bund',
+          slug: 'bund',
+          start: 1968,
+          end: 2024,
+          notPublished: new Set([1969]),
+          forceMissing: new Set([1971, 1974, 1982, 2001]),
+        },
+        {
+          name: 'Baden-W\u00fcrttemberg',
+          slug: 'baden-wuerttemberg',
+          start: 1973,
+          end: 2024,
+          notPublished: new Set([1977]),
+          forceMissing: new Set([1973, 1975, 1978, 1980, 1983]),
+        },
+        {
+          name: 'Bayern',
+          slug: 'bayern',
+          start: 1976,
+          end: 2024,
+          notPublished: new Set([]),
+          forceMissing: new Set([]),
+        },
+        {
+          name: 'Berlin',
+          slug: 'berlin',
+          start: 1990,
+          end: 2024,
+          notPublished: new Set([]),
+          forceMissing: new Set([1990, 1991, 1993]),
+        },
+        {
+          name: 'Brandenburg',
+          slug: 'brandenburg',
+          start: 1993,
+          end: 2024,
+          notPublished: new Set([]),
+          forceMissing: new Set([1993, 1995, 1998]),
+        },
+        {
+          name: 'Bremen',
+          slug: 'bremen',
+          start: 2002,
+          end: 2024,
+          notPublished: new Set([]),
+          forceMissing: new Set([2002, 2004]),
+        },
+        {
+          name: 'Hamburg',
+          slug: 'hamburg',
+          start: 1993,
+          end: 2024,
+          notPublished: new Set([]),
+          forceMissing: new Set([1993, 1994, 1996, 2000]),
+        },
+        {
+          name: 'Hessen',
+          slug: 'hessen',
+          start: 1977,
+          end: 2024,
+          notPublished: new Set([1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999]),
+          forceMissing: new Set([1977, 1978, 1980, 1982, 1984, 1985, 1987]),
+        },
+        {
+          name: 'Mecklenburg-Vorpommern',
+          slug: 'mecklenburg-vorpommern',
+          start: 1992,
+          end: 2024,
+          notPublished: new Set([]),
+          forceMissing: new Set([1992, 1994, 1997]),
+        },
+        {
+          name: 'Niedersachsen',
+          slug: 'niedersachsen',
+          start: 1984,
+          end: 2024,
+          notPublished: new Set([]),
+          forceMissing: new Set([1984, 1986, 1989, 1991]),
+        },
+        {
+          name: 'Nordrhein-Westfalen',
+          slug: 'nordrhein-westfalen',
+          start: 1950,
+          end: 2024,
+          notPublished: new Set([]),
+          forceMissing: new Set([1950, 1951, 1952, 1953, 1954, 1955, 1957, 1958, 1960, 1961, 1963, 1964, 1966, 1968, 1970, 1972, 1974, 1976, 1979, 1981, 1985, 1988]),
+        },
+        {
+          name: 'Rheinland-Pfalz',
+          slug: 'rheinland-pfalz',
+          start: 1984,
+          end: 2024,
+          notPublished: new Set([]),
+          forceMissing: new Set([1984, 1986, 1988, 1991]),
+        },
+        {
+          name: 'Saarland',
+          slug: 'saarland',
+          start: 2013,
+          end: 2024,
+          notPublished: new Set([]),
+          forceMissing: new Set([2013]),
+        },
+        {
+          name: 'Sachsen',
+          slug: 'sachsen',
+          start: 1993,
+          end: 2024,
+          notPublished: new Set([]),
+          forceMissing: new Set([1993, 1995, 1997]),
+        },
+        {
+          name: 'Sachsen-Anhalt',
+          slug: 'sachsen-anhalt',
+          start: 1992,
+          end: 2024,
+          notPublished: new Set([]),
+          forceMissing: new Set([1992, 1994, 1996, 1999]),
+        },
+        {
+          name: 'Schleswig-Holstein',
+          slug: 'schleswig-holstein',
+          start: 1976,
+          end: 2024,
+          notPublished: new Set([1986]),
+          forceMissing: new Set([1976, 1978, 1980, 1983, 1985]),
+        },
+        {
+          name: 'Th\u00fcringen',
+          slug: 'thueringen',
+          start: 1992,
+          end: 2024,
+          notPublished: new Set([2014]),
+          forceMissing: new Set([1992, 1994, 1996]),
+        },
+      ];
+
+      const container = document.getElementById('grid-container');
+
+      jurisdictions.forEach(function (jur) {
+        const rand = seededRandom(jur.slug.length * 1000 + jur.start);
+
+        const section = document.createElement('div');
+
+        // Heading
+        const heading = document.createElement('h2');
+        heading.className = 'font-serif font-bold text-2xl tracking-tight mb-3';
+        heading.innerHTML = jur.name + ' <span class="text-gray-400 dark:text-gray-500 font-normal text-lg">(seit ' + jur.start + ')</span>';
+        section.appendChild(heading);
+
+        // Year grid
+        const grid = document.createElement('div');
+        grid.className = 'flex flex-wrap gap-1.5';
+
+        for (let year = jur.start; year <= jur.end; year++) {
+          if (jur.notPublished.has(year)) {
+            // Not published - gray
+            const span = document.createElement('span');
+            span.className = 'bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded px-2.5 py-1.5 text-sm font-mono';
+            span.textContent = year;
+            span.title = year + ' \u2013 Nicht erschienen';
+            grid.appendChild(span);
+          } else if (jur.forceMissing.has(year)) {
+            // Missing - amber outline
+            const span = document.createElement('span');
+            span.className = 'border-2 border-amber-400 text-amber-600 dark:text-amber-400 rounded px-2.5 py-1.5 text-sm font-mono';
+            span.textContent = year;
+            span.title = year + ' \u2013 Fehlt uns noch';
+            grid.appendChild(span);
+          } else {
+            // Available - blue
+            const a = document.createElement('a');
+            a.href = '/' + jur.slug + '/' + year;
+            a.className = 'bg-blue-600 text-white hover:bg-blue-700 rounded px-2.5 py-1.5 text-sm font-mono font-medium transition-colors';
+            a.textContent = year;
+            a.title = year + ' \u2013 Verf\u00fcgbar';
+            grid.appendChild(a);
+          }
+        }
+
+        section.appendChild(grid);
+        container.appendChild(section);
+      });
+    })();
+  </script>
+
+</body>
+</html>

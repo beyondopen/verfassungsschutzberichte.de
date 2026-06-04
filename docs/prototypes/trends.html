@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="de" class="">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trends - Verfassungsschutzberichte.de</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { serif: ['"Source Serif 4"', 'Georgia', 'serif'] } } } }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 antialiased">
+
+  <!-- Skip to content -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-blue-700 focus:text-white focus:px-4 focus:py-2 focus:rounded">
+    Zum Inhalt springen
+  </a>
+
+  <!-- Navbar -->
+  <nav class="sticky top-0 z-40 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
+    <div class="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
+      <a href="/" class="font-serif font-bold text-xl tracking-tight">Verfassungsschutzberichte.de</a>
+      <div class="hidden md:flex items-center gap-8 text-sm">
+        <a href="/berichte" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Berichte</a>
+        <a href="/suche" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Suche</a>
+        <a href="/trends" class="text-gray-900 dark:text-white font-bold">Trends</a>
+        <a href="/regional" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Regional</a>
+        <a href="/blog" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Blog</a>
+      </div>
+      <div class="flex items-center gap-4">
+        <button id="dark-mode-toggle" aria-label="Dunkelmodus umschalten" class="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+          <!-- Sun icon (shown in dark mode) -->
+          <svg class="hidden dark:block w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.95l-.71.71M21 12h-1M4 12H3m16.66 7.66l-.71-.71M4.05 4.05l-.71-.71M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          <!-- Moon icon (shown in light mode) -->
+          <svg class="block dark:hidden w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.005 9.005 0 0012 21a9.005 9.005 0 008.354-5.646z" />
+          </svg>
+        </button>
+        <!-- Mobile menu button -->
+        <button id="mobile-menu-toggle" class="md:hidden p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="Men&uuml; &ouml;ffnen">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <!-- Mobile menu -->
+    <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 px-6 pb-4 pt-2 space-y-3">
+      <a href="/berichte" class="block text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm py-1">Berichte</a>
+      <a href="/suche" class="block text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm py-1">Suche</a>
+      <a href="/trends" class="block text-gray-900 dark:text-white font-bold text-sm py-1">Trends</a>
+      <a href="/regional" class="block text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm py-1">Regional</a>
+      <a href="/blog" class="block text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm py-1">Blog</a>
+    </div>
+  </nav>
+
+  <main id="main-content">
+
+    <!-- Page Header -->
+    <section class="pt-16 pb-8">
+      <div class="max-w-6xl mx-auto px-6">
+        <h1 class="font-serif font-bold text-4xl tracking-tight mb-2">Trends</h1>
+        <p class="text-gray-600 dark:text-gray-400 text-lg mb-4">Vergleiche Begriffe im zeitlichen Verlauf</p>
+        <p class="text-gray-600 dark:text-gray-400 max-w-2xl leading-relaxed">
+          Wie oft werden bestimmte Begriffe in den Verfassungsschutzberichten erw&auml;hnt? Die Trends zeigen die relative H&auml;ufigkeit von Begriffen &uuml;ber die Jahre. Vergleiche bis zu f&uuml;nf Begriffe gleichzeitig.
+        </p>
+      </div>
+    </section>
+
+    <!-- Search Form -->
+    <section class="pb-10">
+      <div class="max-w-6xl mx-auto px-6">
+        <!-- Add term form -->
+        <form action="/trends" method="get" class="mb-4">
+          <div class="flex gap-3">
+            <label for="term-input" class="sr-only">Begriff eingeben</label>
+            <input
+              id="term-input"
+              type="text"
+              name="term"
+              placeholder="Begriff eingeben&hellip;"
+              class="flex-1 max-w-md px-5 py-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+            <button type="submit" class="px-6 py-3 bg-blue-700 text-white rounded-lg font-medium hover:bg-blue-800 transition-colors whitespace-nowrap">
+              Hinzuf&uuml;gen
+            </button>
+          </div>
+        </form>
+
+        <!-- Active search term pills -->
+        <div class="flex flex-wrap items-center gap-2 mb-4">
+          <!-- NSU pill -->
+          <form action="/trends" method="get" class="inline-flex">
+            <input type="hidden" name="remove" value="NSU">
+            <input type="hidden" name="terms" value="RAF">
+            <span class="inline-flex items-center gap-1.5 pl-3.5 pr-1.5 py-1.5 bg-blue-700 text-white text-sm font-medium rounded-full">
+              NSU
+              <button type="submit" aria-label="NSU entfernen" class="inline-flex items-center justify-center w-5 h-5 rounded-full hover:bg-blue-600 transition-colors">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </span>
+          </form>
+          <!-- RAF pill -->
+          <form action="/trends" method="get" class="inline-flex">
+            <input type="hidden" name="remove" value="RAF">
+            <input type="hidden" name="terms" value="NSU">
+            <span class="inline-flex items-center gap-1.5 pl-3.5 pr-1.5 py-1.5 bg-blue-700 text-white text-sm font-medium rounded-full">
+              RAF
+              <button type="submit" aria-label="RAF entfernen" class="inline-flex items-center justify-center w-5 h-5 rounded-full hover:bg-blue-600 transition-colors">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </span>
+          </form>
+        </div>
+
+        <!-- Suggestions -->
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+          <span class="text-gray-500 dark:text-gray-400">Vorschl&auml;ge:</span>
+          <a href="/trends?terms=NSU,RAF,linksextrem" class="text-blue-700 dark:text-blue-400 hover:underline">linksextrem</a>
+          <a href="/trends?terms=NSU,RAF,rechtsextrem" class="text-blue-700 dark:text-blue-400 hover:underline">rechtsextrem</a>
+          <a href="/trends?terms=NSU,RAF,cyber" class="text-blue-700 dark:text-blue-400 hover:underline">cyber</a>
+          <a href="/trends?terms=NSU,RAF,internet" class="text-blue-700 dark:text-blue-400 hover:underline">internet</a>
+          <a href="/trends?terms=NSU,RAF,NPD" class="text-blue-700 dark:text-blue-400 hover:underline">NPD</a>
+          <a href="/trends?terms=NSU,RAF,PKK" class="text-blue-700 dark:text-blue-400 hover:underline">PKK</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chart Area -->
+    <section class="pb-8">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
+          <h2 class="font-bold text-lg mb-1">Relative H&auml;ufigkeit: NSU, RAF</h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Alle Berichte, 1993&ndash;2024</p>
+
+          <!-- Placeholder with dashed border -->
+          <div class="h-80 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg flex flex-col items-center justify-center">
+            <p class="text-sm text-gray-400 dark:text-gray-500 mb-6">Interaktiver Chart mit JavaScript</p>
+
+            <!-- SVG mockup chart -->
+            <svg viewBox="0 0 600 200" class="w-full max-w-xl px-4" aria-label="Trendvergleich NSU und RAF, 1993 bis 2024" role="img">
+              <!-- Grid lines -->
+              <line x1="50" y1="20" x2="50" y2="170" stroke="currentColor" class="text-gray-200 dark:text-gray-700" stroke-width="0.5" />
+              <line x1="50" y1="170" x2="580" y2="170" stroke="currentColor" class="text-gray-200 dark:text-gray-700" stroke-width="0.5" />
+              <line x1="50" y1="120" x2="580" y2="120" stroke="currentColor" class="text-gray-200 dark:text-gray-700" stroke-width="0.5" stroke-dasharray="4 4" />
+              <line x1="50" y1="70" x2="580" y2="70" stroke="currentColor" class="text-gray-200 dark:text-gray-700" stroke-width="0.5" stroke-dasharray="4 4" />
+              <line x1="50" y1="20" x2="580" y2="20" stroke="currentColor" class="text-gray-200 dark:text-gray-700" stroke-width="0.5" stroke-dasharray="4 4" />
+
+              <!-- Y-axis label -->
+              <text x="10" y="100" fill="currentColor" class="text-gray-400 dark:text-gray-500" font-size="10" text-anchor="middle" transform="rotate(-90 10 100)">rel. H&auml;ufigkeit</text>
+
+              <!-- X-axis labels -->
+              <text x="50" y="188" fill="currentColor" class="text-gray-400 dark:text-gray-500" font-size="11" text-anchor="middle">1993</text>
+              <text x="227" y="188" fill="currentColor" class="text-gray-400 dark:text-gray-500" font-size="11" text-anchor="middle">2000</text>
+              <text x="403" y="188" fill="currentColor" class="text-gray-400 dark:text-gray-500" font-size="11" text-anchor="middle">2010</text>
+              <text x="580" y="188" fill="currentColor" class="text-gray-400 dark:text-gray-500" font-size="11" text-anchor="middle">2020</text>
+
+              <!-- RAF line (amber) - starts high, gradually decreases -->
+              <polyline
+                fill="none"
+                stroke="#d97706"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="dark:stroke-amber-400"
+                points="
+                  50,35
+                  90,42
+                  130,50
+                  170,60
+                  210,72
+                  250,88
+                  290,100
+                  330,112
+                  370,125
+                  410,135
+                  450,142
+                  490,148
+                  530,152
+                  570,155
+                "
+              />
+
+              <!-- NSU line (blue) - starts very low, spikes around 2011-2012, stays elevated -->
+              <polyline
+                fill="none"
+                stroke="#1d4ed8"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="dark:stroke-blue-400"
+                points="
+                  50,165
+                  90,164
+                  130,163
+                  170,162
+                  210,161
+                  250,160
+                  290,158
+                  330,155
+                  370,140
+                  390,50
+                  410,42
+                  430,55
+                  450,62
+                  490,70
+                  530,75
+                  570,80
+                "
+              />
+
+              <!-- Legend -->
+              <line x1="420" y1="20" x2="440" y2="20" stroke="#1d4ed8" stroke-width="2.5" class="dark:stroke-blue-400" />
+              <text x="445" y="24" fill="currentColor" class="text-gray-600 dark:text-gray-300" font-size="11">NSU</text>
+              <line x1="480" y1="20" x2="500" y2="20" stroke="#d97706" stroke-width="2.5" class="dark:stroke-amber-400" />
+              <text x="505" y="24" fill="currentColor" class="text-gray-600 dark:text-gray-300" font-size="11">RAF</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Export Buttons -->
+    <section class="pb-10">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="flex flex-wrap gap-3">
+          <!-- Als JPG speichern -->
+          <button type="button" class="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Als JPG speichern
+          </button>
+          <!-- CSV exportieren -->
+          <button type="button" class="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            CSV exportieren
+          </button>
+          <!-- Link kopieren -->
+          <button type="button" class="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+            Link kopieren
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Data Table (collapsible) -->
+    <section class="pb-10">
+      <div class="max-w-6xl mx-auto px-6">
+        <details class="border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
+          <summary class="px-6 py-4 cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors select-none">
+            Daten als Tabelle anzeigen
+          </summary>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-t border-gray-200 dark:border-gray-800">
+                  <th class="px-6 py-3 text-left font-semibold text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-800/50">Jahr</th>
+                  <th class="px-6 py-3 text-right font-semibold text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-800/50">NSU</th>
+                  <th class="px-6 py-3 text-right font-semibold text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-800/50">RAF</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-t border-gray-100 dark:border-gray-800/50">
+                  <td class="px-6 py-2.5 text-gray-900 dark:text-gray-100">1993</td>
+                  <td class="px-6 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">0.000</td>
+                  <td class="px-6 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">0.045</td>
+                </tr>
+                <tr class="border-t border-gray-100 dark:border-gray-800/50 bg-gray-50/50 dark:bg-gray-800/20">
+                  <td class="px-6 py-2.5 text-gray-900 dark:text-gray-100">1995</td>
+                  <td class="px-6 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">0.000</td>
+                  <td class="px-6 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">0.038</td>
+                </tr>
+                <tr class="border-t border-gray-100 dark:border-gray-800/50">
+                  <td class="px-6 py-2.5 text-gray-900 dark:text-gray-100">2000</td>
+                  <td class="px-6 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">0.000</td>
+                  <td class="px-6 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">0.025</td>
+                </tr>
+                <tr class="border-t border-gray-100 dark:border-gray-800/50 bg-gray-50/50 dark:bg-gray-800/20">
+                  <td class="px-6 py-2.5 text-gray-900 dark:text-gray-100">2005</td>
+                  <td class="px-6 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">0.001</td>
+                  <td class="px-6 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">0.018</td>
+                </tr>
+                <tr class="border-t border-gray-100 dark:border-gray-800/50">
+                  <td class="px-6 py-2.5 text-gray-900 dark:text-gray-100">2010</td>
+                  <td class="px-6 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">0.002</td>
+                  <td class="px-6 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">0.012</td>
+                </tr>
+                <tr class="border-t border-gray-100 dark:border-gray-800/50 bg-gray-50/50 dark:bg-gray-800/20">
+                  <td class="px-6 py-2.5 text-gray-900 dark:text-gray-100">2012</td>
+                  <td class="px-6 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">0.035</td>
+                  <td class="px-6 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">0.010</td>
+                </tr>
+                <tr class="border-t border-gray-100 dark:border-gray-800/50">
+                  <td class="px-6 py-2.5 text-gray-900 dark:text-gray-100">2015</td>
+                  <td class="px-6 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">0.028</td>
+                  <td class="px-6 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">0.008</td>
+                </tr>
+                <tr class="border-t border-gray-100 dark:border-gray-800/50 bg-gray-50/50 dark:bg-gray-800/20">
+                  <td class="px-6 py-2.5 text-gray-900 dark:text-gray-100">2018</td>
+                  <td class="px-6 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">0.025</td>
+                  <td class="px-6 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">0.006</td>
+                </tr>
+                <tr class="border-t border-gray-100 dark:border-gray-800/50">
+                  <td class="px-6 py-2.5 text-gray-900 dark:text-gray-100">2020</td>
+                  <td class="px-6 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">0.022</td>
+                  <td class="px-6 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">0.005</td>
+                </tr>
+                <tr class="border-t border-gray-100 dark:border-gray-800/50 bg-gray-50/50 dark:bg-gray-800/20">
+                  <td class="px-6 py-2.5 text-gray-900 dark:text-gray-100">2023</td>
+                  <td class="px-6 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">0.020</td>
+                  <td class="px-6 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">0.004</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- Methodology Note -->
+    <section class="pb-20">
+      <div class="max-w-6xl mx-auto px-6">
+        <p class="text-sm text-gray-500 dark:text-gray-400 max-w-2xl mt-12 leading-relaxed">
+          Hinweis zur Methodik: Die relative H&auml;ufigkeit wird berechnet, indem die absoluten Erw&auml;hnungen pro Jahr durch die Gesamtzahl aller W&ouml;rter in dem Jahr dividiert werden. Dies normalisiert die Werte, da nicht f&uuml;r alle Jahre gleich viele Berichte vorliegen.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 dark:bg-black text-gray-400 py-16">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+        <div>
+          <h3 class="font-serif font-bold text-white text-lg mb-4">Verfassungsschutz&shy;berichte.de</h3>
+          <p class="text-sm leading-relaxed">
+            Ein zivilgesellschaftliches Projekt f&uuml;r Transparenz und Aufkl&auml;rung.
+          </p>
+        </div>
+        <div>
+          <h4 class="font-bold text-white text-sm uppercase tracking-wider mb-4">Entdecken</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="/berichte" class="hover:text-white transition-colors">Alle Berichte</a></li>
+            <li><a href="/suche" class="hover:text-white transition-colors">Volltextsuche</a></li>
+            <li><a href="/trends" class="hover:text-white transition-colors">Trend-Analyse</a></li>
+            <li><a href="/regional" class="hover:text-white transition-colors">Regionale Analyse</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-white text-sm uppercase tracking-wider mb-4">Projekt</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="hover:text-white transition-colors">&Uuml;ber uns</a></li>
+            <li><a href="/blog" class="hover:text-white transition-colors">Blog</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Presse</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Kontakt</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-white text-sm uppercase tracking-wider mb-4">Folge uns</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="hover:text-white transition-colors">GitHub</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Mastodon</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Twitter / X</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">RSS-Feed</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-gray-800 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm">
+        <p>&copy; 2024 Verfassungsschutzberichte.de &ndash; Ein Open-Source-Projekt</p>
+        <div class="flex gap-6">
+          <a href="#" class="hover:text-white transition-colors">Impressum</a>
+          <a href="#" class="hover:text-white transition-colors">Datenschutz</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Dark mode toggle with localStorage
+    (function () {
+      var toggle = document.getElementById('dark-mode-toggle');
+      var html = document.documentElement;
+
+      function getPreference() {
+        var stored = localStorage.getItem('dark-mode');
+        if (stored !== null) return stored === 'true';
+        return window.matchMedia('(prefers-color-scheme: dark)').matches;
+      }
+
+      function applyDarkMode(isDark) {
+        if (isDark) {
+          html.classList.add('dark');
+        } else {
+          html.classList.remove('dark');
+        }
+      }
+
+      applyDarkMode(getPreference());
+
+      toggle.addEventListener('click', function () {
+        var isDark = html.classList.toggle('dark');
+        localStorage.setItem('dark-mode', isDark);
+      });
+    })();
+
+    // Mobile menu toggle
+    (function () {
+      var menuToggle = document.getElementById('mobile-menu-toggle');
+      var menu = document.getElementById('mobile-menu');
+
+      menuToggle.addEventListener('click', function () {
+        var isOpen = !menu.classList.contains('hidden');
+        menu.classList.toggle('hidden');
+        menuToggle.setAttribute('aria-expanded', !isOpen);
+        menuToggle.setAttribute('aria-label', isOpen ? 'Men\u00fc \u00f6ffnen' : 'Men\u00fc schlie\u00dfen');
+      });
+    })();
+  </script>
+
+</body>
+</html>

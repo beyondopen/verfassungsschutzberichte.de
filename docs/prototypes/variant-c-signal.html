@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="de" class="">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VSBerichte – Verfassungsschutzberichte durchsuchbar &amp; offen</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            amber: {
+              500: '#f59e0b',
+            },
+            ink: '#0f172a',
+          },
+          fontFamily: {
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace'],
+            sans: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    /* Sharp details/summary styling */
+    details summary { cursor: pointer; list-style: none; }
+    details summary::-webkit-details-marker { display: none; }
+    details summary::marker { display: none; }
+    details[open] summary .chevron { transform: rotate(90deg); }
+    .chevron { transition: transform 0.15s ease; }
+
+    /* Remove all rounding globally */
+    *, *::before, *::after { border-radius: 0 !important; }
+
+    /* Focus styles */
+    :focus-visible {
+      outline: 3px solid #f59e0b;
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body class="bg-white text-ink dark:bg-ink dark:text-white font-sans antialiased">
+
+  <!-- Skip to content -->
+  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:bg-amber-500 focus:text-ink focus:px-4 focus:py-2 font-mono text-sm font-bold">
+    Zum Inhalt springen
+  </a>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 1. NAVBAR                                   -->
+  <!-- ═══════════════════════════════════════════ -->
+  <nav class="bg-ink text-white sticky top-0 z-40 border-b border-white/10" aria-label="Hauptnavigation">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-12">
+      <!-- Logo -->
+      <a href="/" class="font-mono text-lg font-bold tracking-tight text-white hover:text-amber-500 transition-colors">
+        VSBerichte
+      </a>
+
+      <!-- Links (hidden on small screens, shown on md+) -->
+      <div class="hidden md:flex items-center gap-6">
+        <a href="/berichte" class="text-xs uppercase tracking-wider text-gray-300 hover:text-amber-500 transition-colors">Berichte</a>
+        <a href="/suche" class="text-xs uppercase tracking-wider text-gray-300 hover:text-amber-500 transition-colors">Suche</a>
+        <a href="/trends" class="text-xs uppercase tracking-wider text-gray-300 hover:text-amber-500 transition-colors">Trends</a>
+        <a href="/regional" class="text-xs uppercase tracking-wider text-gray-300 hover:text-amber-500 transition-colors">Regional</a>
+        <a href="/blog" class="text-xs uppercase tracking-wider text-gray-300 hover:text-amber-500 transition-colors">Blog</a>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <!-- Dark mode toggle -->
+        <button
+          id="darkToggle"
+          type="button"
+          class="font-mono text-xs uppercase tracking-wider text-gray-300 hover:text-amber-500 transition-colors border border-gray-600 px-2 py-1"
+          aria-label="Dunkelmodus umschalten"
+        >
+          <span id="toggleLabel">Dark</span>
+        </button>
+
+        <!-- Mobile menu button -->
+        <button
+          id="mobileMenuBtn"
+          type="button"
+          class="md:hidden text-gray-300 hover:text-amber-500 transition-colors"
+          aria-label="Menü öffnen"
+          aria-expanded="false"
+          aria-controls="mobileMenu"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div id="mobileMenu" class="hidden md:hidden border-t border-white/10 px-4 pb-4 pt-2 space-y-2">
+      <a href="/berichte" class="block text-xs uppercase tracking-wider text-gray-300 hover:text-amber-500 py-1">Berichte</a>
+      <a href="/suche" class="block text-xs uppercase tracking-wider text-gray-300 hover:text-amber-500 py-1">Suche</a>
+      <a href="/trends" class="block text-xs uppercase tracking-wider text-gray-300 hover:text-amber-500 py-1">Trends</a>
+      <a href="/regional" class="block text-xs uppercase tracking-wider text-gray-300 hover:text-amber-500 py-1">Regional</a>
+      <a href="/blog" class="block text-xs uppercase tracking-wider text-gray-300 hover:text-amber-500 py-1">Blog</a>
+    </div>
+  </nav>
+
+  <main id="main">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 2. HERO                                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="bg-amber-500 text-ink">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-20 sm:py-28 lg:py-36">
+        <div class="space-y-2 sm:space-y-3">
+          <h1>
+            <span class="block font-mono font-extrabold text-6xl sm:text-7xl lg:text-8xl leading-none">487 Berichte.</span>
+            <span class="block font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-none mt-2">Durchsuchbar.</span>
+            <span class="block font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-none mt-1">Offen.</span>
+          </h1>
+        </div>
+
+        <!-- Search -->
+        <form action="/suche" method="get" class="mt-10 sm:mt-14 max-w-2xl">
+          <div class="flex">
+            <label for="heroSearch" class="sr-only">Suchbegriff</label>
+            <input
+              id="heroSearch"
+              type="search"
+              name="q"
+              placeholder="Berichte durchsuchen…"
+              class="flex-1 px-4 py-3 sm:py-4 text-base sm:text-lg bg-white text-ink border-2 border-ink placeholder-gray-500 focus:outline-none focus:ring-0 focus:border-ink"
+            >
+            <button type="submit" class="bg-ink text-white font-bold px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg border-2 border-ink hover:bg-gray-800 transition-colors">
+              Suchen
+            </button>
+          </div>
+        </form>
+
+        <!-- Example queries -->
+        <div class="mt-4 text-sm text-ink/70">
+          <span>z.B.</span>
+          <a href="/suche?q=NSU" class="underline hover:text-ink font-medium ml-1">NSU</a>,
+          <a href="/suche?q=RAF" class="underline hover:text-ink font-medium">RAF</a>,
+          <a href="/suche?q=Cyber" class="underline hover:text-ink font-medium">Cyber</a>,
+          <a href="/suche?q=linksextrem" class="underline hover:text-ink font-medium">linksextrem</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 3. WAS IST DAS                              -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="bg-white dark:bg-slate-900 py-20 sm:py-24">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6">
+        <h2 class="text-3xl sm:text-4xl font-extrabold mb-6">Was ist das?</h2>
+        <p class="text-lg sm:text-xl leading-relaxed text-gray-700 dark:text-gray-300 mb-14">
+          Ein zivilgesellschaftliches Archiv aller Verfassungsschutzberichte von Bund und Ländern. Gesammelt. Durchsuchbar. Analysiert.
+        </p>
+
+        <div class="grid sm:grid-cols-3 gap-8 sm:gap-10">
+          <!-- Feature 1 -->
+          <div class="border-l-4 border-amber-500 pl-5">
+            <span class="font-mono text-2xl font-bold text-amber-500">01</span>
+            <h3 class="font-bold text-lg mt-2 mb-1">Volltextsuche</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">Alle Berichte im Volltext durchsuchbar. Finden Sie jede Erwähnung in Sekunden.</p>
+          </div>
+          <!-- Feature 2 -->
+          <div class="border-l-4 border-amber-500 pl-5">
+            <span class="font-mono text-2xl font-bold text-amber-500">02</span>
+            <h3 class="font-bold text-lg mt-2 mb-1">Trends</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">Wie oft wird ein Begriff erwähnt? Verfolgen Sie Entwicklungen über Jahrzehnte.</p>
+          </div>
+          <!-- Feature 3 -->
+          <div class="border-l-4 border-amber-500 pl-5">
+            <span class="font-mono text-2xl font-bold text-amber-500">03</span>
+            <h3 class="font-bold text-lg mt-2 mb-1">Regional</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">Vergleichen Sie Berichte aller 16 Bundesländer und des Bundes.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 4. STATS BAND                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="bg-ink text-amber-500 border-y-4 border-amber-500">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-0 text-center font-mono">
+          <div class="sm:border-r sm:border-amber-500/30">
+            <span class="block text-2xl sm:text-3xl font-bold">17</span>
+            <span class="block text-xs uppercase tracking-wider mt-1 text-amber-500/70">Behörden</span>
+          </div>
+          <div class="sm:border-r sm:border-amber-500/30">
+            <span class="block text-2xl sm:text-3xl font-bold">seit 1950</span>
+            <span class="block text-xs uppercase tracking-wider mt-1 text-amber-500/70">Erstausgabe</span>
+          </div>
+          <div class="sm:border-r sm:border-amber-500/30">
+            <span class="block text-2xl sm:text-3xl font-bold">Bund + 16</span>
+            <span class="block text-xs uppercase tracking-wider mt-1 text-amber-500/70">Länder</span>
+          </div>
+          <div>
+            <span class="block text-2xl sm:text-3xl font-bold">&gt;100.000</span>
+            <span class="block text-xs uppercase tracking-wider mt-1 text-amber-500/70">Seiten</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 5. CHART PLACEHOLDERS                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="bg-white dark:bg-slate-900 py-20 sm:py-24">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6">
+        <h2 class="text-3xl sm:text-4xl font-extrabold mb-10">Trends</h2>
+
+        <div class="grid sm:grid-cols-2 gap-6 sm:gap-8">
+          <!-- Chart 1 -->
+          <div class="border-2 border-ink dark:border-white">
+            <div class="px-4 py-3 border-b-2 border-ink dark:border-white bg-gray-50 dark:bg-slate-800">
+              <span class="font-mono font-bold text-sm uppercase tracking-wider">RAF &amp; NSU</span>
+            </div>
+            <div class="h-56 sm:h-64 flex items-center justify-center border-4 border-dashed border-gray-300 dark:border-gray-600 m-4">
+              <span class="font-mono text-sm text-gray-400 dark:text-gray-500 uppercase tracking-wider">Diagramm-Platzhalter</span>
+            </div>
+          </div>
+          <!-- Chart 2 -->
+          <div class="border-2 border-ink dark:border-white">
+            <div class="px-4 py-3 border-b-2 border-ink dark:border-white bg-gray-50 dark:bg-slate-800">
+              <span class="font-mono font-bold text-sm uppercase tracking-wider">Parteien (NPD, PKK, DKP)</span>
+            </div>
+            <div class="h-56 sm:h-64 flex items-center justify-center border-4 border-dashed border-gray-300 dark:border-gray-600 m-4">
+              <span class="font-mono text-sm text-gray-400 dark:text-gray-500 uppercase tracking-wider">Diagramm-Platzhalter</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8">
+          <a href="/trends" class="inline-block font-bold text-ink dark:text-white hover:text-amber-500 dark:hover:text-amber-500 transition-colors border-b-2 border-amber-500 pb-1">
+            Mehr Trends entdecken &rarr;
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 6. TESTIMONIAL                              -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="bg-gray-100 dark:bg-slate-800 py-20 sm:py-24">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6">
+        <div class="relative">
+          <!-- Large amber quotation mark -->
+          <span class="absolute -top-6 -left-2 sm:-left-6 text-8xl sm:text-9xl font-bold leading-none text-amber-500 select-none pointer-events-none" aria-hidden="true">&ldquo;</span>
+          <blockquote class="relative z-10 pt-8 sm:pt-6">
+            <p class="text-xl sm:text-2xl leading-relaxed font-medium text-gray-800 dark:text-gray-200">
+              Die Bundes- und Landesämter für Verfassungsschutz sind wohl die intransparentesten Behörden der BRD. Ihre Berichte sind das kleine bisschen Transparenz, das der Öffentlichkeit zugestanden wird.
+            </p>
+            <footer class="mt-6">
+              <cite class="not-italic text-sm uppercase tracking-widest font-bold text-gray-500 dark:text-gray-400">
+                Linus Neumann
+              </cite>
+            </footer>
+          </blockquote>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 7. FAQ                                      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="bg-white dark:bg-slate-900 py-20 sm:py-24">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6">
+        <h2 class="text-3xl sm:text-4xl font-extrabold mb-10">Häufige Fragen</h2>
+
+        <div class="space-y-0 border-t-2 border-ink dark:border-white">
+          <!-- Q1 -->
+          <details class="border-b-2 border-ink dark:border-white group">
+            <summary class="flex items-center gap-4 py-5 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors px-2">
+              <span class="font-mono text-lg font-bold text-amber-500 flex-shrink-0">01</span>
+              <span class="font-bold text-base sm:text-lg flex-1">Was ist ein Verfassungsschutzbericht?</span>
+              <span class="chevron text-gray-400 flex-shrink-0" aria-hidden="true">&#9654;</span>
+            </summary>
+            <div class="pb-5 pl-14 pr-4 text-gray-600 dark:text-gray-400 leading-relaxed">
+              Verfassungsschutzberichte werden jährlich von den Verfassungsschutzbehörden des Bundes und der Länder veröffentlicht. Sie dokumentieren Bestrebungen gegen die freiheitliche demokratische Grundordnung und geben Auskunft über extremistische Organisationen und Aktivitäten.
+            </div>
+          </details>
+
+          <!-- Q2 -->
+          <details class="border-b-2 border-ink dark:border-white group">
+            <summary class="flex items-center gap-4 py-5 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors px-2">
+              <span class="font-mono text-lg font-bold text-amber-500 flex-shrink-0">02</span>
+              <span class="font-bold text-base sm:text-lg flex-1">Woher stammen die Daten?</span>
+              <span class="chevron text-gray-400 flex-shrink-0" aria-hidden="true">&#9654;</span>
+            </summary>
+            <div class="pb-5 pl-14 pr-4 text-gray-600 dark:text-gray-400 leading-relaxed">
+              Alle Berichte sind öffentlich zugänglich und werden von den jeweiligen Landesämtern und dem Bundesamt für Verfassungsschutz veröffentlicht. Wir sammeln, digitalisieren und indexieren diese Dokumente, um sie zentral durchsuchbar zu machen.
+            </div>
+          </details>
+
+          <!-- Q3 -->
+          <details class="border-b-2 border-ink dark:border-white group">
+            <summary class="flex items-center gap-4 py-5 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors px-2">
+              <span class="font-mono text-lg font-bold text-amber-500 flex-shrink-0">03</span>
+              <span class="font-bold text-base sm:text-lg flex-1">Wer steckt dahinter?</span>
+              <span class="chevron text-gray-400 flex-shrink-0" aria-hidden="true">&#9654;</span>
+            </summary>
+            <div class="pb-5 pl-14 pr-4 text-gray-600 dark:text-gray-400 leading-relaxed">
+              Das Projekt ist ein zivilgesellschaftliches Open-Source-Vorhaben, entstanden im Umfeld von Code for Germany und der Open Knowledge Foundation. Der Quellcode ist auf GitHub frei verfügbar.
+            </div>
+          </details>
+
+          <!-- Q4 -->
+          <details class="border-b-2 border-ink dark:border-white group">
+            <summary class="flex items-center gap-4 py-5 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors px-2">
+              <span class="font-mono text-lg font-bold text-amber-500 flex-shrink-0">04</span>
+              <span class="font-bold text-base sm:text-lg flex-1">Kann ich die Daten weiterverwenden?</span>
+              <span class="chevron text-gray-400 flex-shrink-0" aria-hidden="true">&#9654;</span>
+            </summary>
+            <div class="pb-5 pl-14 pr-4 text-gray-600 dark:text-gray-400 leading-relaxed">
+              Ja. Alle aufbereiteten Daten stehen als offene Daten zur Verfügung. Die Original-PDFs sind amtliche Werke und damit gemeinfrei. Unsere extrahierten Texte und Metadaten stehen unter einer freien Lizenz.
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 8. OFFENE DATEN                             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="bg-gray-100 dark:bg-slate-800 py-20 sm:py-24">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6">
+        <h2 class="text-3xl sm:text-4xl font-extrabold mb-10">Offene Daten</h2>
+
+        <div class="grid sm:grid-cols-2 gap-6">
+          <!-- PDF download -->
+          <div class="border-2 border-ink dark:border-white bg-white dark:bg-slate-900 p-6">
+            <span class="font-mono text-xs uppercase tracking-wider text-amber-500 font-bold">Download</span>
+            <h3 class="font-bold text-lg mt-2 mb-2">PDFs herunterladen</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">&gt;6 GB als ZIP-Archiv. Alle Original-Berichte als PDF-Dateien.</p>
+            <a href="/data/pdfs.zip" class="inline-block bg-ink dark:bg-white text-white dark:text-ink font-bold text-sm px-5 py-2 border-2 border-ink dark:border-white hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors">
+              ZIP herunterladen
+            </a>
+          </div>
+
+          <!-- Text download -->
+          <div class="border-2 border-ink dark:border-white bg-white dark:bg-slate-900 p-6">
+            <span class="font-mono text-xs uppercase tracking-wider text-amber-500 font-bold">Download</span>
+            <h3 class="font-bold text-lg mt-2 mb-2">Text-Dateien herunterladen</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Extrahierte Volltexte aller Berichte im Reintext-Format.</p>
+            <a href="/data/texts.zip" class="inline-block bg-ink dark:bg-white text-white dark:text-ink font-bold text-sm px-5 py-2 border-2 border-ink dark:border-white hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors">
+              ZIP herunterladen
+            </a>
+          </div>
+        </div>
+
+        <div class="mt-8">
+          <a href="/api" class="inline-flex items-center gap-2 font-mono text-sm font-bold text-ink dark:text-white hover:text-amber-500 dark:hover:text-amber-500 transition-colors border-b-2 border-amber-500 pb-1">
+            <span>JSON-API verfügbar</span>
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 9. PARTNERS                                 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="bg-white dark:bg-slate-900 py-12 sm:py-16 border-t-2 border-gray-200 dark:border-slate-700">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 text-center">
+        <p class="font-mono text-xs sm:text-sm uppercase tracking-widest text-gray-500 dark:text-gray-400">
+          apabiz
+          <span class="text-amber-500 mx-2 sm:mx-3" aria-hidden="true">&middot;</span>
+          Humanistische Union
+          <span class="text-amber-500 mx-2 sm:mx-3" aria-hidden="true">&middot;</span>
+          FragDenStaat
+          <span class="text-amber-500 mx-2 sm:mx-3" aria-hidden="true">&middot;</span>
+          Code for Germany
+          <span class="text-amber-500 mx-2 sm:mx-3" aria-hidden="true">&middot;</span>
+          OKF
+        </p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 10. NEWSLETTER                              -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="bg-amber-500 text-ink py-16 sm:py-20">
+      <div class="max-w-xl mx-auto px-4 sm:px-6 text-center">
+        <h2 class="text-3xl sm:text-4xl font-extrabold mb-6">Bleib informiert.</h2>
+
+        <form action="/newsletter" method="post" class="flex max-w-md mx-auto">
+          <label for="newsletterEmail" class="sr-only">E-Mail-Adresse</label>
+          <input
+            id="newsletterEmail"
+            type="email"
+            name="email"
+            required
+            placeholder="deine@email.de"
+            class="flex-1 px-4 py-3 text-base bg-white text-ink border-2 border-ink placeholder-gray-500 focus:outline-none focus:ring-0"
+          >
+          <button type="submit" class="bg-ink text-white font-bold px-6 py-3 text-base border-2 border-ink hover:bg-gray-800 transition-colors">
+            Anmelden
+          </button>
+        </form>
+
+        <p class="mt-4 text-sm text-ink/60">Maximal einmal pro Monat. Kein Spam.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 11. FOOTER                                  -->
+  <!-- ═══════════════════════════════════════════ -->
+  <footer class="bg-ink text-gray-400 border-t-4 border-amber-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-12">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+        <!-- Left -->
+        <div class="space-y-3">
+          <span class="font-mono text-lg font-bold text-white">VSBerichte</span>
+          <p class="text-sm">Ein Projekt von <a href="https://codefor.de" class="text-amber-500 hover:underline">Code for Germany</a></p>
+        </div>
+
+        <!-- Links -->
+        <div class="flex flex-wrap gap-x-6 gap-y-2 font-mono text-xs uppercase tracking-wider">
+          <a href="https://github.com/beyondopen/verfassungsschutzberichte.de" class="hover:text-amber-500 transition-colors">GitHub</a>
+          <a href="mailto:kontakt@verfassungsschutzberichte.de" class="hover:text-amber-500 transition-colors">Kontakt</a>
+          <a href="/impressum" class="hover:text-amber-500 transition-colors">Impressum</a>
+          <a href="/datenschutz" class="hover:text-amber-500 transition-colors">Datenschutz</a>
+          <a href="https://mastodon.social/@vsberichte" rel="me" class="hover:text-amber-500 transition-colors">Mastodon</a>
+        </div>
+      </div>
+
+      <div class="mt-8 pt-6 border-t border-white/10 text-xs text-gray-500 font-mono">
+        Alle Verfassungsschutzberichte sind amtliche Werke und damit gemeinfrei (&sect; 5 UrhG).
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- Scripts                                     -->
+  <!-- ═══════════════════════════════════════════ -->
+  <script>
+    // Dark mode toggle with localStorage
+    (function () {
+      const html = document.documentElement;
+      const toggle = document.getElementById('darkToggle');
+      const label = document.getElementById('toggleLabel');
+
+      function applyMode(dark) {
+        if (dark) {
+          html.classList.add('dark');
+          label.textContent = 'Light';
+        } else {
+          html.classList.remove('dark');
+          label.textContent = 'Dark';
+        }
+      }
+
+      // Check saved preference or system preference
+      const saved = localStorage.getItem('darkMode');
+      if (saved !== null) {
+        applyMode(saved === 'true');
+      } else {
+        applyMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
+      }
+
+      toggle.addEventListener('click', function () {
+        const isDark = html.classList.contains('dark');
+        const next = !isDark;
+        localStorage.setItem('darkMode', String(next));
+        applyMode(next);
+      });
+    })();
+
+    // Mobile menu toggle
+    (function () {
+      const btn = document.getElementById('mobileMenuBtn');
+      const menu = document.getElementById('mobileMenu');
+
+      btn.addEventListener('click', function () {
+        const open = !menu.classList.contains('hidden');
+        menu.classList.toggle('hidden');
+        btn.setAttribute('aria-expanded', String(!open));
+      });
+    })();
+  </script>
+
+</body>
+</html>
