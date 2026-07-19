@@ -44,7 +44,7 @@ set -e
 
 echo "Running unit tests with separate coverage data..."
 set +e
-docker compose $COMPOSE_FILES exec -T web sh -c "cd /app && coverage run --source=/app --data-file=/app/.coverage.unit -m pytest /app/tests/test_unit.py -v"
+docker compose $COMPOSE_FILES exec -T web sh -c "cd /app && coverage run --source=/app --data-file=/app/.coverage.unit -m pytest /app/tests/ --ignore=/app/tests/test_integration.py -v"
 UNIT_EXIT_CODE=$?
 set -e
 
