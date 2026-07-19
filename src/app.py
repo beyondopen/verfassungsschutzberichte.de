@@ -257,12 +257,23 @@ def proc_pdf(pdf_path):
     ):
         return
 
-    juris = "Bund"
-    for [a, b] in report_info["abr"]:
-        if a.lower() == str(pdf_path.name.split("-")[1]):
-            juris = b
+    # `vsbericht-2023` is the federal report, `vsbericht-rp-2023` a state one.
+    # An unrecognized abbreviation used to fall back to "Bund" silently, which
+    # filed a typo'd `vsbericht-rl-2023` as a second federal report for 2023.
+    parts = pdf_path.stem.split("-")
+    jurisdictions = {a.lower(): b for [a, b] in report_info["abr"]}
+    jurisdictions["bund"] = "Bund"
+
+    if len(parts) == 2:
+        juris = "Bund"
+    elif len(parts) == 3 and parts[1] in jurisdictions:
+        juris = jurisdictions[parts[1]]
+    else:
+        print(f"Skipping {pdf_path.name}: cannot parse jurisdiction from filename")
+        return
+
     try:
-        year = int(pdf_path.stem.split("-")[-1])
+        year = int(parts[-1])
     except ValueError:
         print(f"Skipping {pdf_path.name}: cannot parse year from filename")
         return

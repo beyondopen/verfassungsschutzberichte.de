@@ -100,27 +100,50 @@ class TestSavePageImage:
 
 
 class TestProcPdfYearParsing:
-    """Test year parsing error handling in proc_pdf."""
+    """Test filename parsing error handling in proc_pdf."""
 
-    def test_skips_file_with_unparseable_year(self, tmp_path, capsys):
+    def test_skips_file_with_reversed_name(self, tmp_path, capsys):
         from pathlib import Path
 
-        # Create an actual file with an unparseable year suffix
+        # Jurisdiction and year the wrong way round
         pdf_path = tmp_path / "vsbericht-2023-hb.pdf"
         pdf_path.write_bytes(b"%PDF-fake")
 
         # Import after creating the file
         from app import proc_pdf
 
-        # This should return early due to ValueError on int("hb")
-        with patch('app.report_info', {'abr': []}):
+        with patch('app.report_info', {'abr': [["HB", "Bremen"]]}):
             with patch('app.db'):
                 result = proc_pdf(pdf_path)
 
         assert result is None
         captured = capsys.readouterr()
         assert "Skipping" in captured.out
-        assert "cannot parse year" in captured.out
+        assert "cannot parse jurisdiction" in captured.out
+
+    def test_skips_unknown_jurisdiction_instead_of_filing_as_bund(
+        self, tmp_path, capsys
+    ):
+        """`rl` is not a valid abbreviation (Rheinland-Pfalz is `rp`).
+
+        This used to fall through to the "Bund" default and show the
+        Rheinland-Pfalz report as a second federal report for 2023.
+        """
+        from pathlib import Path
+
+        pdf_path = tmp_path / "vsbericht-rl-2023.pdf"
+        pdf_path.write_bytes(b"%PDF-fake")
+
+        from app import proc_pdf
+
+        with patch('app.report_info', {'abr': [["RP", "Rheinland-Pfalz"]]}):
+            with patch('app.db') as mock_db:
+                result = proc_pdf(pdf_path)
+
+        assert result is None
+        mock_db.session.add.assert_not_called()
+        captured = capsys.readouterr()
+        assert "cannot parse jurisdiction" in captured.out
 
     def test_processes_file_with_valid_year(self):
         from pathlib import Path
