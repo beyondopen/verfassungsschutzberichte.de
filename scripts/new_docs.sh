@@ -24,7 +24,7 @@ fi
 
 if [ "$2" == "process" ]; then
     cp -r "$1" "$1".done
-    cd ~/code/pdf-scripts && ./pipeline.sh -l deu -o 1 "$1".done
+    cd ~/code/jf/pdf-scripts && ./pipeline.sh -l deu -o 1 "$1".done
     exit 0
 fi
 
