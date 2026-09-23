@@ -133,6 +133,8 @@ And update the title in [src/report_info.py](src/report_info.py) accordingly.
 2. Process it: `dokku run <app> flask update-docs 'vsbericht-nw-2000'`
 3. Optionally store the original in `data/raw/` and the cleaned version in `data/cleaned/`
 
+For the yearly batch of new reports (release rhythm, preprocessing, checks before upload, replacing a broken report) see [docs/jahresnachtrag.md](docs/jahresnachtrag.md).
+
 ## Search
 
 Using Postgres' full-text search features via [sqlalchemy-searchable](https://github.com/kvesteri/sqlalchemy-searchable).
