@@ -41,7 +41,7 @@ if [ "$2" == "upload" ]; then
         && sudo install -o 32767 -g 32767 -m 644 /tmp/vsb-upload/pdfs/* /mnt/data/vsb/pdfs/ \
         && { ! ls /tmp/vsb-upload/raw/* >/dev/null 2>&1 || sudo install -o 32767 -g 32767 -m 644 /tmp/vsb-upload/raw/* /mnt/data/vsb/raw/; } \
         && rm -rf /tmp/vsb-upload"
-    ./update_docs.sh
+    "$(dirname "$0")"/update_docs.sh
     exit 0
 fi
 
