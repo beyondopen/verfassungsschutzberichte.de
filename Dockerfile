@@ -1,4 +1,4 @@
-FROM python:3.10
+FROM python:3.12
 
 RUN apt-get update -y && apt-get upgrade -y && apt-get install -y build-essential libpoppler-cpp-dev pkg-config python-dev-is-python3 poppler-utils libavif-dev
 
